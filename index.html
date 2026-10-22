@@ -1,0 +1,413 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Recursos interactivos de Tecnología y Digitalización para Educación Secundaria.">
+  <title>Tecnología Interactiva | Learning by Doing</title>
+
+  <style>
+    :root {
+      --bg: #0b1120;
+      --surface: #151e30;
+      --line: #29374e;
+      --text: #f2f6ff;
+      --muted: #a9b8d0;
+      --accent: #7dd3fc;
+      --green: #86efac;
+    }
+
+    * { box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+      line-height: 1.6;
+    }
+
+    a { color: inherit; }
+
+    .container {
+      width: min(1100px, 90%);
+      margin: auto;
+    }
+
+    header {
+      border-bottom: 1px solid var(--line);
+      background: rgba(11, 17, 32, .95);
+    }
+
+    nav {
+      min-height: 74px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .brand {
+      font-weight: 800;
+      letter-spacing: -.5px;
+      font-size: 1.1rem;
+      text-decoration: none;
+    }
+
+    .brand span { color: var(--accent); }
+
+    .nav-link {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: .9rem;
+    }
+
+    .nav-link:hover { color: white; }
+
+    .hero {
+      padding: 100px 0 85px;
+      background:
+        radial-gradient(ellipse at 80% 10%,
+          rgba(56, 189, 248, .15), transparent 50%),
+        radial-gradient(ellipse at 10% 90%,
+          rgba(168, 85, 247, .10), transparent 45%);
+    }
+
+    .eyebrow {
+      display: inline-block;
+      padding: 7px 13px;
+      border: 1px solid #35506a;
+      border-radius: 30px;
+      color: var(--accent);
+      font-size: .77rem;
+      font-weight: 750;
+      letter-spacing: 1.2px;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      max-width: 850px;
+      margin: 24px 0;
+      font-size: clamp(2.7rem, 6vw, 5.2rem);
+      letter-spacing: -3px;
+      line-height: 1.08;
+    }
+
+    h1 em {
+      font-style: normal;
+      color: var(--accent);
+    }
+
+    .intro {
+      max-width: 650px;
+      color: var(--muted);
+      font-size: 1.15rem;
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+      margin-top: 32px;
+    }
+
+    .button {
+      display: inline-block;
+      padding: 13px 22px;
+      border-radius: 10px;
+      font-weight: 700;
+      text-decoration: none;
+      transition: transform .2s, background .2s;
+    }
+
+    .button:hover { transform: translateY(-2px); }
+
+    .button.primary {
+      background: var(--accent);
+      color: #082032;
+    }
+
+    .button.secondary {
+      border: 1px solid var(--line);
+      color: var(--text);
+    }
+
+    section { padding: 65px 0; }
+
+    .section-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: end;
+      gap: 20px;
+      margin-bottom: 28px;
+    }
+
+    .section-top h2 {
+      margin: 0;
+      font-size: 2rem;
+      letter-spacing: -1px;
+    }
+
+    .section-top p {
+      margin: 8px 0 0;
+      color: var(--muted);
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
+
+    .card {
+      display: flex;
+      flex-direction: column;
+      padding: 28px;
+      min-height: 305px;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: var(--surface);
+      text-decoration: none;
+      transition: transform .2s, border-color .2s;
+    }
+
+    a.card:hover {
+      transform: translateY(-5px);
+      border-color: var(--accent);
+    }
+
+    .card.featured {
+      background: linear-gradient(155deg, #163146, #151e30 65%);
+    }
+
+    .card .symbol {
+      font-size: 2.2rem;
+      margin-bottom: 23px;
+    }
+
+    .tag {
+      display: inline-block;
+      width: fit-content;
+      margin-bottom: 10px;
+      padding: 4px 10px;
+      border-radius: 6px;
+      background: #26364a;
+      color: var(--muted);
+      font-size: .72rem;
+      font-weight: 750;
+      text-transform: uppercase;
+      letter-spacing: .6px;
+    }
+
+    .tag.ready {
+      background: #153d32;
+      color: var(--green);
+    }
+
+    .card h3 {
+      margin: 0 0 10px;
+      font-size: 1.3rem;
+    }
+
+    .card p {
+      margin: 0 0 25px;
+      color: var(--muted);
+      font-size: .92rem;
+    }
+
+    .card .bottom {
+      margin-top: auto;
+      font-weight: 700;
+      color: var(--accent);
+      font-size: .88rem;
+    }
+
+    .card:not(a) .bottom { color: var(--muted); }
+
+    .method {
+      border-top: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+      background: #10192a;
+    }
+
+    .steps {
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 15px;
+      margin-top: 30px;
+    }
+
+    .step {
+      flex: 1;
+      min-width: 120px;
+    }
+
+    .step strong {
+      display: block;
+      font-size: 1.25rem;
+      color: var(--accent);
+    }
+
+    .step span {
+      color: var(--muted);
+      font-size: .86rem;
+    }
+
+    footer {
+      padding: 32px 0;
+      color: var(--muted);
+      font-size: .85rem;
+      text-align: center;
+    }
+
+    @media (max-width: 800px) {
+      .hero { padding: 70px 0; }
+      .grid { grid-template-columns: 1fr; }
+      .card { min-height: 240px; }
+      h1 { letter-spacing: -1.5px; }
+      .section-top { display: block; }
+    }
+  </style>
+</head>
+
+<body>
+
+  <header>
+    <nav class="container">
+      <a class="brand" href="./">
+        TECNOLOGÍA<span> / INTERACTIVA</span>
+      </a>
+      <a class="nav-link" href="#projects">Proyectos</a>
+    </nav>
+  </header>
+
+  <main>
+
+    <div class="hero">
+      <div class="container">
+
+        <span class="eyebrow">Technology · Coding · STEM</span>
+
+        <h1>
+          Learn.<br>
+          Build.<br>
+          <em>Experiment.</em>
+        </h1>
+
+        <p class="intro">
+          Recursos interactivos para aprender Tecnología
+          y Digitalización. Electrónica, programación,
+          simuladores y proyectos reales para Educación Secundaria.
+        </p>
+
+        <div class="actions">
+          <a class="button primary" href="#projects">
+            Explorar proyectos &rarr;
+          </a>
+          <a class="button secondary" href="arduino/">
+            Arduino from Zero
+          </a>
+        </div>
+
+      </div>
+    </div>
+
+    <section id="projects">
+      <div class="container">
+
+        <div class="section-top">
+          <div>
+            <h2>Explore the projects</h2>
+            <p>De las primeras prácticas a los proyectos completos.</p>
+          </div>
+        </div>
+
+        <div class="grid">
+
+          <a class="card featured" href="arduino/">
+            <div class="symbol">⚡</div>
+            <span class="tag ready">Disponible</span>
+            <h3>Arduino from Zero</h3>
+            <p>
+              Diez prácticas interactivas de electrónica y
+              programación, desde un LED hasta construir
+              un reloj de ajedrez.
+              Incluye actividades CLIL para 3.º ESO.
+            </p>
+            <span class="bottom">Abrir laboratorio &rarr;</span>
+          </a>
+
+          <article class="card">
+            <div class="symbol">♟</div>
+            <span class="tag">En desarrollo</span>
+            <h3>SmartChess Lab</h3>
+            <p>
+              Diseño, fabricación, sensores y programación
+              de un tablero de ajedrez inteligente.
+            </p>
+            <span class="bottom">Próximamente</span>
+          </article>
+
+          <article class="card">
+            <div class="symbol">⌘</div>
+            <span class="tag">Próximamente</span>
+            <h3>Hexapawn</h3>
+            <p>
+              Un pequeño juego de ajedrez para aprender
+              lógica, algoritmos y programación.
+            </p>
+            <span class="bottom">Próximamente</span>
+          </article>
+
+        </div>
+
+      </div>
+    </section>
+
+    <section class="method">
+      <div class="container">
+
+        <div class="section-top">
+          <div>
+            <h2>Learning by doing</h2>
+            <p>Experimentar para comprender.</p>
+          </div>
+        </div>
+
+        <div class="steps">
+          <div class="step">
+            <strong>01 · Learn</strong>
+            <span>Comprende el problema.</span>
+          </div>
+          <div class="step">
+            <strong>02 · Build</strong>
+            <span>Construye una solución.</span>
+          </div>
+          <div class="step">
+            <strong>03 · Test</strong>
+            <span>Comprueba cómo funciona.</span>
+          </div>
+          <div class="step">
+            <strong>04 · Improve</strong>
+            <span>Propón mejoras.</span>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+  <footer>
+    <div class="container">
+      Tecnología y Digitalización · Educación Secundaria ·
+      Bilingual STEM Education
+    </div>
+  </footer>
+
+</body>
+</html>
