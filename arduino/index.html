@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<meta name="description" content="Ten interactive bilingual Arduino lessons for 3rd ESO. From blinking an LED to building a chess clock. All in one offline HTML file."/>
+<meta name="theme-color" content="#f3f2ee"/>
+<title>Arduino from Zero · Interactive Technology Lab</title>
+<style>
+:root{--bg:#f3f2ee;--white:#fff;--ink:#222828;--muted:#6f7774;--line:#deded6;--accent:#dc522c;--accent-soft:#ffe6dc;--mint:#cbe9d6;--dark:#19231f;--shadow:0 16px 44px rgba(24,36,28,.07);--r:16px;font-family:Arial,Helvetica,sans-serif;color:var(--ink);background:var(--bg);font-size:15px}
+*{box-sizing:border-box}html{scroll-behavior:smooth;scroll-padding-top:25px}body{margin:0}button,input,select{font:inherit}button{cursor:pointer}a{color:inherit}button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visible{outline:3px solid #0b88bd;outline-offset:3px}::selection{background:#ffd8c7}
+.wrap{max-width:1440px;margin:0 auto;display:grid;grid-template-columns:275px minmax(0,1fr);min-height:100vh}
+.sidebar{position:sticky;top:0;height:100vh;overflow-y:auto;background:#eaeae4;border-right:1px solid #dcdcd4;padding:31px 18px 20px 22px;scrollbar-width:thin;display:flex;flex-direction:column;gap:22px}.logo{display:flex;gap:11px;align-items:center;text-decoration:none;font-weight:900;letter-spacing:-.7px;font-size:19px}.logo-symbol{display:grid;place-items:center;background:var(--ink);color:#fff;border-radius:10px;width:40px;height:40px;font-weight:900}.sidebar-kicker{margin-top:6px;color:#888e87;font-size:11px;font-weight:900;letter-spacing:1.8px}.side-nav{display:grid;gap:4px}.side-nav a{display:grid;grid-template-columns:30px 1fr 16px;align-items:center;gap:9px;padding:11px 9px;text-decoration:none;border-radius:9px;font-size:13px;font-weight:700}.side-nav a:hover,.side-nav a.active{background:#fff}.nav-index{color:#989e99;font-family:monospace;font-size:12px}.nav-check{color:#aeb4ad}.side-nav a.finished .nav-check{color:#388661;font-weight:900}.side-box{margin-top:auto;background:#fff;border:1px solid var(--line);border-radius:13px;padding:16px}.side-box small{color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:1px;font-weight:800}.progress-track{background:#e4e5df;border-radius:12px;height:8px;overflow:hidden;margin:12px 0 10px}.progress-fill{height:100%;width:0;background:#4d9971;border-radius:12px;transition:width .3s}.progress-text{font-weight:800;font-size:14px}.sidebar-footer{font-size:11px;color:var(--muted)}
+.main{min-width:0;padding:25px clamp(16px,4vw,62px) 100px;max-width:1150px;width:100%;margin:0 auto}.topbar{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:24px}.class-tag{font-size:11px;letter-spacing:1.2px;font-weight:900;color:#67706a;text-transform:uppercase}.top-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.ui-btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;background:var(--ink);border:1px solid var(--ink);color:#fff;padding:10px 14px;border-radius:9px;font-size:13px;font-weight:800;transition:transform .15s,background .15s;white-space:nowrap}.ui-btn:hover{transform:translateY(-1px);background:#37423b}.ui-btn.subtle{background:#fff;color:var(--ink);border-color:#d6d9d2}.ui-btn.ghost{background:transparent;color:var(--ink);border-color:transparent}.ui-btn:disabled{opacity:.5;cursor:default}.mobile-menu{display:none}
+.hero{background:var(--dark);color:#fff;border-radius:22px;position:relative;overflow:hidden;min-height:375px;display:grid;grid-template-columns:1.12fr .88fr}.hero:after{content:"";position:absolute;width:390px;height:390px;border:1px solid #4f6658;opacity:.25;right:-100px;top:-110px;border-radius:100%}.hero-copy{padding:clamp(24px,4vw,50px);position:relative;z-index:1}.hero-eyebrow{font-size:11px;font-weight:800;letter-spacing:2px;color:#a7cbb8;margin-bottom:23px}.hero h1{font-size:clamp(44px,5.5vw,70px);letter-spacing:-3.8px;line-height:.98;margin:0 0 22px;font-weight:900}.hero h1 em{font-style:normal;color:#fb9c72}.hero p{font-size:16px;line-height:1.6;color:#d0d9d1;max-width:390px;margin:0 0 24px}.hero-buttons{display:flex;gap:10px;flex-wrap:wrap}.hero-buttons a{text-decoration:none;padding:11px 16px;border-radius:8px;background:var(--accent);color:#fff;font-weight:800;font-size:13px}.hero-buttons a.secondary{background:transparent;border:1px solid #60776b}.hero-art{position:relative;display:flex;justify-content:center;align-items:center;padding:24px;z-index:1}.board-illustration{position:relative;width:min(100%,320px);aspect-ratio:1.1;border:2px solid #8db4a2;border-radius:22px;transform:rotate(-6deg);background:linear-gradient(135deg,#3a4d42,#1b2a24);box-shadow:18px 22px 0 rgba(0,0,0,.12);padding:21px}.chip{position:absolute;left:24%;top:26%;width:52%;height:43%;border-radius:12px;background:#0b1410;border:2px solid #6b8775;display:grid;place-items:center;color:#cbefda;font-size:clamp(28px,4vw,43px);font-weight:900;letter-spacing:-1px}.board-lines{position:absolute;inset:0;background:repeating-linear-gradient(90deg,transparent 0 19px,#70917c20 19px 20px);border-radius:22px}.pin-dots{position:absolute;display:grid;grid-template-columns:repeat(9,1fr);gap:9px;left:8%;right:8%;bottom:10%}.pin-dots i{width:6px;height:6px;background:#b2c9b8;border-radius:50%}.led-art{position:absolute;top:8%;right:10%;border:7px solid #7d3d2e;width:27px;height:27px;background:#ff754a;border-radius:50%;box-shadow:0 0 27px #f76036;animation:glow 2s infinite alternate}@keyframes glow{to{opacity:.55;box-shadow:0 0 4px #d65027}}
+.summary-strip{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:16px 0 30px}.stat{background:#fff;border:1px solid var(--line);border-radius:12px;padding:18px 19px}.stat strong{display:block;font-weight:900;font-size:26px;letter-spacing:-1px}.stat span{font-size:12px;color:var(--muted);font-weight:700}
+.intro-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:28px}.info-card{background:#fff;border:1px solid var(--line);border-radius:var(--r);padding:23px}.eyebrow{font-weight:900;font-size:10px;letter-spacing:1.4px;color:#8b6a59;text-transform:uppercase}.info-card h2,.section-heading h2{font-size:24px;line-height:1.1;letter-spacing:-.9px;margin:9px 0 11px}.info-card p{color:#59645c;line-height:1.6;font-size:14px;margin:0 0 10px}.pipeline{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.pipeline span{border-radius:7px;background:#f0f1ec;padding:10px 12px;font-weight:900;font-size:12px}.pipeline b{color:var(--accent)}.component-table{border-collapse:collapse;width:100%;font-size:13px}.component-table th,.component-table td{padding:9px 5px;text-align:left;border-bottom:1px solid #ebebe5}.component-table th{color:#7b827a;text-transform:uppercase;letter-spacing:.6px;font-size:10px}.component-table td:nth-child(2){font-family:monospace;font-weight:800;color:#ad462c}.mini-note{margin-top:12px;font-size:12px;color:#757e75;line-height:1.6}.english-kit{border:1px solid #dfdfd7;background:#fff;border-radius:15px;padding:21px;margin-bottom:29px}.english-head{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}.english-head h2{font-size:19px;letter-spacing:-.5px;margin:0}.phrase-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-top:15px}.phrase{background:#f6f6f2;border:1px solid #eeeeea;border-radius:9px;padding:11px 13px;display:grid;gap:3px}.phrase b{font-size:13px}.phrase span{color:#81887f;font-size:12px}.lesson-divider{display:flex;justify-content:space-between;align-items:end;margin:45px 0 14px;gap:8px}.lesson-divider h2{font-size:32px;letter-spacing:-1.6px;margin:3px 0 0}.lesson-divider span{font-size:12px;color:var(--muted)}
+.lesson{background:#fff;border:1px solid var(--line);border-radius:15px;margin:12px 0;overflow:hidden;scroll-margin-top:20px;box-shadow:0 2px 3px rgba(0,0,0,.015)}.lesson[open]{box-shadow:var(--shadow);border-color:#c5c9c0}.lesson>summary{padding:17px 22px;list-style:none;display:flex;align-items:center;gap:17px;cursor:pointer;min-height:95px}.lesson>summary::-webkit-details-marker{display:none}.lesson-num{height:48px;width:48px;background:#eff0ea;display:grid;place-items:center;border-radius:11px;font-size:20px;font-weight:900;letter-spacing:-1px;flex:0 0 auto}.lesson[open] .lesson-num{background:var(--accent);color:#fff}.lesson-heading{display:grid;flex:1;gap:3px;min-width:0}.lesson-heading small{color:#9c978c;font-size:9px;font-weight:900;letter-spacing:1.2px}.lesson-heading strong{font-size:21px;letter-spacing:-.7px}.lesson-heading em{font-size:13px;color:var(--muted);font-style:normal}.lesson-status{font-size:25px;color:#aeb5ad}.lesson-status.done{color:#379269}.chevron{font-size:29px;color:#8a9288;transition:transform .2s}.lesson[open] .chevron{transform:rotate(180deg)}.lesson-content{border-top:1px solid #eff0eb;padding:25px clamp(17px,3vw,33px) 15px}.lesson-concept{background:#f5f5f1;border-left:3px solid var(--accent);padding:15px 18px;font-size:14px;line-height:1.75;border-radius:0 9px 9px 0;margin:0 0 25px}.lesson-concept code,.challenge code,.steps code,.quiz-question code{background:#e7eae4;padding:2px 4px;font-size:12px;border-radius:4px}.section-top{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:19px 0 11px}.sim-flag{font-size:9px;font-weight:900;letter-spacing:.5px;color:#57866d}.simulation{background:#f7f7f2;border:1px solid #e9eae2;border-radius:13px;padding:20px;margin-bottom:23px}.sim-panel{display:flex;gap:18px;align-items:center;justify-content:center;flex-wrap:wrap;min-height:158px}.device{width:140px;height:139px;background:#fff;border:1px solid #dce0d6;border-radius:15px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:13px}.device-top{font-size:10px;letter-spacing:.6px;font-weight:900;color:#87918a}.device-caption{font-size:11px;font-weight:800;color:#687a6c}.bulb{width:45px;height:45px;border-radius:50%;background:#69281e;border:5px solid #7e544a;box-shadow:inset -6px -4px 7px #280805}.bulb.lit{background:#ff6949;box-shadow:0 0 35px #fa735e91,inset 3px 4px 10px #ffc2a5;border-color:#e07a61}.sim-controls{display:flex;flex-direction:column;gap:9px;min-width:190px;max-width:300px;flex:1}.sim-controls label{font-size:12px;color:#526057}.sim-controls label strong{color:var(--accent);float:right}.sim-controls input[type=range]{width:100%;accent-color:var(--accent)}.sim-controls input[type=text],.sim-controls select{border:1px solid #cccfc7;border-radius:7px;padding:10px;background:#fff;color:var(--ink);max-width:100%}.sim-small{font-size:11px;line-height:1.5;color:#868d84;max-width:570px;margin:0}.sound-symbol{font-size:90px;color:#cd7051;line-height:1;width:160px;text-align:center}.push-button{border:7px solid #b8bdb4;width:80px;height:80px;border-radius:50%;background:#e8e9e6;box-shadow:0 7px 0 #959b91;font-weight:900;font-size:11px;color:#455047}.push-button:hover,.push-button[aria-pressed=true]{background:#f6ab91;transform:translateY(4px);box-shadow:0 3px 0 #9f6351}.serial{border:1px solid #444b48;background:#222b26;color:#9df4b5;border-radius:12px;padding:20px 26px;min-width:160px;text-align:center;display:grid;gap:4px}.serial span,.serial small{color:#a7bfb0;font-size:10px;letter-spacing:1px}.serial strong{font-size:46px;line-height:1.2;font-family:monospace}.arrow-mid{font-size:25px;color:#aab4a8}.oled-case{background:#242d29;border:8px solid #3e4540;border-radius:13px;padding:11px;box-shadow:0 10px 18px #00000012;width:272px;max-width:100%}.oled-screen{background:#071014;border:2px solid #222e34;border-radius:5px;height:112px;display:flex;align-items:center;justify-content:center;color:#a9e3ff;text-align:center;overflow:hidden}.oled-sim-message{font-family:monospace;font-size:29px;font-weight:800;white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.25}.oled-name{font-size:9px;font-weight:800;color:#9ba79f;text-align:center;letter-spacing:1px;margin:9px 0 0}.oled-readout{display:grid;gap:3px;font-family:monospace}.oled-readout small{font-size:12px}.oled-readout strong{font-size:56px}.chess-button{border-radius:11px;padding:20px 16px;min-width:140px;font-size:13px;font-weight:900;letter-spacing:.2px;border:1px solid #d1d6ce;transition:transform .12s}.chess-button:hover{transform:translateY(-2px)}.chess-button:active{transform:translateY(2px)}.chess-button.white{background:#fff;color:#1d2920}.chess-button.black{background:#262e29;color:white}.chess-button small{display:block;font-size:10px;color:#869087;padding-top:6px}.turn-indicator{text-align:center;min-width:168px;display:grid;gap:8px}.turn-indicator small{font-size:10px;color:#848d84;font-weight:900}.turn-indicator strong{font-size:20px;letter-spacing:-.5px}.turn-indicator span{font-size:11px;color:#858d84}.chess-simulator{display:flex;flex-direction:column;gap:13px;align-items:center}.clock-display{background:#121c17;color:#effff0;border-radius:14px;display:grid;grid-template-columns:1fr 35px 1fr;gap:12px;width:min(100%,560px);padding:20px}.clock-player{border:1px solid #4b5a4d;border-radius:9px;padding:14px 7px;text-align:center;display:grid;gap:9px}.clock-player.active{border:2px solid #f6a16f;background:#344035}.clock-label{font-size:11px;font-weight:900;letter-spacing:1px;color:#a2b7a2}.clock-player strong{font-family:monospace;font-size:clamp(23px,4.5vw,42px);letter-spacing:-1px;font-variant-numeric:tabular-nums}.clock-middle{display:flex;align-items:center;justify-content:center;flex-direction:column;gap:7px;font-size:9px;color:#8a9d8d}.mini-led{width:14px;height:14px;background:#592b29;border-radius:50%;border:2px solid #78504b}.mini-led.lit{background:#ff6547;box-shadow:0 0 13px #ff6547}.mini-led.flash{animation:flash .5s step-end infinite}@keyframes flash{50%{opacity:0}}.clock-status{font-size:13px;font-weight:900;color:#344239}.clock-controls{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}.clock-controls .chess-button{min-width:160px}
+.code-name,.smallnote{font-size:10px;color:#8b938a;font-weight:800}.code-wrap{border-radius:12px;overflow:hidden;background:#19241f;border:1px solid #293931}.code-toolbar{padding:10px 13px;display:flex;align-items:center;justify-content:space-between;gap:8px;border-bottom:1px solid #334039;background:#25312a;color:#a7c0ac;font-size:11px;font-weight:800}.code-toolbar>span{display:flex;align-items:center;gap:5px}.code-toolbar i{height:7px;width:7px;background:#9c6660;border-radius:50%;display:inline-block}.code-toolbar i:nth-child(2){background:#aa9368}.code-toolbar i:nth-child(3){background:#579a74;margin-right:9px}.code-toolbar div{display:flex;gap:6px}.code-btn{font-size:11px;border:1px solid #617365;background:#35493c;color:#e5f3e9;border-radius:6px;padding:6px 8px;font-weight:800}.code-btn:hover{background:#48604d}.code-wrap pre{overflow:auto;max-height:490px;margin:0;padding:20px;font-size:12px;line-height:1.65;color:#e4f2e5;tab-size:2;font-family:Consolas,'Courier New',monospace;white-space:pre;scrollbar-width:thin}.code-wrap code{font-family:inherit}.lesson-pair{display:grid;grid-template-columns:1fr 1fr;gap:15px;margin-top:17px}.micro-section,.challenge,.dialogue{padding:18px;border-radius:11px;border:1px solid #e6e7e0}.micro-section{background:#fff}.steps{margin:14px 0 0 18px;padding:0;font-size:13px;line-height:1.8;color:#4e5a51}.steps li{padding-left:3px;margin-bottom:6px}.word-grid{margin-top:13px;display:grid;grid-template-columns:repeat(2,1fr);gap:7px}.word{padding:10px 9px;min-height:52px;border:1px solid #e6e8df;background:#f6f7f3;border-radius:8px;display:grid;place-items:center;font-size:12px;gap:4px}.word strong{font-size:13px}.translation{font-size:11px;color:#a85c43;display:none}.word.revealed{background:#ffece4;border-color:#edc6b8}.word.revealed .translation{display:block}.dialogue{background:#e8f0e8;margin:15px 0 0}.dialogue .section-top{margin:0 0 11px}.dialogue>div:not(.section-top){font-size:13px;line-height:1.9;color:#445a4c}.dialogue b{color:#276e4c}.challenge{background:#fff1e9;border-color:#f5d9ca}.challenge .eyebrow{color:#bb542f}.challenge p{font-size:14px;line-height:1.65;margin:14px 0 0}.quiz-question{font-size:13px;font-weight:800;line-height:1.6}.quiz-options{display:grid;gap:6px}.quiz-option{text-align:left;padding:9px 11px;border:1px solid #e0e3dd;background:#f7f8f5;border-radius:7px;font-size:12px}.quiz-option:hover{background:#e8ede7}.quiz-option.correct{background:#d9f3e0;border-color:#70b986}.quiz-option.incorrect{background:#ffe0d8;border-color:#dc9381}.quiz-feedback{font-size:12px;font-weight:800;margin:8px 0 0;min-height:18px;color:#4a815b}.complete{margin:22px 0 0;padding:18px 0;display:flex;justify-content:space-between;align-items:center;gap:15px;border-top:1px solid #e5e7df}.check-row{display:flex;gap:8px;align-items:center;font-size:13px;margin-top:10px;color:#536055}.check-row input{accent-color:#37895e;width:16px;height:16px}.done-btn{border:1px solid #91bca0;border-radius:9px;background:#e1f1e5;color:#286945;font-weight:900;padding:13px 15px;font-size:12px;white-space:nowrap}.done-btn.done{background:#35815b;color:#fff;border-color:#35815b}.lesson-foot{border-top:1px solid #f0f1ec;padding:15px 0 0;display:flex;justify-content:space-between;align-items:center;font-size:11px;font-weight:800;color:#9aa098}.next-btn{border:0;background:transparent;color:var(--accent);font-weight:900;padding:8px 0}
+.project-end{margin:30px 0 0;border-radius:17px;background:#fff;padding:28px;border:1px solid var(--line)}.project-end h2{font-size:26px;letter-spacing:-1px;margin:0 0 10px}.bonus-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:18px}.bonus{background:#f2f3ef;border:1px solid #e5e9e3;border-radius:10px;padding:15px}.bonus small{display:block;color:#777f78;font-size:10px;font-weight:900;margin-bottom:9px}.bonus strong{display:block;font-size:13px;line-height:1.5}.review{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:18px}.review label{display:flex;gap:9px;align-items:center;font-size:13px;padding:11px;background:#f5f6f3;border-radius:8px}.review input{accent-color:#35815b}.footer{padding-top:33px;color:#898f87;font-size:11px;line-height:1.8}.footer a{color:#4d6f58}.footer hr{border:0;border-top:1px solid var(--line);margin-bottom:20px}.toast{position:fixed;z-index:99;bottom:23px;left:50%;transform:translate(-50%,100px);opacity:0;pointer-events:none;padding:13px 18px;border-radius:9px;background:#182720;color:#fff;box-shadow:var(--shadow);font-size:13px;font-weight:800;transition:all .25s}.toast.show{opacity:1;transform:translate(-50%,0)}
+@media(max-width:1060px){.wrap{grid-template-columns:228px minmax(0,1fr)}.sidebar{padding-left:13px;padding-right:13px}.main{padding-left:25px;padding-right:25px}.hero{grid-template-columns:1fr .7fr}.hero-art{padding:10px}.lesson-pair{grid-template-columns:1fr 1fr}}
+@media(max-width:780px){.wrap{display:block}.sidebar{position:fixed;z-index:30;width:270px;height:100dvh;transform:translateX(-105%);transition:transform .25s;box-shadow:16px 0 30px #0002}.sidebar.open{transform:translateX(0)}.mobile-menu{display:inline-flex}.main{padding:17px 15px 60px}.hero{grid-template-columns:1fr;min-height:initial}.hero-copy{padding:31px}.hero h1{font-size:52px;letter-spacing:-2.9px}.hero-art{display:none}.intro-grid{grid-template-columns:1fr}.lesson-pair{grid-template-columns:1fr}.bonus-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:480px){.topbar{align-items:flex-start}.top-actions{justify-content:end}.top-actions .ui-btn{padding:8px 9px;font-size:11px}.hero h1{font-size:44px}.hero p{font-size:14px}.summary-strip{gap:7px}.stat{padding:14px 10px}.stat strong{font-size:21px}.stat span{font-size:10px}.phrase-grid{grid-template-columns:1fr}.lesson>summary{padding:13px;gap:10px}.lesson-heading strong{font-size:18px}.lesson-heading em{font-size:11px}.lesson-num{height:42px;width:42px;font-size:18px}.lesson-content{padding:18px 13px}.sim-panel{gap:12px}.sim-controls{max-width:100%;min-width:160px}.sim-flag{font-size:8px;max-width:120px;text-align:right}.complete{flex-direction:column;align-items:stretch}.done-btn{width:100%}.bonus-grid{grid-template-columns:1fr}.review{grid-template-columns:1fr}.clock-display{padding:10px;gap:6px;grid-template-columns:1fr 18px 1fr}.clock-player{padding:9px 4px}.clock-player strong{font-size:23px}.clock-middle{font-size:7px}.clock-controls .chess-button{min-width:115px}}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{animation-duration:.01ms!important;transition-duration:.01ms!important;scroll-behavior:auto!important}}
+@media print{body{background:#fff}.wrap{display:block}.sidebar,.topbar,.sim-flag,.simulation,.code-toolbar button,.lesson-status,.chevron,.done-btn,.next-btn,.hero-art,.toast,.hero-buttons{display:none!important}.main{padding:0;max-width:100%}.hero{background:#fff;color:#111;min-height:0;border:1px solid #bbb;display:block}.hero h1,.hero h1 em{color:#111}.hero p,.hero-eyebrow{color:#333}.lesson{break-inside:auto;box-shadow:none!important}.lesson-content{display:block!important}.lesson>summary{break-after:avoid}.code-wrap pre{max-height:none;white-space:pre-wrap;overflow:visible}.lesson-pair{break-inside:auto}.project-end{break-inside:avoid}.word .translation{display:block!important}.stat,.info-card,.english-kit{break-inside:avoid}}
+</style>
+</head>
+<body>
+<div class="wrap" id="top">
+<aside class="sidebar" id="sidebar" aria-label="Practice navigation">
+<a href="#top" class="logo"><span class="logo-symbol">A<span style="color:#f59068">.</span></span><span>ARDUINO<br/><small style="font-size:11px;letter-spacing:1.7px;color:#818781">FROM ZERO</small></span></a>
+<div><div class="sidebar-kicker">YOUR PRACTICES</div><nav class="side-nav"><a href="#practice-1" data-nav="1"><span class="nav-index">01</span><span>Blink!</span><span class="nav-check" id="nav-check-1">○</span></a><a href="#practice-2" data-nav="2"><span class="nav-index">02</span><span>Beep!</span><span class="nav-check" id="nav-check-2">○</span></a><a href="#practice-3" data-nav="3"><span class="nav-index">03</span><span>Press the button!</span><span class="nav-check" id="nav-check-3">○</span></a><a href="#practice-4" data-nav="4"><span class="nav-index">04</span><span>Button + LED</span><span class="nav-check" id="nav-check-4">○</span></a><a href="#practice-5" data-nav="5"><span class="nav-index">05</span><span>One press, one beep</span><span class="nav-check" id="nav-check-5">○</span></a><a href="#practice-6" data-nav="6"><span class="nav-index">06</span><span>Hello, OLED!</span><span class="nav-check" id="nav-check-6">○</span></a><a href="#practice-7" data-nav="7"><span class="nav-index">07</span><span>Let&#x27;s count!</span><span class="nav-check" id="nav-check-7">○</span></a><a href="#practice-8" data-nav="8"><span class="nav-index">08</span><span>Time is running!</span><span class="nav-check" id="nav-check-8">○</span></a><a href="#practice-9" data-nav="9"><span class="nav-index">09</span><span>Whose turn is it?</span><span class="nav-check" id="nav-check-9">○</span></a><a href="#practice-10" data-nav="10"><span class="nav-index">10</span><span>Build your chess clock!</span><span class="nav-check" id="nav-check-10">○</span></a></nav></div>
+<div class="side-box"><small>Your progress</small><div class="progress-track"><div class="progress-fill" id="progress-fill"></div></div><span class="progress-text" id="progress-text">0 / 10 completed</span><p class="mini-note">Saved automatically in this browser.</p><button type="button" class="ui-btn ghost" id="reset-progress" style="padding:3px 0;font-size:11px">Reset my progress ↺</button></div>
+<div class="sidebar-footer">3.º ESO · Technology & Digitalisation<br/>Offline-ready · No sign-in · No tracking</div>
+</aside>
+<main class="main">
+<div class="topbar"><span class="class-tag">TECHNOLOGY LAB / 3.º ESO BILINGUAL</span><div class="top-actions"><button class="ui-btn subtle mobile-menu" type="button" id="menu-toggle">☰ Practices</button><button class="ui-btn subtle" type="button" id="print-button">⎙ Print</button><button class="ui-btn subtle" type="button" id="expand-button">Expand all</button></div></div>
+<section class="hero"><div class="hero-copy"><div class="hero-eyebrow">10 HANDS-ON PRACTICES · A1–A2 ENGLISH</div><h1>Arduino<br/><em>from Zero.</em></h1><p>From a blinking LED to your own chess clock. Learn electronics, write code, and speak English.</p><div class="hero-buttons"><a href="#practice-1" id="start-link">Start learning ↗</a><a href="#toolbox" class="secondary">English toolbox</a></div></div><div class="hero-art" aria-hidden="true"><div class="board-illustration"><div class="board-lines"></div><div class="led-art"></div><div class="chip">UNO<br/>R4</div><div class="pin-dots"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div></div></div></section>
+<div class="summary-strip"><div class="stat"><strong>10</strong><span>practices</span></div><div class="stat"><strong>5</strong><span>components</span></div><div class="stat"><strong>1</strong><span>chess clock</span></div></div>
+<div class="intro-grid"><section class="info-card"><span class="eyebrow">01 / THE IDEA</span><h2>Input → Output</h2><p>Arduino is a programmable board. A <b>button</b> is an input. An <b>LED</b> is an output. The program connects them.</p><div class="pipeline"><span>BUTTON</span><b>→</b><span>ARDUINO</span><b>→</b><span>LED</span></div><p class="mini-note">We start with one light. We finish with a complete electronic project.</p></section><section class="info-card"><span class="eyebrow">02 / OUR KIT</span><h2>Connections</h2><table class="component-table"><thead><tr><th>Component</th><th>Pin</th><th>Type</th></tr></thead><tbody><tr><td>White button</td><td>A0</td><td>Input</td></tr><tr><td>Black button</td><td>A3</td><td>Input</td></tr><tr><td>Red LED</td><td>A1</td><td>Output</td></tr><tr><td>Buzzer</td><td>A2</td><td>Output</td></tr><tr><td>OLED screen</td><td>I²C / 0x3C</td><td>Output</td></tr></tbody></table><p class="mini-note"><strong>Safety:</strong> Turn off the power before connecting components. Do not change the cables during the lessons.</p></section></div>
+<section class="english-kit" id="toolbox"><div class="english-head"><h2>↗ Your English toolbox</h2><span class="smallnote">Use 2 English questions every lesson</span></div><div class="phrase-grid"><div class="phrase"><b>What does it do?</b><span>¿Qué hace?</span></div><div class="phrase"><b>What happens if I change this?</b><span>¿Qué pasa si cambio esto?</span></div><div class="phrase"><b>What does this mean?</b><span>¿Qué significa esto?</span></div><div class="phrase"><b>How do you say … in English?</b><span>¿Cómo se dice … en inglés?</span></div><div class="phrase"><b>Can you help me, please?</b><span>¿Puedes ayudarme?</span></div><div class="phrase"><b>Why doesn't it work?</b><span>¿Por qué no funciona?</span></div></div><p class="mini-note"><b>Useful answers:</b> I think… · It turns on. · It turns off. · It works now! · Let's test it.</p><p class="mini-note"><b>Our learning routine:</b> PREDICT → TEST → OBSERVE → EXPLAIN.</p></section>
+<div class="lesson-divider" id="lessons"><div><span class="eyebrow">YOUR JOURNEY</span><h2>The practices</h2></div><span>Open a practice to begin ↓</span></div>
+<details class="lesson" id="practice-1" data-number="1" open>
+<summary><span class="lesson-num">01</span><span class="lesson-heading"><small>PRACTICE 01 · BUILD & LEARN</small><strong>Blink!</strong><em>Can you make an LED blink?</em></span><span class="lesson-status" id="status-1" aria-label="Practice progress">○</span><span class="chevron">⌄</span></summary>
+<div class="lesson-content"><p class="lesson-concept">An LED is a small electronic light. The pin is an <strong>output</strong>. <code>HIGH</code> turns the LED on; <code>LOW</code> turns it off.</p>
+<div class="section-top"><span class="eyebrow">01 — TRY IT ONLINE</span><span class="sim-flag">BROWSER SIMULATION · NO ARDUINO NEEDED</span></div>
+<div class="simulation"><div class="sim-panel sim-led"><div class="device"><div class="device-top">VYK · LED / A1</div><span class="bulb lit" id="bulb-1" aria-label="LED simulation"></span><span class="device-caption" id="sim-caption-1">LED ON</span></div><div class="sim-controls"><label for="speed-1">Blink interval <strong id="speed-value-1">1000 ms</strong></label><input id="speed-1" type="range" min="100" max="1800" step="100" value="1000"/><button class="ui-btn" type="button" data-sim-action="led-toggle">Pause blinking</button><span class="sim-small">Change the interval and observe the LED.</span></div></div></div>
+<div class="section-top"><span class="eyebrow">02 — ARDUINO CODE</span><span class="code-name">practice_01.ino</span></div>
+<div class="code-wrap"><div class="code-toolbar"><span><i></i><i></i><i></i> Arduino · C++</span><div><button type="button" data-copy="1" class="code-btn">Copy code</button><button type="button" data-save="1" class="code-btn">↓ .ino</button></div></div><pre><code id="code-1">const int LED = A1;
+
+void setup() {
+  pinMode(LED, OUTPUT);
+}
+
+void loop() {
+  digitalWrite(LED, HIGH);
+  delay(1000);
+
+  digitalWrite(LED, LOW);
+  delay(1000);
+}</code></pre></div>
+<div class="lesson-pair"><section class="micro-section"><div class="section-top"><span class="eyebrow">03 — LET'S TRY</span></div><ol class="steps"><li>Upload the program.</li><li>Watch the red LED.</li><li>Change <code>1000</code> to <code>200</code> and upload it again.</li></ol></section><section class="micro-section"><div class="section-top"><span class="eyebrow">04 — KEY WORDS</span><span class="smallnote">Tap to translate</span></div><div class="word-grid"><button class="word" type="button" aria-label="Translate turn on" data-word="turn on"><strong>turn on</strong><span class="translation" aria-hidden="true">encender</span></button><button class="word" type="button" aria-label="Translate turn off" data-word="turn off"><strong>turn off</strong><span class="translation" aria-hidden="true">apagar</span></button><button class="word" type="button" aria-label="Translate blink" data-word="blink"><strong>blink</strong><span class="translation" aria-hidden="true">parpadear</span></button><button class="word" type="button" aria-label="Translate wait" data-word="wait"><strong>wait</strong><span class="translation" aria-hidden="true">esperar</span></button></div></section></div>
+<section class="dialogue"><div class="section-top"><span class="eyebrow">05 — ASK YOUR PARTNER</span><span class="smallnote">Student A ↔ Student B</span></div><div><b>A:</b> What happens if we change 1000 to 200?<br><b>B:</b> The LED blinks faster.</div></section>
+<div class="lesson-pair"><section class="challenge"><div class="eyebrow">✦ YOUR CHALLENGE</div><p>Make the LED blink <strong>three times quickly</strong> and then wait two seconds.</p></section><section class="micro-section quiz" id="quiz-1"><div class="eyebrow">? QUICK CHECK</div><p class="quiz-question">What does <code>delay(1000)</code> do?</p><div class="quiz-options"><button type="button" class="quiz-option" data-quiz-choice="0" data-correct="0" data-feedback="1000 milliseconds = 1 second.">Wait one second</button><button type="button" class="quiz-option" data-quiz-choice="1" data-correct="0" data-feedback="1000 milliseconds = 1 second.">Turn off Arduino</button><button type="button" class="quiz-option" data-quiz-choice="2" data-correct="0" data-feedback="1000 milliseconds = 1 second.">Wait ten seconds</button></div><p class="quiz-feedback" aria-live="polite"></p></section></div>
+<div class="complete"><div><div class="eyebrow">I CAN…</div><label class="check-row"><input type="checkbox" data-check="1-0"/><span>I can turn an LED on and off.</span></label><label class="check-row"><input type="checkbox" data-check="1-1"/><span>I can change the blinking speed.</span></label></div><button type="button" class="done-btn" data-done="1" aria-pressed="false">Mark as complete ✓</button></div>
+<div class="lesson-foot"><span>Practice 1 of 10</span><button class="next-btn" type="button" data-next="2">Next practice →</button></div>
+</div></details>
+<details class="lesson" id="practice-2" data-number="2" >
+<summary><span class="lesson-num">02</span><span class="lesson-heading"><small>PRACTICE 02 · BUILD & LEARN</small><strong>Beep!</strong><em>Can Arduino make a sound?</em></span><span class="lesson-status" id="status-2" aria-label="Practice progress">○</span><span class="chevron">⌄</span></summary>
+<div class="lesson-content"><p class="lesson-concept">A <strong>buzzer</strong> makes sounds. <code>tone()</code> controls frequency (Hz) and duration (ms). A higher frequency makes a higher-pitched sound.</p>
+<div class="section-top"><span class="eyebrow">01 — TRY IT ONLINE</span><span class="sim-flag">BROWSER SIMULATION · NO ARDUINO NEEDED</span></div>
+<div class="simulation"><div class="sim-panel"><div class="sound-symbol" aria-hidden="true">♫</div><div class="sim-controls"><label for="freq-2">Frequency <strong id="freq-value-2">500 Hz</strong></label><input id="freq-2" type="range" min="200" max="2500" step="100" value="500"/><button class="ui-btn" type="button" data-sim-action="sound">▶ Play beep</button><span class="sim-small">Sound plays through your device, at a low volume.</span></div></div></div>
+<div class="section-top"><span class="eyebrow">02 — ARDUINO CODE</span><span class="code-name">practice_02.ino</span></div>
+<div class="code-wrap"><div class="code-toolbar"><span><i></i><i></i><i></i> Arduino · C++</span><div><button type="button" data-copy="2" class="code-btn">Copy code</button><button type="button" data-save="2" class="code-btn">↓ .ino</button></div></div><pre><code id="code-2">const int BUZZER = A2;
+
+void setup() {
+  pinMode(BUZZER, OUTPUT);
+}
+
+void loop() {
+  tone(BUZZER, 500, 200);
+  delay(500);
+
+  tone(BUZZER, 2000, 200);
+  delay(1000);
+}</code></pre></div>
+<div class="lesson-pair"><section class="micro-section"><div class="section-top"><span class="eyebrow">03 — LET'S TRY</span></div><ol class="steps"><li>Upload the program and listen.</li><li>Change <code>500</code> to <code>1000</code>.</li><li>Change the duration from <code>200</code> to <code>500</code>.</li></ol></section><section class="micro-section"><div class="section-top"><span class="eyebrow">04 — KEY WORDS</span><span class="smallnote">Tap to translate</span></div><div class="word-grid"><button class="word" type="button" aria-label="Translate beep" data-word="beep"><strong>beep</strong><span class="translation" aria-hidden="true">pitido</span></button><button class="word" type="button" aria-label="Translate sound" data-word="sound"><strong>sound</strong><span class="translation" aria-hidden="true">sonido</span></button><button class="word" type="button" aria-label="Translate high-pitched" data-word="high-pitched"><strong>high-pitched</strong><span class="translation" aria-hidden="true">agudo</span></button><button class="word" type="button" aria-label="Translate low-pitched" data-word="low-pitched"><strong>low-pitched</strong><span class="translation" aria-hidden="true">grave</span></button></div></section></div>
+<section class="dialogue"><div class="section-top"><span class="eyebrow">05 — ASK YOUR PARTNER</span><span class="smallnote">Student A ↔ Student B</span></div><div><b>A:</b> Which sound is higher?<br><b>B:</b> The 2000 Hz sound.</div></section>
+<div class="lesson-pair"><section class="challenge"><div class="eyebrow">✦ YOUR CHALLENGE</div><p>Make an alarm: <strong>BEEP – BEEP – BEEP – BEEEEEP</strong>.</p></section><section class="micro-section quiz" id="quiz-2"><div class="eyebrow">? QUICK CHECK</div><p class="quiz-question">What changes the pitch of a sound?</p><div class="quiz-options"><button type="button" class="quiz-option" data-quiz-choice="0" data-correct="1" data-feedback="Frequency is measured in hertz (Hz).">The pin name</button><button type="button" class="quiz-option" data-quiz-choice="1" data-correct="1" data-feedback="Frequency is measured in hertz (Hz).">The frequency</button><button type="button" class="quiz-option" data-quiz-choice="2" data-correct="1" data-feedback="Frequency is measured in hertz (Hz).">The LED</button></div><p class="quiz-feedback" aria-live="polite"></p></section></div>
+<div class="complete"><div><div class="eyebrow">I CAN…</div><label class="check-row"><input type="checkbox" data-check="2-0"/><span>I can make a sound with Arduino.</span></label><label class="check-row"><input type="checkbox" data-check="2-1"/><span>I can change the frequency.</span></label></div><button type="button" class="done-btn" data-done="2" aria-pressed="false">Mark as complete ✓</button></div>
+<div class="lesson-foot"><span>Practice 2 of 10</span><button class="next-btn" type="button" data-next="3">Next practice →</button></div>
+</div></details>
+<details class="lesson" id="practice-3" data-number="3" >
+<summary><span class="lesson-num">03</span><span class="lesson-heading"><small>PRACTICE 03 · BUILD & LEARN</small><strong>Press the button!</strong><em>Can Arduino detect a button press?</em></span><span class="lesson-status" id="status-3" aria-label="Practice progress">○</span><span class="chevron">⌄</span></summary>
+<div class="lesson-content"><p class="lesson-concept">A push button is an <strong>input</strong>. Use <code>digitalRead()</code> to read it. On our VYK module, <code>1</code> means pressed and <code>0</code> means released.</p>
+<div class="section-top"><span class="eyebrow">01 — TRY IT ONLINE</span><span class="sim-flag">BROWSER SIMULATION · NO ARDUINO NEEDED</span></div>
+<div class="simulation"><div class="sim-panel"><div class="device"><div class="device-top">PUL · A0</div><button class="push-button" data-sim-action="input" type="button" aria-pressed="false">PRESS</button></div><div class="serial"><span>SERIAL MONITOR</span><strong id="input-val-3">0</strong><small id="input-status-3">NOT PRESSED</small></div></div></div>
+<div class="section-top"><span class="eyebrow">02 — ARDUINO CODE</span><span class="code-name">practice_03.ino</span></div>
+<div class="code-wrap"><div class="code-toolbar"><span><i></i><i></i><i></i> Arduino · C++</span><div><button type="button" data-copy="3" class="code-btn">Copy code</button><button type="button" data-save="3" class="code-btn">↓ .ino</button></div></div><pre><code id="code-3">const int BUTTON = A0;
+
+void setup() {
+  pinMode(BUTTON, INPUT);
+  Serial.begin(115200);
+}
+
+void loop() {
+  int state = digitalRead(BUTTON);
+
+  Serial.println(state);
+  delay(100);
+}</code></pre></div>
+<div class="lesson-pair"><section class="micro-section"><div class="section-top"><span class="eyebrow">03 — LET'S TRY</span></div><ol class="steps"><li>Upload the program.</li><li>Open the <strong>Serial Monitor</strong> at 115200 baud.</li><li>Press and release the button. Watch the values.</li></ol></section><section class="micro-section"><div class="section-top"><span class="eyebrow">04 — KEY WORDS</span><span class="smallnote">Tap to translate</span></div><div class="word-grid"><button class="word" type="button" aria-label="Translate button" data-word="button"><strong>button</strong><span class="translation" aria-hidden="true">pulsador</span></button><button class="word" type="button" aria-label="Translate press" data-word="press"><strong>press</strong><span class="translation" aria-hidden="true">pulsar</span></button><button class="word" type="button" aria-label="Translate release" data-word="release"><strong>release</strong><span class="translation" aria-hidden="true">soltar</span></button><button class="word" type="button" aria-label="Translate input" data-word="input"><strong>input</strong><span class="translation" aria-hidden="true">entrada</span></button></div></section></div>
+<section class="dialogue"><div class="section-top"><span class="eyebrow">05 — ASK YOUR PARTNER</span><span class="smallnote">Student A ↔ Student B</span></div><div><b>A:</b> What happens when you press the button?<br><b>B:</b> The value changes to one.</div></section>
+<div class="lesson-pair"><section class="challenge"><div class="eyebrow">✦ YOUR CHALLENGE</div><p>Change <code>A0</code> to <code>A3</code> and test the second button.</p></section><section class="micro-section quiz" id="quiz-3"><div class="eyebrow">? QUICK CHECK</div><p class="quiz-question">A button is an…</p><div class="quiz-options"><button type="button" class="quiz-option" data-quiz-choice="0" data-correct="1" data-feedback="Buttons give information to Arduino.">output</button><button type="button" class="quiz-option" data-quiz-choice="1" data-correct="1" data-feedback="Buttons give information to Arduino.">input</button><button type="button" class="quiz-option" data-quiz-choice="2" data-correct="1" data-feedback="Buttons give information to Arduino.">screen</button></div><p class="quiz-feedback" aria-live="polite"></p></section></div>
+<div class="complete"><div><div class="eyebrow">I CAN…</div><label class="check-row"><input type="checkbox" data-check="3-0"/><span>I can read a digital input.</span></label><label class="check-row"><input type="checkbox" data-check="3-1"/><span>I can use the Serial Monitor.</span></label></div><button type="button" class="done-btn" data-done="3" aria-pressed="false">Mark as complete ✓</button></div>
+<div class="lesson-foot"><span>Practice 3 of 10</span><button class="next-btn" type="button" data-next="4">Next practice →</button></div>
+</div></details>
+<details class="lesson" id="practice-4" data-number="4" >
+<summary><span class="lesson-num">04</span><span class="lesson-heading"><small>PRACTICE 04 · BUILD & LEARN</small><strong>Button + LED</strong><em>Can a button control a light?</em></span><span class="lesson-status" id="status-4" aria-label="Practice progress">○</span><span class="chevron">⌄</span></summary>
+<div class="lesson-content"><p class="lesson-concept">We connect an <strong>input</strong> to an <strong>output</strong> using <code>if</code> and <code>else</code>. Arduino makes a decision.</p>
+<div class="section-top"><span class="eyebrow">01 — TRY IT ONLINE</span><span class="sim-flag">BROWSER SIMULATION · NO ARDUINO NEEDED</span></div>
+<div class="simulation"><div class="sim-panel"><div class="device"><div class="device-top">INPUT · A0</div><button class="push-button" data-sim-action="buttonled" type="button" aria-pressed="false">PRESS</button></div><span class="arrow-mid" aria-hidden="true">→</span><div class="device"><div class="device-top">OUTPUT · A1</div><span class="bulb" id="bulb-4"></span><span class="device-caption" id="sim-caption-4">OFF</span></div></div></div>
+<div class="section-top"><span class="eyebrow">02 — ARDUINO CODE</span><span class="code-name">practice_04.ino</span></div>
+<div class="code-wrap"><div class="code-toolbar"><span><i></i><i></i><i></i> Arduino · C++</span><div><button type="button" data-copy="4" class="code-btn">Copy code</button><button type="button" data-save="4" class="code-btn">↓ .ino</button></div></div><pre><code id="code-4">const int BUTTON = A0;
+const int LED = A1;
+
+void setup() {
+  pinMode(BUTTON, INPUT);
+  pinMode(LED, OUTPUT);
+}
+
+void loop() {
+  if (digitalRead(BUTTON) == HIGH) {
+    digitalWrite(LED, HIGH);
+  } else {
+    digitalWrite(LED, LOW);
+  }
+}</code></pre></div>
+<div class="lesson-pair"><section class="micro-section"><div class="section-top"><span class="eyebrow">03 — LET'S TRY</span></div><ol class="steps"><li>Upload the program.</li><li>Press and release the button.</li><li>Find <code>if</code> and <code>else</code> in the code.</li></ol></section><section class="micro-section"><div class="section-top"><span class="eyebrow">04 — KEY WORDS</span><span class="smallnote">Tap to translate</span></div><div class="word-grid"><button class="word" type="button" aria-label="Translate if" data-word="if"><strong>if</strong><span class="translation" aria-hidden="true">si</span></button><button class="word" type="button" aria-label="Translate else" data-word="else"><strong>else</strong><span class="translation" aria-hidden="true">si no</span></button><button class="word" type="button" aria-label="Translate condition" data-word="condition"><strong>condition</strong><span class="translation" aria-hidden="true">condición</span></button><button class="word" type="button" aria-label="Translate output" data-word="output"><strong>output</strong><span class="translation" aria-hidden="true">salida</span></button></div></section></div>
+<section class="dialogue"><div class="section-top"><span class="eyebrow">05 — ASK YOUR PARTNER</span><span class="smallnote">Student A ↔ Student B</span></div><div><b>A:</b> What happens if I press the button?<br><b>B:</b> The LED turns on.</div><div><b>A:</b> And if I release it?<br><b>B:</b> The LED turns off.</div></section>
+<div class="lesson-pair"><section class="challenge"><div class="eyebrow">✦ YOUR CHALLENGE</div><p>Make the LED <strong>turn off when you press</strong> the button.</p></section><section class="micro-section quiz" id="quiz-4"><div class="eyebrow">? QUICK CHECK</div><p class="quiz-question">What does <code>else</code> mean?</p><div class="quiz-options"><button type="button" class="quiz-option" data-quiz-choice="0" data-correct="1" data-feedback="else runs when the if condition is false.">Repeat</button><button type="button" class="quiz-option" data-quiz-choice="1" data-correct="1" data-feedback="else runs when the if condition is false.">If not / otherwise</button><button type="button" class="quiz-option" data-quiz-choice="2" data-correct="1" data-feedback="else runs when the if condition is false.">Stop</button></div><p class="quiz-feedback" aria-live="polite"></p></section></div>
+<div class="complete"><div><div class="eyebrow">I CAN…</div><label class="check-row"><input type="checkbox" data-check="4-0"/><span>I can use if and else.</span></label><label class="check-row"><input type="checkbox" data-check="4-1"/><span>I can control an LED with a button.</span></label></div><button type="button" class="done-btn" data-done="4" aria-pressed="false">Mark as complete ✓</button></div>
+<div class="lesson-foot"><span>Practice 4 of 10</span><button class="next-btn" type="button" data-next="5">Next practice →</button></div>
+</div></details>
+<details class="lesson" id="practice-5" data-number="5" >
+<summary><span class="lesson-num">05</span><span class="lesson-heading"><small>PRACTICE 05 · BUILD & LEARN</small><strong>One press, one beep</strong><em>Can you make one beep for each press?</em></span><span class="lesson-status" id="status-5" aria-label="Practice progress">○</span><span class="chevron">⌄</span></summary>
+<div class="lesson-content"><p class="lesson-concept">We use a <strong>boolean variable</strong> to remember the previous button state. <code>&amp;&amp;</code> means AND; <code>!</code> means NOT.</p>
+<div class="section-top"><span class="eyebrow">01 — TRY IT ONLINE</span><span class="sim-flag">BROWSER SIMULATION · NO ARDUINO NEEDED</span></div>
+<div class="simulation"><div class="sim-panel"><div class="device"><div class="device-top">PUL · A0</div><button class="push-button" data-sim-action="onebeep" type="button">PRESS</button></div><div class="serial"><span>BUZZER · A2</span><strong id="beep-count-5">0</strong><small>BEEPS</small></div></div></div>
+<div class="section-top"><span class="eyebrow">02 — ARDUINO CODE</span><span class="code-name">practice_05.ino</span></div>
+<div class="code-wrap"><div class="code-toolbar"><span><i></i><i></i><i></i> Arduino · C++</span><div><button type="button" data-copy="5" class="code-btn">Copy code</button><button type="button" data-save="5" class="code-btn">↓ .ino</button></div></div><pre><code id="code-5">const int BUTTON = A0;
+const int BUZZER = A2;
+
+bool previous = false;
+
+void setup() {
+  pinMode(BUTTON, INPUT);
+}
+
+void loop() {
+  bool pressed = digitalRead(BUTTON) == HIGH;
+
+  if (pressed &amp;&amp; !previous) {
+    tone(BUZZER, 1800, 60);
+  }
+
+  previous = pressed;
+  delay(10);
+}</code></pre></div>
+<div class="lesson-pair"><section class="micro-section"><div class="section-top"><span class="eyebrow">03 — LET'S TRY</span></div><ol class="steps"><li>Upload the program.</li><li>Press the button once.</li><li>Hold it down: do you hear only one beep?</li></ol></section><section class="micro-section"><div class="section-top"><span class="eyebrow">04 — KEY WORDS</span><span class="smallnote">Tap to translate</span></div><div class="word-grid"><button class="word" type="button" aria-label="Translate previous" data-word="previous"><strong>previous</strong><span class="translation" aria-hidden="true">anterior</span></button><button class="word" type="button" aria-label="Translate true" data-word="true"><strong>true</strong><span class="translation" aria-hidden="true">verdadero</span></button><button class="word" type="button" aria-label="Translate false" data-word="false"><strong>false</strong><span class="translation" aria-hidden="true">falso</span></button><button class="word" type="button" aria-label="Translate remember" data-word="remember"><strong>remember</strong><span class="translation" aria-hidden="true">recordar</span></button></div></section></div>
+<section class="dialogue"><div class="section-top"><span class="eyebrow">05 — ASK YOUR PARTNER</span><span class="smallnote">Student A ↔ Student B</span></div><div><b>A:</b> Why do we use previous?<br><b>B:</b> To remember the old state.</div></section>
+<div class="lesson-pair"><section class="challenge"><div class="eyebrow">✦ YOUR CHALLENGE</div><p>Make each button produce a <strong>different sound</strong>.</p></section><section class="micro-section quiz" id="quiz-5"><div class="eyebrow">? QUICK CHECK</div><p class="quiz-question">What values can a <code>bool</code> store?</p><div class="quiz-options"><button type="button" class="quiz-option" data-quiz-choice="0" data-correct="1" data-feedback="A boolean stores true or false.">0 to 100</button><button type="button" class="quiz-option" data-quiz-choice="1" data-correct="1" data-feedback="A boolean stores true or false.">true or false</button><button type="button" class="quiz-option" data-quiz-choice="2" data-correct="1" data-feedback="A boolean stores true or false.">Text only</button></div><p class="quiz-feedback" aria-live="polite"></p></section></div>
+<div class="complete"><div><div class="eyebrow">I CAN…</div><label class="check-row"><input type="checkbox" data-check="5-0"/><span>I can detect a new button press.</span></label><label class="check-row"><input type="checkbox" data-check="5-1"/><span>I can make one beep per press.</span></label></div><button type="button" class="done-btn" data-done="5" aria-pressed="false">Mark as complete ✓</button></div>
+<div class="lesson-foot"><span>Practice 5 of 10</span><button class="next-btn" type="button" data-next="6">Next practice →</button></div>
+</div></details>
+<details class="lesson" id="practice-6" data-number="6" >
+<summary><span class="lesson-num">06</span><span class="lesson-heading"><small>PRACTICE 06 · BUILD & LEARN</small><strong>Hello, OLED!</strong><em>Can Arduino display a message?</em></span><span class="lesson-status" id="status-6" aria-label="Practice progress">○</span><span class="chevron">⌄</span></summary>
+<div class="lesson-content"><p class="lesson-concept">Our OLED has <strong>128 × 64 pixels</strong>. Install <em>Adafruit GFX Library</em> and <em>Adafruit SSD1306</em> using the Arduino IDE Library Manager.</p>
+<div class="section-top"><span class="eyebrow">01 — TRY IT ONLINE</span><span class="sim-flag">BROWSER SIMULATION · NO ARDUINO NEEDED</span></div>
+<div class="simulation"><div class="sim-panel"><div class="oled-case"><div class="oled-screen"><span class="oled-sim-message" id="oled-message-6">HELLO!</span></div><div class="oled-name">128 × 64 OLED · 0x3C</div></div><div class="sim-controls"><label for="oled-input-6">Text on screen</label><input type="text" id="oled-input-6" maxlength="16" value="HELLO!"/><label for="oled-size-6">Text size</label><select id="oled-size-6"><option value="1">1 — Small</option><option value="2" selected>2 — Medium</option><option value="3">3 — Large</option></select></div></div></div>
+<div class="section-top"><span class="eyebrow">02 — ARDUINO CODE</span><span class="code-name">practice_06.ino</span></div>
+<div class="code-wrap"><div class="code-toolbar"><span><i></i><i></i><i></i> Arduino · C++</span><div><button type="button" data-copy="6" class="code-btn">Copy code</button><button type="button" data-save="6" class="code-btn">↓ .ino</button></div></div><pre><code id="code-6">#include &lt;Wire.h&gt;
+#include &lt;Adafruit_GFX.h&gt;
+#include &lt;Adafruit_SSD1306.h&gt;
+
+Adafruit_SSD1306 oled(128, 64, &amp;Wire, -1);
+
+void setup() {
+  Wire.begin();
+
+  if (!oled.begin(SSD1306_SWITCHCAPVCC, 0x3C)) {
+    while (true) {
+      delay(100);
+    }
+  }
+
+  oled.clearDisplay();
+  oled.setTextColor(SSD1306_WHITE);
+  oled.setTextSize(2);
+
+  oled.setCursor(20, 20);
+  oled.print(&quot;HELLO!&quot;);
+
+  oled.display();
+}
+
+void loop() {
+}</code></pre></div>
+<div class="lesson-pair"><section class="micro-section"><div class="section-top"><span class="eyebrow">03 — LET'S TRY</span></div><ol class="steps"><li>Install the two libraries.</li><li>Upload the program.</li><li>Change <code>HELLO!</code>, the text size and position.</li></ol></section><section class="micro-section"><div class="section-top"><span class="eyebrow">04 — KEY WORDS</span><span class="smallnote">Tap to translate</span></div><div class="word-grid"><button class="word" type="button" aria-label="Translate screen" data-word="screen"><strong>screen</strong><span class="translation" aria-hidden="true">pantalla</span></button><button class="word" type="button" aria-label="Translate display" data-word="display"><strong>display</strong><span class="translation" aria-hidden="true">mostrar</span></button><button class="word" type="button" aria-label="Translate pixel" data-word="pixel"><strong>pixel</strong><span class="translation" aria-hidden="true">píxel</span></button><button class="word" type="button" aria-label="Translate position" data-word="position"><strong>position</strong><span class="translation" aria-hidden="true">posición</span></button></div></section></div>
+<section class="dialogue"><div class="section-top"><span class="eyebrow">05 — ASK YOUR PARTNER</span><span class="smallnote">Student A ↔ Student B</span></div><div><b>A:</b> How can I change the text?<br><b>B:</b> Change oled.print().</div><div><b>A:</b> How can I make it bigger?<br><b>B:</b> Change setTextSize().</div></section>
+<div class="lesson-pair"><section class="challenge"><div class="eyebrow">✦ YOUR CHALLENGE</div><p>Display <strong>CHESS</strong> on one line and <strong>CLOCK</strong> on the next.</p></section><section class="micro-section quiz" id="quiz-6"><div class="eyebrow">? QUICK CHECK</div><p class="quiz-question">What does <code>oled.display()</code> do?</p><div class="quiz-options"><button type="button" class="quiz-option" data-quiz-choice="0" data-correct="0" data-feedback="It sends the image to the OLED screen.">Show the prepared image</button><button type="button" class="quiz-option" data-quiz-choice="1" data-correct="0" data-feedback="It sends the image to the OLED screen.">Turn off Arduino</button><button type="button" class="quiz-option" data-quiz-choice="2" data-correct="0" data-feedback="It sends the image to the OLED screen.">Read a button</button></div><p class="quiz-feedback" aria-live="polite"></p></section></div>
+<div class="complete"><div><div class="eyebrow">I CAN…</div><label class="check-row"><input type="checkbox" data-check="6-0"/><span>I can display a message.</span></label><label class="check-row"><input type="checkbox" data-check="6-1"/><span>I can change its size and position.</span></label></div><button type="button" class="done-btn" data-done="6" aria-pressed="false">Mark as complete ✓</button></div>
+<div class="lesson-foot"><span>Practice 6 of 10</span><button class="next-btn" type="button" data-next="7">Next practice →</button></div>
+</div></details>
+<details class="lesson" id="practice-7" data-number="7" >
+<summary><span class="lesson-num">07</span><span class="lesson-heading"><small>PRACTICE 07 · BUILD & LEARN</small><strong>Let&#x27;s count!</strong><em>Can Arduino count button presses?</em></span><span class="lesson-status" id="status-7" aria-label="Practice progress">○</span><span class="chevron">⌄</span></summary>
+<div class="lesson-content"><p class="lesson-concept">A <strong>counter</strong> is a variable. <code>counter++</code> adds one. A <strong>function</strong> groups instructions under one name.</p>
+<div class="section-top"><span class="eyebrow">01 — TRY IT ONLINE</span><span class="sim-flag">BROWSER SIMULATION · NO ARDUINO NEEDED</span></div>
+<div class="simulation"><div class="sim-panel"><div class="oled-case"><div class="oled-screen"><div class="oled-readout"><small>PRESSES</small><strong id="counter-7">0</strong></div></div><div class="oled-name">OLED COUNTER</div></div><div class="sim-controls"><button class="ui-btn" type="button" data-sim-action="plus">+ 1 · WHITE</button><button class="ui-btn subtle" type="button" data-sim-action="minus">− 1 · BLACK</button><button class="ui-btn ghost" type="button" data-sim-action="zero">Reset</button></div></div></div>
+<div class="section-top"><span class="eyebrow">02 — ARDUINO CODE</span><span class="code-name">practice_07.ino</span></div>
+<div class="code-wrap"><div class="code-toolbar"><span><i></i><i></i><i></i> Arduino · C++</span><div><button type="button" data-copy="7" class="code-btn">Copy code</button><button type="button" data-save="7" class="code-btn">↓ .ino</button></div></div><pre><code id="code-7">#include &lt;Wire.h&gt;
+#include &lt;Adafruit_GFX.h&gt;
+#include &lt;Adafruit_SSD1306.h&gt;
+
+Adafruit_SSD1306 oled(128, 64, &amp;Wire, -1);
+
+const int BUTTON = A0;
+
+int counter = 0;
+bool previous = false;
+
+void showCounter() {
+  oled.clearDisplay();
+  oled.setTextColor(SSD1306_WHITE);
+
+  oled.setTextSize(1);
+  oled.setCursor(20, 5);
+  oled.print(&quot;PRESSES&quot;);
+
+  oled.setTextSize(3);
+  oled.setCursor(40, 25);
+  oled.print(counter);
+
+  oled.display();
+}
+
+void setup() {
+  pinMode(BUTTON, INPUT);
+  Wire.begin();
+
+  if (!oled.begin(SSD1306_SWITCHCAPVCC, 0x3C)) {
+    while (true) {
+      delay(100);
+    }
+  }
+
+  showCounter();
+}
+
+void loop() {
+  bool pressed = digitalRead(BUTTON) == HIGH;
+
+  if (pressed &amp;&amp; !previous) {
+    counter++;
+    showCounter();
+  }
+
+  previous = pressed;
+  delay(10);
+}</code></pre></div>
+<div class="lesson-pair"><section class="micro-section"><div class="section-top"><span class="eyebrow">03 — LET'S TRY</span></div><ol class="steps"><li>Upload the program.</li><li>Press the button five times.</li><li>Find <code>counter++</code> and <code>showCounter()</code>.</li></ol></section><section class="micro-section"><div class="section-top"><span class="eyebrow">04 — KEY WORDS</span><span class="smallnote">Tap to translate</span></div><div class="word-grid"><button class="word" type="button" aria-label="Translate counter" data-word="counter"><strong>counter</strong><span class="translation" aria-hidden="true">contador</span></button><button class="word" type="button" aria-label="Translate add" data-word="add"><strong>add</strong><span class="translation" aria-hidden="true">sumar</span></button><button class="word" type="button" aria-label="Translate increase" data-word="increase"><strong>increase</strong><span class="translation" aria-hidden="true">aumentar</span></button><button class="word" type="button" aria-label="Translate function" data-word="function"><strong>function</strong><span class="translation" aria-hidden="true">función</span></button></div></section></div>
+<section class="dialogue"><div class="section-top"><span class="eyebrow">05 — ASK YOUR PARTNER</span><span class="smallnote">Student A ↔ Student B</span></div><div><b>A:</b> What happens when I press the button?<br><b>B:</b> The counter increases by one.</div></section>
+<div class="lesson-pair"><section class="challenge"><div class="eyebrow">✦ YOUR CHALLENGE</div><p>Use both buttons: <strong>white = +1</strong>, <strong>black = −1</strong>. Do not go below zero.</p></section><section class="micro-section quiz" id="quiz-7"><div class="eyebrow">? QUICK CHECK</div><p class="quiz-question">What does <code>counter++</code> mean?</p><div class="quiz-options"><button type="button" class="quiz-option" data-quiz-choice="0" data-correct="0" data-feedback="++ increases a number by one.">Add one</button><button type="button" class="quiz-option" data-quiz-choice="1" data-correct="0" data-feedback="++ increases a number by one.">Subtract one</button><button type="button" class="quiz-option" data-quiz-choice="2" data-correct="0" data-feedback="++ increases a number by one.">Set to zero</button></div><p class="quiz-feedback" aria-live="polite"></p></section></div>
+<div class="complete"><div><div class="eyebrow">I CAN…</div><label class="check-row"><input type="checkbox" data-check="7-0"/><span>I can use a counter.</span></label><label class="check-row"><input type="checkbox" data-check="7-1"/><span>I can use a function.</span></label></div><button type="button" class="done-btn" data-done="7" aria-pressed="false">Mark as complete ✓</button></div>
+<div class="lesson-foot"><span>Practice 7 of 10</span><button class="next-btn" type="button" data-next="8">Next practice →</button></div>
+</div></details>
+<details class="lesson" id="practice-8" data-number="8" >
+<summary><span class="lesson-num">08</span><span class="lesson-heading"><small>PRACTICE 08 · BUILD & LEARN</small><strong>Time is running!</strong><em>Can Arduino measure time?</em></span><span class="lesson-status" id="status-8" aria-label="Practice progress">○</span><span class="chevron">⌄</span></summary>
+<div class="lesson-content"><p class="lesson-concept"><code>millis()</code> measures time in milliseconds. <strong>1000 ms = 1 second</strong>. Unlike a long <code>delay()</code>, it lets our program keep checking buttons.</p>
+<div class="section-top"><span class="eyebrow">01 — TRY IT ONLINE</span><span class="sim-flag">BROWSER SIMULATION · NO ARDUINO NEEDED</span></div>
+<div class="simulation"><div class="sim-panel"><div class="oled-case"><div class="oled-screen"><div class="oled-readout"><small>SECONDS LEFT</small><strong id="timer-8">10</strong></div></div><div class="oled-name">COUNTDOWN</div></div><div class="sim-controls"><label for="duration-8">Duration <strong id="duration-value-8">10 s</strong></label><input id="duration-8" type="range" min="5" max="30" step="5" value="10"/><button class="ui-btn" type="button" data-sim-action="timer-toggle" id="timer-toggle-8">▶ Start</button><button class="ui-btn subtle" type="button" data-sim-action="timer-reset">↻ Reset</button></div></div></div>
+<div class="section-top"><span class="eyebrow">02 — ARDUINO CODE</span><span class="code-name">practice_08.ino</span></div>
+<div class="code-wrap"><div class="code-toolbar"><span><i></i><i></i><i></i> Arduino · C++</span><div><button type="button" data-copy="8" class="code-btn">Copy code</button><button type="button" data-save="8" class="code-btn">↓ .ino</button></div></div><pre><code id="code-8">const unsigned long DURATION = 10000;
+
+unsigned long startTime;
+unsigned long lastUpdate = 0;
+
+void setup() {
+  Serial.begin(115200);
+  startTime = millis();
+}
+
+void loop() {
+  unsigned long now = millis();
+  unsigned long elapsed = now - startTime;
+
+  unsigned long remaining;
+
+  if (elapsed &gt;= DURATION) {
+    remaining = 0;
+  } else {
+    remaining = DURATION - elapsed;
+  }
+
+  if (now - lastUpdate &gt;= 200) {
+    lastUpdate = now;
+    Serial.println((remaining + 999) / 1000);
+  }
+}</code></pre></div>
+<div class="lesson-pair"><section class="micro-section"><div class="section-top"><span class="eyebrow">03 — LET'S TRY</span></div><ol class="steps"><li>Upload the program and open the Serial Monitor.</li><li>Watch the countdown from 10 to 0.</li><li>Change <code>DURATION</code> to 30000.</li></ol></section><section class="micro-section"><div class="section-top"><span class="eyebrow">04 — KEY WORDS</span><span class="smallnote">Tap to translate</span></div><div class="word-grid"><button class="word" type="button" aria-label="Translate time" data-word="time"><strong>time</strong><span class="translation" aria-hidden="true">tiempo</span></button><button class="word" type="button" aria-label="Translate countdown" data-word="countdown"><strong>countdown</strong><span class="translation" aria-hidden="true">cuenta atrás</span></button><button class="word" type="button" aria-label="Translate start" data-word="start"><strong>start</strong><span class="translation" aria-hidden="true">comenzar</span></button><button class="word" type="button" aria-label="Translate remaining" data-word="remaining"><strong>remaining</strong><span class="translation" aria-hidden="true">restante</span></button></div></section></div>
+<section class="dialogue"><div class="section-top"><span class="eyebrow">05 — ASK YOUR PARTNER</span><span class="smallnote">Student A ↔ Student B</span></div><div><b>A:</b> What does millis() do?<br><b>B:</b> It measures time.</div><div><b>A:</b> How can we change the duration?<br><b>B:</b> Change DURATION.</div></section>
+<div class="lesson-pair"><section class="challenge"><div class="eyebrow">✦ YOUR CHALLENGE</div><p>Make a countdown from <strong>30 seconds</strong>.</p></section><section class="micro-section quiz" id="quiz-8"><div class="eyebrow">? QUICK CHECK</div><p class="quiz-question">How many milliseconds are in one second?</p><div class="quiz-options"><button type="button" class="quiz-option" data-quiz-choice="0" data-correct="1" data-feedback="One second is 1000 ms.">100</button><button type="button" class="quiz-option" data-quiz-choice="1" data-correct="1" data-feedback="One second is 1000 ms.">1000</button><button type="button" class="quiz-option" data-quiz-choice="2" data-correct="1" data-feedback="One second is 1000 ms.">10000</button></div><p class="quiz-feedback" aria-live="polite"></p></section></div>
+<div class="complete"><div><div class="eyebrow">I CAN…</div><label class="check-row"><input type="checkbox" data-check="8-0"/><span>I can use millis().</span></label><label class="check-row"><input type="checkbox" data-check="8-1"/><span>I can make a countdown.</span></label></div><button type="button" class="done-btn" data-done="8" aria-pressed="false">Mark as complete ✓</button></div>
+<div class="lesson-foot"><span>Practice 8 of 10</span><button class="next-btn" type="button" data-next="9">Next practice →</button></div>
+</div></details>
+<details class="lesson" id="practice-9" data-number="9" >
+<summary><span class="lesson-num">09</span><span class="lesson-heading"><small>PRACTICE 09 · BUILD & LEARN</small><strong>Whose turn is it?</strong><em>Can Arduino remember the active player?</em></span><span class="lesson-status" id="status-9" aria-label="Practice progress">○</span><span class="chevron">⌄</span></summary>
+<div class="lesson-content"><p class="lesson-concept">The chess clock uses <strong>states</strong>: <code>WAITING</code>, <code>WHITE_TURN</code> and <code>BLACK_TURN</code>. Press BLACK first to start White’s clock.</p>
+<div class="section-top"><span class="eyebrow">01 — TRY IT ONLINE</span><span class="sim-flag">BROWSER SIMULATION · NO ARDUINO NEEDED</span></div>
+<div class="simulation"><div class="sim-panel sim-turns"><button class="chess-button white" type="button" data-sim-action="turn-white">WHITE BUTTON <small>A0</small></button><div class="turn-indicator"><small>ACTIVE PLAYER</small><strong id="turn-9">WAITING</strong><span>Press BLACK first</span></div><button class="chess-button black" type="button" data-sim-action="turn-black">BLACK BUTTON <small>A3</small></button></div></div>
+<div class="section-top"><span class="eyebrow">02 — ARDUINO CODE</span><span class="code-name">practice_09.ino</span></div>
+<div class="code-wrap"><div class="code-toolbar"><span><i></i><i></i><i></i> Arduino · C++</span><div><button type="button" data-copy="9" class="code-btn">Copy code</button><button type="button" data-save="9" class="code-btn">↓ .ino</button></div></div><pre><code id="code-9">const int WHITE_BUTTON = A0;
+const int BLACK_BUTTON = A3;
+
+enum State {
+  WAITING,
+  WHITE_TURN,
+  BLACK_TURN
+};
+
+State state = WAITING;
+
+bool oldWhite = false;
+bool oldBlack = false;
+
+void setup() {
+  pinMode(WHITE_BUTTON, INPUT);
+  pinMode(BLACK_BUTTON, INPUT);
+
+  Serial.begin(115200);
+  Serial.println(&quot;WAITING&quot;);
+}
+
+void loop() {
+  bool white = digitalRead(WHITE_BUTTON) == HIGH;
+  bool black = digitalRead(BLACK_BUTTON) == HIGH;
+
+  if (black &amp;&amp; !oldBlack) {
+    if (state == WAITING || state == BLACK_TURN) {
+      state = WHITE_TURN;
+      Serial.println(&quot;WHITE TURN&quot;);
+    }
+  }
+
+  if (white &amp;&amp; !oldWhite) {
+    if (state == WHITE_TURN) {
+      state = BLACK_TURN;
+      Serial.println(&quot;BLACK TURN&quot;);
+    }
+  }
+
+  oldWhite = white;
+  oldBlack = black;
+
+  delay(20);
+}</code></pre></div>
+<div class="lesson-pair"><section class="micro-section"><div class="section-top"><span class="eyebrow">03 — LET'S TRY</span></div><ol class="steps"><li>Upload and open the Serial Monitor.</li><li>Press BLACK to start White’s time.</li><li>Press WHITE, then BLACK, to switch turns.</li></ol></section><section class="micro-section"><div class="section-top"><span class="eyebrow">04 — KEY WORDS</span><span class="smallnote">Tap to translate</span></div><div class="word-grid"><button class="word" type="button" aria-label="Translate player" data-word="player"><strong>player</strong><span class="translation" aria-hidden="true">jugador</span></button><button class="word" type="button" aria-label="Translate turn" data-word="turn"><strong>turn</strong><span class="translation" aria-hidden="true">turno</span></button><button class="word" type="button" aria-label="Translate white" data-word="white"><strong>white</strong><span class="translation" aria-hidden="true">blancas</span></button><button class="word" type="button" aria-label="Translate switch" data-word="switch"><strong>switch</strong><span class="translation" aria-hidden="true">cambiar</span></button></div></section></div>
+<section class="dialogue"><div class="section-top"><span class="eyebrow">05 — ASK YOUR PARTNER</span><span class="smallnote">Student A ↔ Student B</span></div><div><b>A:</b> Whose turn is it?<br><b>B:</b> It’s White’s turn.</div><div><b>A:</b> What happens when White presses the button?<br><b>B:</b> It’s Black’s turn.</div></section>
+<div class="lesson-pair"><section class="challenge"><div class="eyebrow">✦ YOUR CHALLENGE</div><p>Add a short <strong>beep</strong> when the turn changes.</p></section><section class="micro-section quiz" id="quiz-9"><div class="eyebrow">? QUICK CHECK</div><p class="quiz-question">Which button starts White’s clock in our project?</p><div class="quiz-options"><button type="button" class="quiz-option" data-quiz-choice="0" data-correct="1" data-feedback="We press BLACK to start the White player’s countdown.">WHITE</button><button type="button" class="quiz-option" data-quiz-choice="1" data-correct="1" data-feedback="We press BLACK to start the White player’s countdown.">BLACK</button><button type="button" class="quiz-option" data-quiz-choice="2" data-correct="1" data-feedback="We press BLACK to start the White player’s countdown.">Both buttons</button></div><p class="quiz-feedback" aria-live="polite"></p></section></div>
+<div class="complete"><div><div class="eyebrow">I CAN…</div><label class="check-row"><input type="checkbox" data-check="9-0"/><span>I can use states.</span></label><label class="check-row"><input type="checkbox" data-check="9-1"/><span>I can change turns with buttons.</span></label></div><button type="button" class="done-btn" data-done="9" aria-pressed="false">Mark as complete ✓</button></div>
+<div class="lesson-foot"><span>Practice 9 of 10</span><button class="next-btn" type="button" data-next="10">Next practice →</button></div>
+</div></details>
+<details class="lesson" id="practice-10" data-number="10" >
+<summary><span class="lesson-num">10</span><span class="lesson-heading"><small>PRACTICE 10 · FINAL PROJECT</small><strong>Build your chess clock!</strong><em>It&#x27;s time for the final project!</em></span><span class="lesson-status" id="status-10" aria-label="Practice progress">○</span><span class="chevron">⌄</span></summary>
+<div class="lesson-content"><p class="lesson-concept">Two players, <strong>five minutes each</strong>, two buttons, one LED, one buzzer and one OLED. During the game the LED stays on. At zero, the alarm sounds and the LED blinks. Hold both buttons for two seconds to reset.</p>
+<div class="section-top"><span class="eyebrow">01 — TRY IT ONLINE</span><span class="sim-flag">BROWSER SIMULATION · NO ARDUINO NEEDED</span></div>
+<div class="simulation"><div class="chess-simulator"><div class="clock-display"><div class="clock-player" id="clock-white"><div class="clock-label">WHITE</div><strong id="clock-white-time">00:10</strong></div><div class="clock-middle"><span class="mini-led" id="clock-led"></span><span>LED</span></div><div class="clock-player" id="clock-black"><div class="clock-label">BLACK</div><strong id="clock-black-time">00:10</strong></div></div><div class="clock-status" id="clock-status">Press BLACK to start</div><div class="clock-controls"><button type="button" data-sim-action="chess-white" class="chess-button white">WHITE BUTTON</button><button type="button" data-sim-action="chess-black" class="chess-button black">BLACK BUTTON</button></div><button type="button" data-sim-action="chess-reset" class="ui-btn subtle">↻ Reset both timers</button><p class="sim-small">Browser simulation: 10 seconds per player for a quick test. On Arduino, the program starts at 5 minutes. The physical version resets by holding both buttons for 2 seconds.</p></div></div>
+<div class="section-top"><span class="eyebrow">02 — ARDUINO CODE</span><span class="code-name">practice_10.ino</span></div>
+<div class="code-wrap"><div class="code-toolbar"><span><i></i><i></i><i></i> Arduino · C++</span><div><button type="button" data-copy="10" class="code-btn">Copy code</button><button type="button" data-save="10" class="code-btn">↓ .ino</button></div></div><pre><code id="code-10">#include &lt;Wire.h&gt;
+#include &lt;Adafruit_GFX.h&gt;
+#include &lt;Adafruit_SSD1306.h&gt;
+
+// ---------- PINS ----------
+const int WHITE_BUTTON = A0;
+const int BLACK_BUTTON = A3;
+const int LED = A1;
+const int BUZZER = A2;
+
+Adafruit_SSD1306 oled(128, 64, &amp;Wire, -1);
+
+// ---------- TIME ----------
+const unsigned long GAME_TIME = 5UL * 60UL * 1000UL;
+const unsigned long RESET_TIME = 2000UL;
+
+unsigned long whiteTime = GAME_TIME;
+unsigned long blackTime = GAME_TIME;
+
+unsigned long lastTime = 0;
+unsigned long lastScreen = 0;
+unsigned long holdStart = 0;
+
+// ---------- STATES ----------
+enum State {
+  WAITING,
+  WHITE_TURN,
+  BLACK_TURN,
+  FINISHED
+};
+State state = WAITING;
+
+// ---------- BUTTONS ----------
+bool oldWhite = false;
+bool oldBlack = false;
+bool bothBefore = false;
+bool buttonsLocked = false;
+bool resetDone = false;
+
+// ---------- SOUNDS ----------
+void beep() {
+  tone(BUZZER, 1800, 60);
+}
+
+void alarmSound() {
+  for (int i = 0; i &lt; 3; i++) {
+    tone(BUZZER, 2000, 200);
+    delay(300);
+  }
+}
+
+// ---------- DISPLAY TIME ----------
+void showTime(unsigned long ms) {
+  unsigned long seconds = (ms + 999UL) / 1000UL;
+  int minutes = seconds / 60;
+  int rest = seconds % 60;
+
+  if (minutes &lt; 10) oled.print(&quot;0&quot;);
+  oled.print(minutes);
+  oled.print(&quot;:&quot;);
+
+  if (rest &lt; 10) oled.print(&quot;0&quot;);
+  oled.print(rest);
+}
+
+// ---------- OLED ----------
+void showScreen() {
+  oled.clearDisplay();
+  oled.setTextColor(SSD1306_WHITE);
+
+  oled.setTextSize(1);
+  oled.setCursor(8, 0);
+  oled.print(&quot;WHITE&quot;);
+  oled.setCursor(76, 0);
+  oled.print(&quot;BLACK&quot;);
+
+  oled.setTextSize(2);
+  oled.setCursor(2, 18);
+  showTime(whiteTime);
+  oled.setCursor(68, 18);
+  showTime(blackTime);
+
+  oled.drawLine(0, 42, 127, 42, SSD1306_WHITE);
+  oled.setTextSize(1);
+  oled.setCursor(4, 50);
+
+  if (state == WAITING) {
+    oled.print(&quot;Press BLACK&quot;);
+  }
+  else if (state == WHITE_TURN) {
+    oled.print(&quot;WHITE TURN&quot;);
+  }
+  else if (state == BLACK_TURN) {
+    oled.print(&quot;BLACK TURN&quot;);
+  }
+  else if (whiteTime == 0) {
+    oled.print(&quot;BLACK WINS&quot;);
+  }
+  else {
+    oled.print(&quot;WHITE WINS&quot;);
+  }
+  oled.display();
+}
+
+// ---------- RESET ----------
+void resetClock() {
+  whiteTime = GAME_TIME;
+  blackTime = GAME_TIME;
+  state = WAITING;
+  noTone(BUZZER);
+  digitalWrite(LED, LOW);
+  lastTime = millis();
+  showScreen();
+}
+
+// ---------- SETUP ----------
+void setup() {
+  pinMode(WHITE_BUTTON, INPUT);
+  pinMode(BLACK_BUTTON, INPUT);
+  pinMode(LED, OUTPUT);
+  pinMode(BUZZER, OUTPUT);
+  Wire.begin();
+
+  if (!oled.begin(SSD1306_SWITCHCAPVCC, 0x3C)) {
+    while (true) {
+      delay(100);
+    }
+  }
+  resetClock();
+}
+
+// ---------- LOOP ----------
+void loop() {
+  unsigned long now = millis();
+  unsigned long elapsed = now - lastTime;
+  lastTime = now;
+
+  // 1. Update the active timer
+  if (state == WHITE_TURN) {
+    if (elapsed &gt;= whiteTime) {
+      whiteTime = 0;
+      state = FINISHED;
+      alarmSound();
+    } else {
+      whiteTime -= elapsed;
+    }
+  }
+  else if (state == BLACK_TURN) {
+    if (elapsed &gt;= blackTime) {
+      blackTime = 0;
+      state = FINISHED;
+      alarmSound();
+    } else {
+      blackTime -= elapsed;
+    }
+  }
+
+  // 2. Read the buttons
+  bool white = digitalRead(WHITE_BUTTON) == HIGH;
+  bool black = digitalRead(BLACK_BUTTON) == HIGH;
+
+  // 3. Hold both buttons to reset
+  if (white &amp;&amp; black) {
+    buttonsLocked = true;
+    if (!bothBefore) {
+      holdStart = now;
+    }
+    bothBefore = true;
+    if (!resetDone &amp;&amp; now - holdStart &gt;= RESET_TIME) {
+      resetClock();
+      resetDone = true;
+    }
+  }
+  else {
+    bothBefore = false;
+    if (!white &amp;&amp; !black) {
+      buttonsLocked = false;
+      resetDone = false;
+    }
+
+    // 4. Change turns
+    if (!buttonsLocked &amp;&amp; state != FINISHED) {
+      if (state == WHITE_TURN &amp;&amp; white &amp;&amp; !oldWhite) {
+        state = BLACK_TURN;
+        beep();
+      }
+      if ((state == WAITING || state == BLACK_TURN) &amp;&amp;
+          black &amp;&amp; !oldBlack) {
+        state = WHITE_TURN;
+        beep();
+      }
+    }
+  }
+
+  oldWhite = white;
+  oldBlack = black;
+
+  // 5. Red LED
+  if (state == FINISHED) {
+    digitalWrite(LED, (millis() / 250) % 2);
+  } else {
+    bool playing = state == WHITE_TURN || state == BLACK_TURN;
+    digitalWrite(LED, playing);
+  }
+
+  // 6. Update the screen
+  if (millis() - lastScreen &gt;= 100) {
+    lastScreen = millis();
+    showScreen();
+  }
+  delay(20);
+}</code></pre></div>
+<div class="lesson-pair"><section class="micro-section"><div class="section-top"><span class="eyebrow">03 — LET'S TRY</span></div><ol class="steps"><li>Upload the complete program.</li><li>Press BLACK: White’s timer starts. Press WHITE to switch.</li><li>Test the alarm and hold both buttons for 2 seconds to reset.</li></ol></section><section class="micro-section"><div class="section-top"><span class="eyebrow">04 — KEY WORDS</span><span class="smallnote">Tap to translate</span></div><div class="word-grid"><button class="word" type="button" aria-label="Translate chess clock" data-word="chess clock"><strong>chess clock</strong><span class="translation" aria-hidden="true">reloj de ajedrez</span></button><button class="word" type="button" aria-label="Translate timer" data-word="timer"><strong>timer</strong><span class="translation" aria-hidden="true">cronómetro</span></button><button class="word" type="button" aria-label="Translate reset" data-word="reset"><strong>reset</strong><span class="translation" aria-hidden="true">reiniciar</span></button><button class="word" type="button" aria-label="Translate win" data-word="win"><strong>win</strong><span class="translation" aria-hidden="true">ganar</span></button></div></section></div>
+<section class="dialogue"><div class="section-top"><span class="eyebrow">05 — ASK YOUR PARTNER</span><span class="smallnote">Student A ↔ Student B</span></div><div><b>A:</b> What does the OLED show?<br><b>B:</b> It shows the time.</div><div><b>A:</b> How can we reset the clock?<br><b>B:</b> Press both buttons for two seconds.</div></section>
+<div class="lesson-pair"><section class="challenge"><div class="eyebrow">✦ YOUR CHALLENGE</div><p>Change <code>GAME_TIME</code> to <code>10UL * 1000UL</code> to test the alarm quickly. Then restore five minutes.</p></section><section class="micro-section quiz" id="quiz-10"><div class="eyebrow">? QUICK CHECK</div><p class="quiz-question">What happens when a player’s time reaches zero?</p><div class="quiz-options"><button type="button" class="quiz-option" data-quiz-choice="0" data-correct="1" data-feedback="The clock stops and sounds the alarm.">The time increases</button><button type="button" class="quiz-option" data-quiz-choice="1" data-correct="1" data-feedback="The clock stops and sounds the alarm.">The game finishes and the alarm sounds</button><button type="button" class="quiz-option" data-quiz-choice="2" data-correct="1" data-feedback="The clock stops and sounds the alarm.">The screen disappears</button></div><p class="quiz-feedback" aria-live="polite"></p></section></div>
+<div class="complete"><div><div class="eyebrow">I CAN…</div><label class="check-row"><input type="checkbox" data-check="10-0"/><span>I can test the chess clock.</span></label><label class="check-row"><input type="checkbox" data-check="10-1"/><span>I can explain the inputs and outputs.</span></label></div><button type="button" class="done-btn" data-done="10" aria-pressed="false">Mark as complete ✓</button></div>
+<div class="lesson-foot"><span>Practice 10 of 10</span><button class="next-btn" type="button" data-next="0">Back to the top ↑</button></div>
+</div></details>
+<section class="project-end" id="finish"><span class="eyebrow">AFTER THE CLOCK</span><h2>Go further ↗</h2><p class="mini-note">Choose a challenge. Change the program. Test your idea. Explain it in English.</p><div class="bonus-grid"><div class="bonus"><small>LEVEL 01 · EASY</small><strong>Change the game time to 3 minutes.</strong></div><div class="bonus"><small>LEVEL 02 · MEDIUM</small><strong>Make a different beep for each player.</strong></div><div class="bonus"><small>LEVEL 03 · HARD</small><strong>Add a move counter.</strong></div><div class="bonus"><small>LEVEL 04 · EXPERT</small><strong>Add 3 seconds after each move.</strong></div></div><h2 style="margin-top:33px">My final checklist</h2><div class="review"><label><input type="checkbox" data-final="1"/> I can name the components.</label><label><input type="checkbox" data-final="2"/> I can explain inputs and outputs.</label><label><input type="checkbox" data-final="3"/> I can use buttons, LED and buzzer.</label><label><input type="checkbox" data-final="4"/> I can use an OLED screen.</label><label><input type="checkbox" data-final="5"/> I can change an Arduino program.</label><label><input type="checkbox" data-final="6"/> I can explain my project in English.</label></div><p class="mini-note" style="margin-top:23px"><b>Final speaking task:</b> “This is our chess clock. It has two buttons, one LED, a buzzer and a screen. The screen shows the time. When we press a button, the turn changes.”</p></section>
+<footer class="footer"><hr/><strong>ARDUINO FROM ZERO</strong> · Technology and Digitalisation · 3.º ESO Bilingual<br/>Reference: <a href="https://www.arduino.cc/" target="_blank" rel="noopener">Arduino</a> · <a href="https://docs.arduino.cc/hardware/uno-r4-wifi/" target="_blank" rel="noopener">UNO R4 WiFi</a> · <a href="https://github.com/adafruit/Adafruit_SSD1306" target="_blank" rel="noopener">Adafruit SSD1306</a><br/>All lesson demos are browser simulations, not live connections to Arduino. Real hardware may need further testing. The clock is a classroom prototype, not a certified tournament clock.</footer>
+</main></div><div class="toast" id="toast" role="status" aria-live="polite"></div>
+<script>
+'use strict';
+const codeMap = {"1": "const int LED = A1;\n\nvoid setup() {\n  pinMode(LED, OUTPUT);\n}\n\nvoid loop() {\n  digitalWrite(LED, HIGH);\n  delay(1000);\n\n  digitalWrite(LED, LOW);\n  delay(1000);\n}", "2": "const int BUZZER = A2;\n\nvoid setup() {\n  pinMode(BUZZER, OUTPUT);\n}\n\nvoid loop() {\n  tone(BUZZER, 500, 200);\n  delay(500);\n\n  tone(BUZZER, 2000, 200);\n  delay(1000);\n}", "3": "const int BUTTON = A0;\n\nvoid setup() {\n  pinMode(BUTTON, INPUT);\n  Serial.begin(115200);\n}\n\nvoid loop() {\n  int state = digitalRead(BUTTON);\n\n  Serial.println(state);\n  delay(100);\n}", "4": "const int BUTTON = A0;\nconst int LED = A1;\n\nvoid setup() {\n  pinMode(BUTTON, INPUT);\n  pinMode(LED, OUTPUT);\n}\n\nvoid loop() {\n  if (digitalRead(BUTTON) == HIGH) {\n    digitalWrite(LED, HIGH);\n  } else {\n    digitalWrite(LED, LOW);\n  }\n}", "5": "const int BUTTON = A0;\nconst int BUZZER = A2;\n\nbool previous = false;\n\nvoid setup() {\n  pinMode(BUTTON, INPUT);\n}\n\nvoid loop() {\n  bool pressed = digitalRead(BUTTON) == HIGH;\n\n  if (pressed && !previous) {\n    tone(BUZZER, 1800, 60);\n  }\n\n  previous = pressed;\n  delay(10);\n}", "6": "#include <Wire.h>\n#include <Adafruit_GFX.h>\n#include <Adafruit_SSD1306.h>\n\nAdafruit_SSD1306 oled(128, 64, &Wire, -1);\n\nvoid setup() {\n  Wire.begin();\n\n  if (!oled.begin(SSD1306_SWITCHCAPVCC, 0x3C)) {\n    while (true) {\n      delay(100);\n    }\n  }\n\n  oled.clearDisplay();\n  oled.setTextColor(SSD1306_WHITE);\n  oled.setTextSize(2);\n\n  oled.setCursor(20, 20);\n  oled.print(\"HELLO!\");\n\n  oled.display();\n}\n\nvoid loop() {\n}", "7": "#include <Wire.h>\n#include <Adafruit_GFX.h>\n#include <Adafruit_SSD1306.h>\n\nAdafruit_SSD1306 oled(128, 64, &Wire, -1);\n\nconst int BUTTON = A0;\n\nint counter = 0;\nbool previous = false;\n\nvoid showCounter() {\n  oled.clearDisplay();\n  oled.setTextColor(SSD1306_WHITE);\n\n  oled.setTextSize(1);\n  oled.setCursor(20, 5);\n  oled.print(\"PRESSES\");\n\n  oled.setTextSize(3);\n  oled.setCursor(40, 25);\n  oled.print(counter);\n\n  oled.display();\n}\n\nvoid setup() {\n  pinMode(BUTTON, INPUT);\n  Wire.begin();\n\n  if (!oled.begin(SSD1306_SWITCHCAPVCC, 0x3C)) {\n    while (true) {\n      delay(100);\n    }\n  }\n\n  showCounter();\n}\n\nvoid loop() {\n  bool pressed = digitalRead(BUTTON) == HIGH;\n\n  if (pressed && !previous) {\n    counter++;\n    showCounter();\n  }\n\n  previous = pressed;\n  delay(10);\n}", "8": "const unsigned long DURATION = 10000;\n\nunsigned long startTime;\nunsigned long lastUpdate = 0;\n\nvoid setup() {\n  Serial.begin(115200);\n  startTime = millis();\n}\n\nvoid loop() {\n  unsigned long now = millis();\n  unsigned long elapsed = now - startTime;\n\n  unsigned long remaining;\n\n  if (elapsed >= DURATION) {\n    remaining = 0;\n  } else {\n    remaining = DURATION - elapsed;\n  }\n\n  if (now - lastUpdate >= 200) {\n    lastUpdate = now;\n    Serial.println((remaining + 999) / 1000);\n  }\n}", "9": "const int WHITE_BUTTON = A0;\nconst int BLACK_BUTTON = A3;\n\nenum State {\n  WAITING,\n  WHITE_TURN,\n  BLACK_TURN\n};\n\nState state = WAITING;\n\nbool oldWhite = false;\nbool oldBlack = false;\n\nvoid setup() {\n  pinMode(WHITE_BUTTON, INPUT);\n  pinMode(BLACK_BUTTON, INPUT);\n\n  Serial.begin(115200);\n  Serial.println(\"WAITING\");\n}\n\nvoid loop() {\n  bool white = digitalRead(WHITE_BUTTON) == HIGH;\n  bool black = digitalRead(BLACK_BUTTON) == HIGH;\n\n  if (black && !oldBlack) {\n    if (state == WAITING || state == BLACK_TURN) {\n      state = WHITE_TURN;\n      Serial.println(\"WHITE TURN\");\n    }\n  }\n\n  if (white && !oldWhite) {\n    if (state == WHITE_TURN) {\n      state = BLACK_TURN;\n      Serial.println(\"BLACK TURN\");\n    }\n  }\n\n  oldWhite = white;\n  oldBlack = black;\n\n  delay(20);\n}", "10": "#include <Wire.h>\n#include <Adafruit_GFX.h>\n#include <Adafruit_SSD1306.h>\n\n// ---------- PINS ----------\nconst int WHITE_BUTTON = A0;\nconst int BLACK_BUTTON = A3;\nconst int LED = A1;\nconst int BUZZER = A2;\n\nAdafruit_SSD1306 oled(128, 64, &Wire, -1);\n\n// ---------- TIME ----------\nconst unsigned long GAME_TIME = 5UL * 60UL * 1000UL;\nconst unsigned long RESET_TIME = 2000UL;\n\nunsigned long whiteTime = GAME_TIME;\nunsigned long blackTime = GAME_TIME;\n\nunsigned long lastTime = 0;\nunsigned long lastScreen = 0;\nunsigned long holdStart = 0;\n\n// ---------- STATES ----------\nenum State {\n  WAITING,\n  WHITE_TURN,\n  BLACK_TURN,\n  FINISHED\n};\nState state = WAITING;\n\n// ---------- BUTTONS ----------\nbool oldWhite = false;\nbool oldBlack = false;\nbool bothBefore = false;\nbool buttonsLocked = false;\nbool resetDone = false;\n\n// ---------- SOUNDS ----------\nvoid beep() {\n  tone(BUZZER, 1800, 60);\n}\n\nvoid alarmSound() {\n  for (int i = 0; i < 3; i++) {\n    tone(BUZZER, 2000, 200);\n    delay(300);\n  }\n}\n\n// ---------- DISPLAY TIME ----------\nvoid showTime(unsigned long ms) {\n  unsigned long seconds = (ms + 999UL) / 1000UL;\n  int minutes = seconds / 60;\n  int rest = seconds % 60;\n\n  if (minutes < 10) oled.print(\"0\");\n  oled.print(minutes);\n  oled.print(\":\");\n\n  if (rest < 10) oled.print(\"0\");\n  oled.print(rest);\n}\n\n// ---------- OLED ----------\nvoid showScreen() {\n  oled.clearDisplay();\n  oled.setTextColor(SSD1306_WHITE);\n\n  oled.setTextSize(1);\n  oled.setCursor(8, 0);\n  oled.print(\"WHITE\");\n  oled.setCursor(76, 0);\n  oled.print(\"BLACK\");\n\n  oled.setTextSize(2);\n  oled.setCursor(2, 18);\n  showTime(whiteTime);\n  oled.setCursor(68, 18);\n  showTime(blackTime);\n\n  oled.drawLine(0, 42, 127, 42, SSD1306_WHITE);\n  oled.setTextSize(1);\n  oled.setCursor(4, 50);\n\n  if (state == WAITING) {\n    oled.print(\"Press BLACK\");\n  }\n  else if (state == WHITE_TURN) {\n    oled.print(\"WHITE TURN\");\n  }\n  else if (state == BLACK_TURN) {\n    oled.print(\"BLACK TURN\");\n  }\n  else if (whiteTime == 0) {\n    oled.print(\"BLACK WINS\");\n  }\n  else {\n    oled.print(\"WHITE WINS\");\n  }\n  oled.display();\n}\n\n// ---------- RESET ----------\nvoid resetClock() {\n  whiteTime = GAME_TIME;\n  blackTime = GAME_TIME;\n  state = WAITING;\n  noTone(BUZZER);\n  digitalWrite(LED, LOW);\n  lastTime = millis();\n  showScreen();\n}\n\n// ---------- SETUP ----------\nvoid setup() {\n  pinMode(WHITE_BUTTON, INPUT);\n  pinMode(BLACK_BUTTON, INPUT);\n  pinMode(LED, OUTPUT);\n  pinMode(BUZZER, OUTPUT);\n  Wire.begin();\n\n  if (!oled.begin(SSD1306_SWITCHCAPVCC, 0x3C)) {\n    while (true) {\n      delay(100);\n    }\n  }\n  resetClock();\n}\n\n// ---------- LOOP ----------\nvoid loop() {\n  unsigned long now = millis();\n  unsigned long elapsed = now - lastTime;\n  lastTime = now;\n\n  // 1. Update the active timer\n  if (state == WHITE_TURN) {\n    if (elapsed >= whiteTime) {\n      whiteTime = 0;\n      state = FINISHED;\n      alarmSound();\n    } else {\n      whiteTime -= elapsed;\n    }\n  }\n  else if (state == BLACK_TURN) {\n    if (elapsed >= blackTime) {\n      blackTime = 0;\n      state = FINISHED;\n      alarmSound();\n    } else {\n      blackTime -= elapsed;\n    }\n  }\n\n  // 2. Read the buttons\n  bool white = digitalRead(WHITE_BUTTON) == HIGH;\n  bool black = digitalRead(BLACK_BUTTON) == HIGH;\n\n  // 3. Hold both buttons to reset\n  if (white && black) {\n    buttonsLocked = true;\n    if (!bothBefore) {\n      holdStart = now;\n    }\n    bothBefore = true;\n    if (!resetDone && now - holdStart >= RESET_TIME) {\n      resetClock();\n      resetDone = true;\n    }\n  }\n  else {\n    bothBefore = false;\n    if (!white && !black) {\n      buttonsLocked = false;\n      resetDone = false;\n    }\n\n    // 4. Change turns\n    if (!buttonsLocked && state != FINISHED) {\n      if (state == WHITE_TURN && white && !oldWhite) {\n        state = BLACK_TURN;\n        beep();\n      }\n      if ((state == WAITING || state == BLACK_TURN) &&\n          black && !oldBlack) {\n        state = WHITE_TURN;\n        beep();\n      }\n    }\n  }\n\n  oldWhite = white;\n  oldBlack = black;\n\n  // 5. Red LED\n  if (state == FINISHED) {\n    digitalWrite(LED, (millis() / 250) % 2);\n  } else {\n    bool playing = state == WHITE_TURN || state == BLACK_TURN;\n    digitalWrite(LED, playing);\n  }\n\n  // 6. Update the screen\n  if (millis() - lastScreen >= 100) {\n    lastScreen = millis();\n    showScreen();\n  }\n  delay(20);\n}"};
+const lessons = [...document.querySelectorAll('details.lesson')];
+let state = {done:{}, checks:{}, quiz:{}, final:{}};
+try {const saved = JSON.parse(localStorage.getItem('arduino-zero-v1') || '{}'); if(saved && typeof saved==='object') state={...state,...saved};} catch(e){}
+function persist(){try{localStorage.setItem('arduino-zero-v1',JSON.stringify(state));}catch(e){}}
+function toast(message){let t=document.getElementById('toast');t.textContent=message;t.classList.add('show');clearTimeout(toast._t);toast._t=setTimeout(()=>t.classList.remove('show'),2200)}
+function updateProgress(){const count=Object.keys(state.done).filter(k=>state.done[k]).length;document.getElementById('progress-text').textContent=`${count} / 10 completed`;document.getElementById('progress-fill').style.width=(count*10)+'%';for(let i=1;i<=10;i++){let done=!!state.done[i];document.getElementById('status-'+i).textContent=done?'✓':'○';document.getElementById('status-'+i).classList.toggle('done',done);document.getElementById('nav-check-'+i).textContent=done?'✓':'○';document.querySelector('[data-nav="'+i+'"]').classList.toggle('finished',done);let b=document.querySelector('[data-done="'+i+'"]');b.classList.toggle('done',done);b.setAttribute('aria-pressed',String(done));b.textContent=done?'Completed ✓':'Mark as complete ✓';}}
+function hydrate(){document.querySelectorAll('input[data-check]').forEach(c=>c.checked=!!state.checks[c.dataset.check]);document.querySelectorAll('input[data-final]').forEach(c=>c.checked=!!state.final[c.dataset.final]);for(let i=1;i<=10;i++){if(state.quiz[i]!==undefined) answerQuiz(document.querySelector('#quiz-'+i), Number(state.quiz[i]),true)}updateProgress()}
+function answerQuiz(quiz,index,quiet=false){if(!quiz)return;const buttons=[...quiz.querySelectorAll('.quiz-option')];const correct=Number(buttons[0].dataset.correct);buttons.forEach((b,i)=>{b.classList.toggle('correct',i===correct);b.classList.toggle('incorrect',i===index && i!==correct);b.setAttribute('aria-pressed',String(i===index))});const feedback=quiz.querySelector('.quiz-feedback');feedback.textContent=(index===correct?'✓ Correct! ':'Try again. ')+buttons[0].dataset.feedback;if(!quiet&&index===correct)toast('Great answer! ✓')}
+document.addEventListener('change',ev=>{if(ev.target.matches('[data-check]')){state.checks[ev.target.dataset.check]=ev.target.checked;persist()}if(ev.target.matches('[data-final]')){state.final[ev.target.dataset.final]=ev.target.checked;persist()}});
+// Navigation
+function goTo(n){if(n===0){window.scrollTo({top:0,behavior:'smooth'});return}let d=document.getElementById('practice-'+n);if(d){d.open=true;d.scrollIntoView({behavior:'smooth',block:'start'})}document.getElementById('sidebar').classList.remove('open')}
+document.querySelectorAll('[data-nav]').forEach(a=>a.addEventListener('click',e=>{e.preventDefault();goTo(Number(a.dataset.nav));history.replaceState(null,'','#practice-'+a.dataset.nav)}));document.getElementById('start-link').addEventListener('click',e=>{e.preventDefault();goTo(1)});document.getElementById('menu-toggle').addEventListener('click',()=>document.getElementById('sidebar').classList.toggle('open'));
+document.getElementById('expand-button').addEventListener('click',e=>{let expand=lessons.some(d=>!d.open);lessons.forEach(d=>d.open=expand);e.currentTarget.textContent=expand?'Collapse all':'Expand all'});
+document.getElementById('print-button').addEventListener('click',()=>{let prev=lessons.map(x=>x.open);lessons.forEach(x=>x.open=true);setTimeout(()=>{window.print();lessons.forEach((x,i)=>x.open=prev[i])},50)});
+document.getElementById('reset-progress').addEventListener('click',()=>{if(confirm('Reset all saved progress and answers?')){state={done:{},checks:{},quiz:{},final:{}};persist();document.querySelectorAll('[data-check],[data-final]').forEach(x=>x.checked=false);document.querySelectorAll('.quiz-option').forEach(x=>x.classList.remove('correct','incorrect'));document.querySelectorAll('.quiz-feedback').forEach(x=>x.textContent='');updateProgress();toast('Progress reset')}});
+// Copy / download Arduino sketches
+async function copyCode(n){const code=codeMap[String(n)];try{await navigator.clipboard.writeText(code);toast('Arduino code copied ✓')}catch(e){const area=document.createElement('textarea');area.value=code;document.body.appendChild(area);area.select();try{document.execCommand('copy');toast('Arduino code copied ✓')}catch(e){toast('Select the code and copy it manually')}area.remove()}}
+function saveCode(n){const text=codeMap[String(n)];const name='practice_'+String(n).padStart(2,'0');const filename=name+'.ino';const url=URL.createObjectURL(new Blob([text+'\n'],{type:'text/plain;charset=utf-8'}));const a=document.createElement('a');a.href=url;a.download=filename;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1200);toast(filename+' downloaded ✓')}
+let audioCtx=null;function beep(freq=1000,duration=140){try{audioCtx ||= new (window.AudioContext||window.webkitAudioContext)();if(audioCtx.state==='suspended')audioCtx.resume();let oscillator=audioCtx.createOscillator();let gain=audioCtx.createGain();oscillator.type='sine';oscillator.frequency.value=Number(freq);gain.gain.setValueAtTime(.0001,audioCtx.currentTime);gain.gain.exponentialRampToValueAtTime(.065,audioCtx.currentTime+.01);gain.gain.exponentialRampToValueAtTime(.0001,audioCtx.currentTime+duration/1000);oscillator.connect(gain);gain.connect(audioCtx.destination);oscillator.start();oscillator.stop(audioCtx.currentTime+duration/1000+.01)}catch(e){toast('Audio is not available in this browser')}}
+// Browser simulations (independent from real Arduino)
+let ledRunning=true,ledOn=true,ledInterval=1000,ledLast=performance.now();let inputPressed=false,linkedOn=false,beepCount=0,counter=0,turn='WAITING';
+let timer={seconds:10,left:10,run:false,last:0};let clock={white:10000,black:10000,active:'WAITING',last:0};
+function setBulb(id,on){let b=document.getElementById(id);if(b)b.classList.toggle('lit',on)}
+function fmt(ms){let sec=Math.ceil(Math.max(0,ms)/1000);return String(Math.floor(sec/60)).padStart(2,'0')+':'+String(sec%60).padStart(2,'0')}
+function updateClock(){document.getElementById('clock-white-time').textContent=fmt(clock.white);document.getElementById('clock-black-time').textContent=fmt(clock.black);document.getElementById('clock-white').classList.toggle('active',clock.active==='WHITE');document.getElementById('clock-black').classList.toggle('active',clock.active==='BLACK');let led=document.getElementById('clock-led');led.classList.toggle('lit',clock.active==='WHITE'||clock.active==='BLACK'||clock.active==='FINISHED');led.classList.toggle('flash',clock.active==='FINISHED');document.getElementById('clock-status').textContent=clock.active==='WAITING'?'Press BLACK to start':clock.active==='FINISHED'?(clock.white<=0?'BLACK WINS · Time is up!':'WHITE WINS · Time is up!'):clock.active+"'S TURN"}
+function renderTurn(){let el=document.getElementById('turn-9');el.textContent=turn;el.nextElementSibling.textContent=turn==='WAITING'?'Press BLACK first':'Now press '+(turn==='WHITE TURN'?'WHITE':'BLACK')+' to switch'}
+function resetClockSim(){clock={white:10000,black:10000,active:'WAITING',last:performance.now()};updateClock()}
+function tick(now){if(ledRunning && now-ledLast>=ledInterval){ledLast=now;ledOn=!ledOn;setBulb('bulb-1',ledOn);document.getElementById('sim-caption-1').textContent=ledOn?'LED ON':'LED OFF'}if(timer.run){const d=now-timer.last;timer.last=now;timer.left=Math.max(0,timer.left-d/1000);document.getElementById('timer-8').textContent=String(Math.ceil(timer.left));if(timer.left<=0){timer.run=false;document.getElementById('timer-toggle-8').textContent='▶ Start';toast('Countdown finished!')}}else{timer.last=now}if(clock.active==='WHITE'||clock.active==='BLACK'){const dt=Math.max(0,now-clock.last);clock.last=now;const key=clock.active==='WHITE'?'white':'black';clock[key]=Math.max(0,clock[key]-dt);if(clock[key]===0){clock.active='FINISHED';beep(1700,200);setTimeout(()=>beep(1900,200),300);setTimeout(()=>beep(2100,200),600)}updateClock()}else{clock.last=now}requestAnimationFrame(tick)}
+document.addEventListener('click',e=>{
+ const btn=e.target.closest('button');if(!btn)return;
+ if(btn.dataset.copy){copyCode(btn.dataset.copy);return}if(btn.dataset.save){saveCode(btn.dataset.save);return}if(btn.dataset.next!==undefined){goTo(Number(btn.dataset.next));return}
+ if(btn.dataset.done){let n=btn.dataset.done;state.done[n]=!state.done[n];persist();updateProgress();toast(state.done[n]?'Practice '+n+' completed ✓':'Practice marked incomplete');return}
+ if(btn.classList.contains('word')){let on=btn.classList.toggle('revealed');btn.querySelector('.translation').setAttribute('aria-hidden',String(!on));return}
+ if(btn.classList.contains('quiz-option')){let quiz=btn.closest('.quiz');let index=[...quiz.querySelectorAll('.quiz-option')].indexOf(btn);let n=quiz.id.split('-')[1];state.quiz[n]=index;persist();answerQuiz(quiz,index);return}
+ const action=btn.dataset.simAction;if(!action)return;
+ if(action==='led-toggle'){ledRunning=!ledRunning;btn.textContent=ledRunning?'Pause blinking':'Resume blinking';if(!ledRunning){ledOn=false;setBulb('bulb-1',false);document.getElementById('sim-caption-1').textContent='PAUSED'}ledLast=performance.now()}
+ if(action==='sound'){beep(Number(document.getElementById('freq-2').value),250)}
+ if(action==='input'){inputPressed=!inputPressed;btn.setAttribute('aria-pressed',String(inputPressed));document.getElementById('input-val-3').textContent=inputPressed?'1':'0';document.getElementById('input-status-3').textContent=inputPressed?'PRESSED':'NOT PRESSED'}
+ if(action==='buttonled'){linkedOn=!linkedOn;btn.setAttribute('aria-pressed',String(linkedOn));setBulb('bulb-4',linkedOn);document.getElementById('sim-caption-4').textContent=linkedOn?'LED ON':'LED OFF'}
+ if(action==='onebeep'){beep(1800,60);beepCount++;document.getElementById('beep-count-5').textContent=beepCount}
+ if(action==='plus'){counter++;document.getElementById('counter-7').textContent=counter}
+ if(action==='minus'){counter=Math.max(0,counter-1);document.getElementById('counter-7').textContent=counter}
+ if(action==='zero'){counter=0;document.getElementById('counter-7').textContent=counter}
+ if(action==='timer-toggle'){if(timer.left<=0)timer.left=timer.seconds;timer.run=!timer.run;timer.last=performance.now();btn.textContent=timer.run?'Ⅱ Pause':'▶ Start'}
+ if(action==='timer-reset'){timer.run=false;timer.left=timer.seconds;document.getElementById('timer-8').textContent=timer.left;document.getElementById('timer-toggle-8').textContent='▶ Start'}
+ if(action==='turn-black'){if(turn==='WAITING'||turn==='BLACK TURN'){turn='WHITE TURN';renderTurn();beep(1500,65)}}
+ if(action==='turn-white'){if(turn==='WHITE TURN'){turn='BLACK TURN';renderTurn();beep(1500,65)}}
+ if(action==='chess-black'){if(clock.active==='WAITING'||clock.active==='BLACK'){clock.active='WHITE';clock.last=performance.now();beep(1700,60);updateClock()}}
+ if(action==='chess-white'){if(clock.active==='WHITE'){clock.active='BLACK';clock.last=performance.now();beep(1700,60);updateClock()}}
+ if(action==='chess-reset'){resetClockSim();toast('Chess clock reset ✓')}
+});
+document.getElementById('speed-1').addEventListener('input',e=>{ledInterval=Number(e.target.value);document.getElementById('speed-value-1').textContent=ledInterval+' ms';ledLast=performance.now()});
+document.getElementById('freq-2').addEventListener('input',e=>document.getElementById('freq-value-2').textContent=e.target.value+' Hz');
+function updateOled(){const str=document.getElementById('oled-input-6').value||' ';const sz=document.getElementById('oled-size-6').value;let out=document.getElementById('oled-message-6');out.textContent=str;out.style.fontSize=({1:'18px',2:'29px',3:'39px'})[sz]}
+document.getElementById('oled-input-6').addEventListener('input',updateOled);document.getElementById('oled-size-6').addEventListener('change',updateOled);
+document.getElementById('duration-8').addEventListener('input',e=>{timer.seconds=Number(e.target.value);timer.left=timer.seconds;timer.run=false;document.getElementById('timer-8').textContent=timer.left;document.getElementById('duration-value-8').textContent=timer.seconds+' s';document.getElementById('timer-toggle-8').textContent='▶ Start'});
+// Start
+hydrate();renderTurn();updateClock();requestAnimationFrame(tick);
+if(location.hash.startsWith('#practice-')){const matching=document.querySelector(location.hash);if(matching && matching.tagName==='DETAILS'){matching.open=true;setTimeout(()=>matching.scrollIntoView({block:'start'}),75)}}
+</script></body></html>
