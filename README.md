@@ -1,103 +1,106 @@
+
+<div align="center">
+
 # TECNOLOGÍA / INTERACTIVA
 
-### Learn. Build. Experiment.
+### LEARN · BUILD · EXPERIMENT
 
-**Laboratorios, juegos y retos interactivos para aprender tecnología haciendo.**
+**Aprende tecnología haciendo.**
 
-Tecnología y Digitalización · Educación Secundaria · STEM · Bilingual Education (CLIL)
+Laboratorios, simuladores y juegos educativos para
+explorar la programación, la electrónica, el diseño,
+la inteligencia artificial y la producción audiovisual.
 
-[🌐 Explorar la web](https://carlostechnology.github.io/tecnologia-interactiva/) · [🎯 Nuestros proyectos](#-explora-los-proyectos)
+**STEM · Educación Secundaria · Bilingual / CLIL**
+
+### [🌐 EXPLORAR LA PLATAFORMA](https://carlostechnology.github.io/tecnologia-interactiva/)
+
+</div>
 
 ---
 
-## 🎯 Explora los proyectos
+## 🚀 Explora los proyectos
 
-**Aprende. Experimenta. Supera desafíos.**
-
-Una colección de laboratorios y experiencias educativas que combinan tecnología, programación, inteligencia artificial, diseño y aprendizaje del inglés.
-
-| Proyecto | Descripción | Estado |
-|---|---|---|
-| [⚡ Arduino from Zero](https://carlostechnology.github.io/tecnologia-interactiva/arduino/) | 10 prácticas interactivas de electrónica y programación para 3.º ESO bilingüe. | 🟢 Disponible |
-| [♟ Hexapawn Lab](https://carlostechnology.github.io/tecnologia-interactiva/hexapawn/) | Aprende programación, algoritmos e inteligencia artificial mediante un juego de ajedrez. | 🟢 Disponible |
-| [🎬 Cinema Quest — B1](https://carlostechnology.github.io/tecnologia-interactiva/cinema-quest/) | Seis misiones y 18 desafíos para aprender edición audiovisual en inglés. | 🟢 Disponible |
-| ♙ SmartChess Lab | Diseño, fabricación y programación de un tablero de ajedrez inteligente. | 🟠 En desarrollo |
+| Proyecto | Experiencia | Destinatarios |
+|:---|:---|:---|
+| [⚡ **Arduino from Zero**](https://carlostechnology.github.io/tecnologia-interactiva/arduino/) | Electrónica y programación con 10 prácticas interactivas. | 3.º ESO · CLIL |
+| [♟ **Hexapawn Lab**](https://carlostechnology.github.io/tecnologia-interactiva/hexapawn/) | Ajedrez, algoritmos e inteligencia artificial. | 2.º Bachillerato |
+| [🎬 **Cinema Quest 2**](https://carlostechnology.github.io/tecnologia-interactiva/cinema-quest/) | Videojuego de edición cinematográfica con 54 retos. | Inglés B1+ |
+| [🎥 **Luz, cámara… ¡Claustro!**](https://carlostechnology.github.io/tecnologia-interactiva/filma-academy/) | Simulador de producción y rodaje cinematográfico. | Profesorado · PIE Filma |
+| ♙ **SmartChess Lab** | Diseño y fabricación de un tablero inteligente. | STEM · En desarrollo |
 
 ---
 
 ## ⚡ Arduino from Zero
 
-**From a blinking LED to a chess clock**
+**From a blinking LED to a chess clock.**
 
-Un laboratorio interactivo para aprender electrónica y programación desde cero, diseñado para estudiantes de **3.º ESO bilingüe**.
+Laboratorio bilingüe de electrónica y programación con
+Arduino UNO R4 WiFi.
 
-Incluye:
+**10 prácticas** · Simuladores · Código C++ · Retos CLIL
 
-- Diez prácticas progresivas con Arduino UNO R4 WiFi.
-- Código de Arduino listo para probar y modificar.
-- Simuladores interactivos.
-- Vocabulario técnico en inglés.
-- Actividades CLIL y autoevaluación.
-- Retos de programación.
-- Proyecto final: un reloj de ajedrez digital.
+Desde el primer LED hasta la construcción de un
+reloj de ajedrez digital.
 
-### [▶ Abrir Arduino from Zero](https://carlostechnology.github.io/tecnologia-interactiva/arduino/)
+**[▶ ABRIR LABORATORIO](https://carlostechnology.github.io/tecnologia-interactiva/arduino/)**
 
 ---
 
 ## ♟ Hexapawn Lab
 
-**From a simple chess game to Artificial Intelligence**
+**Can a machine learn to play chess?**
 
-¿Puede aprender una máquina a jugar al ajedrez?
+Descubre los fundamentos de la inteligencia artificial
+a través de un juego de ajedrez de 3 × 3 casillas.
 
-A partir de un tablero de 3 × 3 y unas reglas muy sencillas, los alumnos de **2.º de Bachillerato** exploran los fundamentos de la programación y la inteligencia artificial.
+**Python** · Minimax · Aprendizaje automático · Estrategia
 
-Incluye:
+Juega contra distintos algoritmos y experimenta
+con sistemas capaces de aprender y tomar decisiones.
 
-- Juego interactivo de Hexapawn.
-- Adversarios aleatorio, minimax y aprendizaje por refuerzo elemental.
-- Modo para dos jugadores.
-- Desafíos de lógica y estrategia.
-- Programación progresiva en Python.
-- Experimentos sobre algoritmos y aprendizaje automático.
+**[▶ JUGAR A HEXAPAWN](https://carlostechnology.github.io/tecnologia-interactiva/hexapawn/)**
 
-### [▶ Jugar a Hexapawn Lab](https://carlostechnology.github.io/tecnologia-interactiva/hexapawn/)
-
-[Leer el tutorial original](https://tecnologiaingenieria.wordpress.com/2026/10/06/smartchess-hexapawn/)
+[Ver tutorial original](https://tecnologiaingenieria.wordpress.com/2026/10/06/smartchess-hexapawn/)
 
 ---
 
-## 🎬 Cinema Quest — B1
+## 🎬 Cinema Quest 2
 
-**Your mission: Become a Film Editing Legend!**
+**Become a Film Editing Legend!**
 
-Aprender inglés también puede ser una aventura cinematográfica.
+Videojuego educativo de cine y edición audiovisual
+en inglés B1+, inspirado en el proyecto PIE Filma.
 
-Un videojuego educativo inspirado en **PIE Filma**, en el que los estudiantes se convierten en editores de cine y deben resolver desafíos relacionados con la producción audiovisual y la edición con Kdenlive.
+**6 misiones** · 54 retos · 8.900 puntos · Kdenlive
 
-**6 misiones · 18 retos · Puntuación final**
+Aprende lenguaje cinematográfico, montaje, sonido y
+efectos mientras resuelves desafíos técnicos de
+dificultad progresiva.
 
-| Misión | Desafío |
-|---|---|
-| 01 · Film School | Learn cinema vocabulary |
-| 02 · Editing Studio | Discover editing tools |
-| 03 · The Timeline | Put editing tasks in order |
-| 04 · Sound & Effects | Work with audio and effects |
-| 05 · Production Troubles | Solve real editing problems |
-| 06 · Final Cut | Complete your final challenge |
+**[▶ PLAY CINEMA QUEST](https://carlostechnology.github.io/tecnologia-interactiva/cinema-quest/)**
 
-**Objetivos educativos**
+[Ver tutorial original](https://tecnologiaingenieria.wordpress.com/2025/11/04/pie-filma-4-edicion-de-cine/)
 
-- Aprender vocabulario cinematográfico en inglés B1.
-- Comprender los procesos de edición audiovisual.
-- Interpretar instrucciones y resolver problemas técnicos.
-- Aprender de los errores mediante explicaciones.
-- Desarrollar autonomía a través del aprendizaje basado en juegos.
+---
 
-### [▶ Play Cinema Quest](https://carlostechnology.github.io/tecnologia-interactiva/cinema-quest/)
+## 🎥 Luz, cámara… ¡Claustro!
 
-[Leer la entrada original de PIE Filma](https://tecnologiaingenieria.wordpress.com/2025/11/04/pie-filma-4-edicion-de-cine/)
+**De profesor a director de cine.**
+
+Academia cinematográfica interactiva diseñada para
+el profesorado del Proyecto de Innovación Educativa
+**PIE Filma**.
+
+**8 capítulos** · 48 decisiones · Simulador de rodaje
+
+Gestiona un presupuesto, planifica escenas,
+selecciona planos, monta secuencias y resuelve
+imprevistos de una producción escolar.
+
+**[▶ ENTRAR EN LA ACADEMIA](https://carlostechnology.github.io/tecnologia-interactiva/filma-academy/)**
+
+[Ver formación original](https://tecnologiaingenieria.wordpress.com/2025/11/08/pie-filma-4-formacion/)
 
 ---
 
@@ -105,46 +108,37 @@ Un videojuego educativo inspirado en **PIE Filma**, en el que los estudiantes se
 
 **Design. Build. Detect. Program.**
 
-**Proyecto en desarrollo.**
+Diseño y construcción de un tablero de ajedrez
+inteligente que integra diseño industrial,
+fabricación digital, electrónica y programación.
 
-Diseño y construcción de un tablero de ajedrez inteligente que combina:
+**Diseño 3D** · Sensores · PCB · Inteligencia artificial
 
-- Diseño industrial y modelado 3D.
-- Fabricación digital.
-- Electrónica y sensores.
-- Programación y algoritmos.
-- Experimentación e investigación educativa.
+*Proyecto en desarrollo.*
 
 ---
 
 ## 🔬 Learning by Doing
 
-**01 · LEARN → 02 · BUILD → 03 · TEST → 04 · IMPROVE**
+<div align="center">
 
-Aprender tecnología no consiste únicamente en estudiar conceptos, sino en aplicarlos para resolver problemas reales.
+### LEARN → BUILD → TEST → IMPROVE
 
-Nuestros proyectos impulsan el pensamiento computacional, la creatividad, el método científico y la capacidad de diseñar, construir y mejorar soluciones.
+**Comprender · Construir · Experimentar · Mejorar**
 
-El inglés se incorpora como una herramienta de aprendizaje mediante actividades bilingües y metodología CLIL.
-
----
-
-## 🧰 Tecnologías y herramientas
-
-**Programación:** Arduino · C++ · Python · JavaScript
-
-**Desarrollo web:** HTML · CSS · GitHub Pages
-
-**Electrónica:** Arduino UNO R4 WiFi · Sensores · Circuitos
-
-**Diseño:** FreeCAD · KiCad · Fabricación digital
-
-**Otros ámbitos:** Inteligencia artificial · Algoritmos · Kdenlive · Edición audiovisual
+Tecnología, creatividad y pensamiento computacional
+a través de proyectos y problemas reales.
 
 ---
 
-### Ready to learn by doing?
+**Arduino · Python · C++ · HTML · CSS · JavaScript**
 
-**[🌐 VISITAR TECNOLOGÍA INTERACTIVA](https://carlostechnology.github.io/tecnologia-interactiva/)**
+**Electrónica · Diseño 3D · Inteligencia artificial · Cine**
 
-*Tecnología y Digitalización · Educación Secundaria · Bilingual STEM Education*
+---
+
+### [🌐 TECNOLOGÍA INTERACTIVA](https://carlostechnology.github.io/tecnologia-interactiva/)
+
+*Tecnología y Digitalización · STEM · Bilingual Education*
+
+</div>
