@@ -105,6 +105,33 @@ button.action,select{background:#fff;color:#19394b;border:2px solid #19394b;bord
 .bottom-actions{min-height:0;display:grid;grid-template-rows:auto 40px;gap:5px}.bottom-actions .feedback{margin:0;padding:5px 8px;font-size:.74rem;min-height:28px;line-height:1.3;max-height:46px;overflow:auto}.actionbar{display:flex;gap:7px}.actionbar button.action{min-height:38px;padding:6px 9px;box-shadow:0 2px 0 #19394b;font-size:.85rem}.actionbar #check,.actionbar #next{flex:1;width:auto}.actionbar #step,.actionbar #restart,.actionbar #hint{flex:0 0 39px;font-size:1rem;padding:4px}.actionbar #step[aria-pressed=true]{background:#ffc52c;outline:2px solid #19394b;outline-offset:1px}#next{background:#51ce80}#diploma{font-size:.7rem;padding:4px 6px;min-height:28px}.compact-help{font-size:.9rem}dialog{width:calc(100% - 24px);max-width:456px;max-height:calc(100dvh - 24px);overflow:auto}.dialog-close{width:100%;margin-top:12px}#expandedCode{white-space:pre-wrap;overflow-wrap:anywhere;font:700 .85rem/1.6 ui-monospace,monospace;background:#f3f6fc;padding:10px;border-radius:8px}
 @media(max-height:620px){#game main{gap:5px;grid-template-rows:28px minmax(72px,1fr) auto auto}.board-frame{width:min(100%,calc(100dvh - 340px))}.welcome{padding:12px}.welcome-card{padding:18px}.welcome-mascot{width:76px;height:76px;font-size:3.7rem;margin-bottom:15px}.welcome-kicker{margin-bottom:16px}.welcome-intro{font-size:.9rem;margin-bottom:15px}.welcome-steps{margin-bottom:16px}.welcome-footer{margin-top:16px}}
 }
+
+/* Landscape play: long programs and the board remain side by side. */
+@media screen{
+#game{max-width:1100px}
+#game header{max-width:none;min-height:34px;height:34px;padding:3px 12px}
+#game main{max-width:none;grid-template-columns:minmax(0,1fr) minmax(0,1fr);grid-template-rows:28px minmax(0,1fr) auto;gap:6px 14px;padding:2px 12px max(6px,env(safe-area-inset-bottom))}
+.gamebar{grid-column:1 / -1;grid-row:1}.gamebar select{max-width:500px}.gamebar .progress{flex:1;max-width:180px}
+#programPanel{grid-column:1;grid-row:2 / 4;min-height:0}#code{font-size:clamp(.75rem,1.7vw,.95rem);line-height:1.5}
+#boardPanel{grid-column:2;grid-row:2;min-height:0;justify-content:center}
+.board-frame{width:min(100%,calc(100dvh - 166px));max-width:420px}.boardmeta{max-width:420px;width:min(100%,calc(100dvh - 166px))}.square{font-size:clamp(1.1rem,6vh,2.8rem)}
+.bottom-actions{grid-column:2;grid-row:3;grid-template-rows:auto 36px;gap:4px;align-self:end;width:100%;max-width:450px;justify-self:center}.bottom-actions .feedback{min-height:24px;font-size:.72rem;padding:4px 7px;max-height:38px}.actionbar button.action{min-height:34px;padding:4px 8px}.actionbar #step,.actionbar #restart,.actionbar #hint{flex-basis:34px}
+#rotatePrompt{display:none}
+}
+@media screen and (orientation:portrait) and (max-width:740px){
+ #game>header,#game>main,#game>#storageNotice{visibility:hidden}
+ #rotatePrompt{position:fixed;inset:0;z-index:5;display:flex;align-items:center;justify-content:center;padding:24px;background:#fff9ed}
+ .rotate-card{width:min(100%,360px);text-align:center;padding:28px 20px;background:#fff;border:2px solid #19394b;border-radius:24px;box-shadow:0 6px 0 #19394b}
+ .rotate-symbol{display:grid;place-items:center;width:106px;height:106px;margin:0 auto 22px;background:#ffcf28;border:2px solid #19394b;border-radius:24px;color:#19394b;font-size:4.7rem;line-height:1}
+ .rotate-card h2{font-size:1.6rem;margin-bottom:12px}.rotate-card p{color:#4e6574;font-size:1rem;margin:0;line-height:1.5}.rotate-brand{font-size:.8rem;font-weight:900;color:#1561ce;margin-top:24px}
+}
+@media screen and (orientation:landscape) and (max-height:500px){
+ #game header{height:30px;min-height:30px}.brand{font-size:1rem}#sound{min-height:26px;font-size:.65rem;padding:2px 8px}
+ #game main{grid-template-rows:26px minmax(0,1fr) auto;padding-top:1px;gap:4px 12px}
+ .gamebar select{min-height:26px;font-size:.7rem}.gamebar .count{font-size:.65rem}.board-frame{width:min(100%,calc(100dvh - 150px))}.boardmeta{width:min(100%,calc(100dvh - 150px));font-size:.65rem;min-height:14px;margin-top:0}
+ #programPanel{padding:5px 6px}.code-top{font-size:.65rem}.code-top button{min-height:22px;padding:0 4px}#code{font-size:.75rem;line-height:1.4;margin-top:3px}.bottom-actions{grid-template-rows:auto 34px;gap:3px}.bottom-actions .feedback{min-height:22px;padding:3px 6px;font-size:.68rem}.actionbar{gap:6px}.actionbar button.action{min-height:32px;font-size:.8rem}.actionbar #step,.actionbar #restart,.actionbar #hint{flex-basis:32px;font-size:.9rem}
+ .welcome-card{width:min(92vw,620px);padding:16px 24px;display:grid;grid-template-columns:100px 1fr;column-gap:22px;align-items:center}.welcome-kicker{grid-column:1 / -1;margin:0 0 10px}.welcome-mascot{grid-column:1;grid-row:2 / 5;width:88px;height:88px;margin:0;font-size:4rem}.welcome h1{grid-column:2;font-size:2rem;margin:0 0 5px}.welcome-intro{grid-column:2;font-size:.85rem;margin:0 0 10px}.welcome-steps{display:none}#continueGame{grid-column:2;min-height:44px;font-size:1rem}.welcome-save{grid-column:1 / -1;margin:12px 0 0;font-size:.7rem}.welcome-footer{display:none}.welcome{padding:16px}
+}
 </style>
 </head>
 <body>
@@ -119,6 +146,7 @@ button.action,select{background:#fff;color:#19394b;border:2px solid #19394b;bord
 <p class="welcome-footer">IES G. TORRENTE BALLESTER<br>Read the code. Find the final square.</p>
 </div></section>
 <div id="game" hidden inert>
+<section id="rotatePrompt" aria-labelledby="rotateTitle"><div class="rotate-card"><div class="rotate-symbol" aria-hidden="true">↻</div><h2 id="rotateTitle">Turn your phone</h2><p>Play sideways to see<br>the code and board together.</p><div class="rotate-brand">♞ CHESSCODE MOBILE</div></div></section>
 <header><div class="brand">♞ CHESS<span>CODE</span></div><button class="action" id="sound" title="Toggle sound" aria-pressed="true">♪ Sound: on</button></header>
 <p id="storageNotice" role="status" hidden></p><div id="confetti" aria-hidden="true"></div>
 <main>
@@ -283,6 +311,13 @@ $("step").onclick=()=>{pencil=!pencil;board();feedback(pencil?"Tap squares to dr
 $("closeHelp").onclick=()=>$("helpDialog").close();
 $("expandCode").onclick=()=>{$("expandedCode").textContent=Array.from($("code").children,n=>n.textContent).join("\n");$("codeDialog").showModal()};
 $("closeCode").onclick=()=>$("codeDialog").close();
+const portraitQuery=window.matchMedia("(orientation: portrait) and (max-width: 740px)");
+function syncOrientation(){
+ const active=!$("game").hidden,blocked=active&&portraitQuery.matches;
+ $("game").querySelector("header").inert=blocked;$("game").querySelector("main").inert=blocked;
+ if(active){if(blocked){$("rotatePrompt").setAttribute("tabindex","-1");$("rotatePrompt").focus({preventScroll:true})}else {$("levels").focus({preventScroll:true});if(progress.length===30&&!award.name&&!$("completion").open)openDiploma()}}
+}
+portraitQuery.addEventListener("change",syncOrientation);
 $("check").onclick=()=>{
  if(!selected){feedback("Choose a square first.","bad");return}
  const right=solutions[levelIndex].finish;
@@ -340,13 +375,13 @@ $("printDiploma").onclick=()=>{if(progress.length===30&&award.name&&!$("printDip
 $("closeDiploma").onclick=()=>$("completion").close();
 $("diploma").onclick=openDiploma;
 $("completion").addEventListener("close",()=>$("diploma").focus());
-document.addEventListener("keydown",e=>{if(!$("welcome").hidden||document.querySelector("dialog[open]")||["SELECT","INPUT","TEXTAREA","BUTTON"].includes(e.target.tagName))return;if(e.key==="Enter"&&selected)$("check").click();if(e.key==="ArrowRight"&&e.altKey)go(levelIndex+1);if(e.key==="ArrowLeft"&&e.altKey)go(levelIndex-1)});
+document.addEventListener("keydown",e=>{if(!$("welcome").hidden||portraitQuery.matches||document.querySelector("dialog[open]")||["SELECT","INPUT","TEXTAREA","BUTTON"].includes(e.target.tagName))return;if(e.key==="Enter"&&selected)$("check").click();if(e.key==="ArrowRight"&&e.altKey)go(levelIndex+1);if(e.key==="ArrowLeft"&&e.altKey)go(levelIndex-1)});
 if(progress.length>0){const firstUnsolved=L.findIndex((_,i)=>!progress.includes(i));levelIndex=firstUnsolved<0?0:firstUnsolved;$("welcomeProgress").textContent=`${progress.length} / 30 challenges solved. Your progress is saved — keep going!`}
 render();
 $("continueGame").onclick=()=>{
  $("welcome").hidden=true;$("game").hidden=false;$("game").inert=false;
- window.scrollTo(0,0);$("levels").focus({preventScroll:true});
- if(progress.length===30&&!award.name)openDiploma();
+ window.scrollTo(0,0);$("levels").focus({preventScroll:true});syncOrientation();
+ if(!portraitQuery.matches&&progress.length===30&&!award.name)openDiploma();
 };
 </script>
 </body></html>
