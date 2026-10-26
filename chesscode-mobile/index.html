@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>CHESSCODE Mobile · Code Week 2026</title>
 <style>
 :root{font-family:Inter,system-ui,-apple-system,Segoe UI,sans-serif;color:#f4f0e6;background:#111924;--gold:#e8ae46;--muted:#a4afbe;--panel:#1b2634}
@@ -131,6 +131,31 @@ button.action,select{background:#fff;color:#19394b;border:2px solid #19394b;bord
  .gamebar select{min-height:26px;font-size:.7rem}.gamebar .count{font-size:.65rem}.board-frame{width:min(100%,calc(100dvh - 150px))}.boardmeta{width:min(100%,calc(100dvh - 150px));font-size:.65rem;min-height:14px;margin-top:0}
  #programPanel{padding:5px 6px}.code-top{font-size:.65rem}.code-top button{min-height:22px;padding:0 4px}#code{font-size:.75rem;line-height:1.4;margin-top:3px}.bottom-actions{grid-template-rows:auto 34px;gap:3px}.bottom-actions .feedback{min-height:22px;padding:3px 6px;font-size:.68rem}.actionbar{gap:6px}.actionbar button.action{min-height:32px;font-size:.8rem}.actionbar #step,.actionbar #restart,.actionbar #hint{flex-basis:32px;font-size:.9rem}
  .welcome-card{width:min(92vw,620px);padding:16px 24px;display:grid;grid-template-columns:100px 1fr;column-gap:22px;align-items:center}.welcome-kicker{grid-column:1 / -1;margin:0 0 10px}.welcome-mascot{grid-column:1;grid-row:2 / 5;width:88px;height:88px;margin:0;font-size:4rem}.welcome h1{grid-column:2;font-size:2rem;margin:0 0 5px}.welcome-intro{grid-column:2;font-size:.85rem;margin:0 0 10px}.welcome-steps{display:none}#continueGame{grid-column:2;min-height:44px;font-size:1rem}.welcome-save{grid-column:1 / -1;margin:12px 0 0;font-size:.7rem}.welcome-footer{display:none}.welcome{padding:16px}
+}
+
+/* Explicit grid tracks prevent Safari from resizing the row containing a piece. */
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
+@media screen{
+ #game{height:var(--visible-height,100dvh);max-width:1100px;width:100%;min-height:0}
+ #game header{display:none}
+ #game main{height:100%;flex:1;min-height:0;grid-template-columns:minmax(0,1fr) minmax(0,1fr);grid-template-rows:28px minmax(0,1fr) 38px;gap:5px 12px;padding:5px max(10px,env(safe-area-inset-right)) max(5px,env(safe-area-inset-bottom)) max(10px,env(safe-area-inset-left))}
+ .gamebar{grid-column:1 / -1;grid-row:1;gap:8px;min-height:0}.gamebar select{max-width:none;flex:1;min-height:27px;height:27px;font-size:.75rem;padding:2px 6px;box-shadow:none}
+ .gamebar #sound{display:block;min-height:26px;height:26px;padding:1px 7px;box-shadow:none;flex:none;font-size:.75rem}
+ .gamebar .progress{max-width:80px;flex:0 1 80px}.gamebar .count{font-size:.7rem}
+ #programPanel{grid-column:1;grid-row:2;box-shadow:none;border-top-width:4px;border-radius:10px;padding:5px 6px;min-height:0}
+ #code{font-size:13px;line-height:1.45;min-height:0;-webkit-overflow-scrolling:touch}
+ #boardPanel{grid-column:2;grid-row:2;min-width:0;min-height:0;display:flex;align-items:center;justify-content:center;overflow:hidden}
+ .board-frame{flex:none;width:calc(var(--board-size,160px) + 16px);height:calc(var(--board-size,160px) + 16px);max-width:none;display:grid;grid-template-columns:14px var(--board-size,160px);grid-template-rows:var(--board-size,160px) 14px;gap:2px}
+ #board{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));grid-template-rows:repeat(8,minmax(0,1fr));width:var(--board-size,160px);height:var(--board-size,160px);min-width:0;min-height:0;max-width:none;aspect-ratio:auto;border:3px solid #2157bd;margin:0;overflow:hidden}
+ #board .square{width:100%;height:100%;min-width:0;min-height:0;aspect-ratio:auto;line-height:1;border:0;padding:0;overflow:hidden;font-size:var(--piece-size,22px);-webkit-appearance:none;appearance:none}
+ .piece{font-family:"Apple Symbols","Segoe UI Symbol","Arial Unicode MS",serif;font-size:inherit;line-height:1;display:block;pointer-events:none}
+ .ranks{min-height:0;padding:3px 0;font-size:10px;grid-template-rows:repeat(8,minmax(0,1fr))}.files{padding:0 3px;font-size:10px}.boardmeta{display:none}
+ .square.picked{box-shadow:inset 0 0 0 3px #19394b}.square.picked:before{font-size:10px;right:2px}.note{width:12px;height:12px;min-width:12px;font-size:8px;z-index:2}
+ .bottom-actions{display:contents}
+ .bottom-actions .feedback{grid-column:1;grid-row:3;min-height:0;max-height:none;height:38px;display:flex;align-items:center;padding:4px 8px;font-size:.76rem;line-height:1.25;margin:0;overflow:auto}
+ .actionbar{grid-column:2;grid-row:3;display:flex;gap:6px;height:38px;min-width:0}
+ .actionbar button.action{min-width:0;min-height:36px;height:36px;padding:4px 8px;font-size:.85rem;box-shadow:0 2px 0 #19394b;flex-shrink:0}.actionbar #step,.actionbar #restart,.actionbar #hint{flex:0 0 36px;font-size:1rem}.actionbar #check,.actionbar #next{flex:1;min-width:0}
+ @media(max-height:300px){#code{font-size:12px;line-height:1.35}#game main{gap:4px 10px;padding-top:3px;padding-bottom:3px;grid-template-rows:27px minmax(0,1fr) 36px}.bottom-actions .feedback{height:36px;font-size:.7rem}.actionbar{height:36px}.actionbar button.action{height:34px;min-height:34px}.gamebar .progress{max-width:55px}}
 }
 </style>
 </head>
@@ -315,7 +340,7 @@ const portraitQuery=window.matchMedia("(orientation: portrait) and (max-width: 7
 function syncOrientation(){
  const active=!$("game").hidden,blocked=active&&portraitQuery.matches;
  $("game").querySelector("header").inert=blocked;$("game").querySelector("main").inert=blocked;
- if(active){if(blocked){$("rotatePrompt").setAttribute("tabindex","-1");$("rotatePrompt").focus({preventScroll:true})}else {$("levels").focus({preventScroll:true});if(progress.length===30&&!award.name&&!$("completion").open)openDiploma()}}
+ if(active){if(blocked){$("rotatePrompt").setAttribute("tabindex","-1");$("rotatePrompt").focus({preventScroll:true})}else {if(progress.length===30&&!award.name&&!$("completion").open)openDiploma()}}
 }
 portraitQuery.addEventListener("change",syncOrientation);
 $("check").onclick=()=>{
@@ -337,7 +362,7 @@ $("check").onclick=()=>{
    if(finishedAll){celebrate();openDiploma()}
  }else {feedback("Try again. Check each command.","bad");playSound("error")}
 };
-$("sound").onclick=()=>{muted=!muted;$("sound").textContent="♪ Sound: "+(muted?"off":"on");$("sound").setAttribute("aria-pressed",String(!muted))};
+$("sound").onclick=()=>{muted=!muted;$("sound").textContent=muted?"♪ off":"♪ on";$("sound").setAttribute("aria-label",muted?"Turn sound on":"Turn sound off");$("sound").setAttribute("aria-pressed",String(!muted))};
 let audioContext;
 async function playSound(kind){
  if(muted)return;
@@ -376,11 +401,25 @@ $("closeDiploma").onclick=()=>$("completion").close();
 $("diploma").onclick=openDiploma;
 $("completion").addEventListener("close",()=>$("diploma").focus());
 document.addEventListener("keydown",e=>{if(!$("welcome").hidden||portraitQuery.matches||document.querySelector("dialog[open]")||["SELECT","INPUT","TEXTAREA","BUTTON"].includes(e.target.tagName))return;if(e.key==="Enter"&&selected)$("check").click();if(e.key==="ArrowRight"&&e.altKey)go(levelIndex+1);if(e.key==="ArrowLeft"&&e.altKey)go(levelIndex-1)});
+$("sound").textContent="♪ on";$("sound").setAttribute("aria-label","Turn sound off");$("game").querySelector(".gamebar").append($("sound"));
+function fitGame(){
+ const viewport=window.visualViewport;
+ document.documentElement.style.setProperty("--visible-height",Math.floor(viewport?viewport.height:window.innerHeight)+"px");
+ const panel=$("boardPanel");if(!panel||$("game").hidden)return;
+ const bounds=panel.getBoundingClientRect();
+ const size=Math.max(40,Math.floor(Math.min(bounds.width-16,bounds.height-16)));
+ document.documentElement.style.setProperty("--board-size",size+"px");
+ document.documentElement.style.setProperty("--piece-size",Math.max(10,Math.floor((size-6)/8*.76))+"px");
+}
+const gameResizeObserver=new ResizeObserver(fitGame);gameResizeObserver.observe($("boardPanel"));
+window.addEventListener("resize",fitGame);window.addEventListener("orientationchange",()=>requestAnimationFrame(fitGame));
+if(window.visualViewport)window.visualViewport.addEventListener("resize",fitGame);
+fitGame();
 if(progress.length>0){const firstUnsolved=L.findIndex((_,i)=>!progress.includes(i));levelIndex=firstUnsolved<0?0:firstUnsolved;$("welcomeProgress").textContent=`${progress.length} / 30 challenges solved. Your progress is saved — keep going!`}
 render();
 $("continueGame").onclick=()=>{
  $("welcome").hidden=true;$("game").hidden=false;$("game").inert=false;
- window.scrollTo(0,0);$("levels").focus({preventScroll:true});syncOrientation();
+ window.scrollTo(0,0);$("code").focus({preventScroll:true});syncOrientation();fitGame();
  if(!portraitQuery.matches&&progress.length===30&&!award.name)openDiploma();
 };
 </script>
