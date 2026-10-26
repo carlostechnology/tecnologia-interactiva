@@ -94,6 +94,17 @@ button.action,select{background:#fff;color:#19394b;border:2px solid #19394b;bord
  .welcome{padding:24px 16px}.welcome-card{max-width:448px}
  #storageNotice{max-width:480px;margin-inline:auto}
 }
+
+@media screen{
+#game{height:100vh;height:100dvh;max-width:480px;margin:auto;display:flex;flex-direction:column;overflow:hidden}
+#game header{flex:none;min-height:42px;padding:5px 12px;border-bottom:0}#game .sub{display:none}#sound{min-height:32px;padding:4px 8px;font-size:.7rem;box-shadow:0 2px 0 #19394b}
+#game main{flex:1;min-height:0;display:grid;grid-template-rows:30px minmax(80px,1fr) auto auto;gap:7px;padding:3px 12px max(8px,env(safe-area-inset-bottom));max-width:480px;width:100%}
+.gamebar{display:flex;gap:8px;align-items:center;min-width:0}.gamebar select{min-width:0;flex:1;font-size:.75rem;min-height:30px;padding:3px 6px;border-radius:7px}.gamebar .count{font-size:.7rem;white-space:nowrap;font-weight:900}.gamebar .progress{width:50px;height:9px;margin:0;background:#e5e5dd;border:1px solid #19394b}.gamebar .fill{background:var(--difficulty)}
+#programPanel{min-height:0;display:flex;flex-direction:column;padding:6px 8px;border-radius:12px;border-top:4px solid #ffc82b;box-shadow:0 2px 0 #19394b;overflow:hidden}.code-top{display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:.7rem;font-weight:900}.code-top button{min-height:26px;border:0;background:transparent;color:#144eaa;font-size:.72rem;font-weight:900;padding:2px 6px}#difficulty{font-size:.65rem}#code{overflow:auto;min-height:0;flex:1;margin:5px 0 0;padding:4px 5px;font-size:.8rem;line-height:1.4;overscroll-behavior:contain;white-space:pre;overflow-wrap:normal}.code-line{padding:0 3px}
+#boardPanel{border:0;background:none;box-shadow:none;padding:0;min-width:0;display:flex;align-items:center;flex-direction:column}.board-frame{width:min(100%,calc(100dvh - 340px));max-width:360px;display:grid;grid-template-columns:14px minmax(0,1fr);grid-template-rows:auto 14px;gap:2px}.ranks{display:grid;grid-template-rows:repeat(8,1fr);font:700 10px system-ui;text-align:center;padding:4px 0}.ranks span{display:grid;place-items:center}.files{grid-column:2;display:grid;grid-template-columns:repeat(8,1fr);font:700 10px system-ui;text-align:center;padding:0 4px}#board{width:100%;max-width:none;margin:0;border-width:4px;border-radius:8px}.square{font-size:clamp(1.3rem,5.8vh,2.6rem)}.square .coord{display:none}.square.picked:before{font-size:14px}.note{position:absolute;bottom:1px;right:2px;font:900 10px system-ui;background:#ffda3d;color:#19394b;border-radius:50%;min-width:15px;height:15px;display:grid;place-items:center}.square.sketched{box-shadow:inset 0 0 0 2px #ce5f1a}.piece{z-index:1}.boardmeta{width:100%;max-width:360px;font-size:.7rem;min-height:18px;margin-top:2px}
+.bottom-actions{min-height:0;display:grid;grid-template-rows:auto 40px;gap:5px}.bottom-actions .feedback{margin:0;padding:5px 8px;font-size:.74rem;min-height:28px;line-height:1.3;max-height:46px;overflow:auto}.actionbar{display:flex;gap:7px}.actionbar button.action{min-height:38px;padding:6px 9px;box-shadow:0 2px 0 #19394b;font-size:.85rem}.actionbar #check,.actionbar #next{flex:1;width:auto}.actionbar #step,.actionbar #restart,.actionbar #hint{flex:0 0 39px;font-size:1rem;padding:4px}.actionbar #step[aria-pressed=true]{background:#ffc52c;outline:2px solid #19394b;outline-offset:1px}#next{background:#51ce80}#diploma{font-size:.7rem;padding:4px 6px;min-height:28px}.compact-help{font-size:.9rem}dialog{width:calc(100% - 24px);max-width:456px;max-height:calc(100dvh - 24px);overflow:auto}.dialog-close{width:100%;margin-top:12px}#expandedCode{white-space:pre-wrap;overflow-wrap:anywhere;font:700 .85rem/1.6 ui-monospace,monospace;background:#f3f6fc;padding:10px;border-radius:8px}
+@media(max-height:620px){#game main{gap:5px;grid-template-rows:28px minmax(72px,1fr) auto auto}.board-frame{width:min(100%,calc(100dvh - 340px))}.welcome{padding:12px}.welcome-card{padding:18px}.welcome-mascot{width:76px;height:76px;font-size:3.7rem;margin-bottom:15px}.welcome-kicker{margin-bottom:16px}.welcome-intro{font-size:.9rem;margin-bottom:15px}.welcome-steps{margin-bottom:16px}.welcome-footer{margin-top:16px}}
+}
 </style>
 </head>
 <body>
@@ -108,39 +119,17 @@ button.action,select{background:#fff;color:#19394b;border:2px solid #19394b;bord
 <p class="welcome-footer">IES G. TORRENTE BALLESTER<br>Read the code. Find the final square.</p>
 </div></section>
 <div id="game" hidden inert>
-<header><div><div class="brand"><span class="horse" aria-hidden="true">♞</span>CHESS<span>CODE</span></div><div class="sub">MOBILE · CODE WEEK 2026</div></div><button class="action" id="sound" title="Toggle sound" aria-pressed="true">♪ Sound: on</button></header>
+<header><div class="brand">♞ CHESS<span>CODE</span></div><button class="action" id="sound" title="Toggle sound" aria-pressed="true">♪ Sound: on</button></header>
 <p id="storageNotice" role="status" hidden></p><div id="confetti" aria-hidden="true"></div>
 <main>
-<div class="journey"><div class="info"><b id="done">0</b> / 30 solved<div class="progress" id="progressMeter" role="progressbar" aria-label="Completed challenges" aria-valuemin="0" aria-valuemax="30" aria-valuenow="0"><div class="fill" id="bar"></div></div><div class="difficulty-key" id="difficultyKey"></div></div><button class="action" id="diploma" hidden>My diploma</button></div>
-<div class="eyebrow" id="chapter"></div><h1 id="title"></h1><p class="muted" id="description"></p>
-<nav class="route" aria-label="Challenge steps"><a href="#programPanel"><span class="number">1</span> Read the code</a><a href="#boardPanel"><span class="number">2</span> Pick a square</a></nav>
-<div class="layout">
-<section class="panel program-panel" id="programPanel" aria-label="Program to read">
-<div class="topline"><span class="tag" id="badge"></span><span class="info" id="difficulty"></span></div>
-<h2>1. Where will it finish?</h2><p id="mission"></p>
-<div class="code" id="code" role="region" aria-label="Code to interpret"></div>
-<p class="info" id="rules">N ↑ · S ↓ · E → · W ← · NE ↗ · NW ↖ · SE ↘ · SW ↙<br>One square per command. Normal chess moves do not apply.</p>
-<a class="jump" href="#boardPanel">Ready? Pick your square ↓</a>
-</section>
-<section class="panel board-panel" id="boardPanel" aria-label="Challenge board">
-<div class="topline"><h2>2. Tap the final square</h2><a href="#programPanel" class="info" style="font-size:.75rem;font-weight:900;padding:10px 0">Read code ↑</a></div>
-<div class="board" id="board" role="group" aria-label="Eight-by-eight board, white side at the bottom"></div>
-<div class="boardmeta"><span id="selectionLabel">Your pick: —</span><span id="pos"></span></div>
-<div class="controls check-row"><button class="action primary" id="check" disabled>Check answer ✓</button></div>
-<div class="feedback" id="feedback" aria-live="polite"></div>
-<div class="controls" id="advance"><button class="action primary" id="next" hidden>Next level →</button></div>
-<div class="controls tools"><button class="action" id="hint">? Hint</button><button class="action" id="step">▶ Trace</button><button class="action" id="restart">↺ Retry</button></div>
-</section>
-</div>
-<details class="extras"><summary>Levels &amp; how to play</summary>
-<label class="level-label" for="levels">Choose any level</label><select id="levels" aria-label="Choose a level"></select><button class="action" id="prev">← Previous level</button>
-<p>Read the program, then tap the square where the piece will finish. Tap <b>Check answer</b>. Use <b>Hint</b> for a clue or <b>Trace</b> to see one move at a time. Try as many times as you like.</p>
-<p><b>repeat:</b> run the whole block several times. <b>lightSquare():</b> test the current square; a1 is dark (blue). <b>onEdge():</b> rank 1 or 8, or file a or h. <b>evenFile():</b> b, d, f or h. <b>function:</b> reuse instructions. Moves are limited to the board.</p>
-<p><b>Difficulty colours:</b> green = Beginner (1–6), amber = Intermediate (7–18), red = Advanced (19–30). The bar shows how many levels you have solved; its colour shows the current level’s difficulty.</p>
-<p>Your progress and diploma stay in this browser. Complete all 30 levels to earn your diploma.</p></details>
-<div class="footer">IES G. TORRENTE BALLESTER · CODE WEEK 2026<br>30 challenges. One clever mind. Yours.</div>
-</main>
-</div>
+<div class="gamebar"><select id="levels" aria-label="Choose a level"></select><span class="count"><b id="done">0</b>/30</span><div class="progress" id="progressMeter" role="progressbar" aria-label="Completed challenges" aria-valuemin="0" aria-valuemax="30" aria-valuenow="0"><div class="fill" id="bar"></div></div><button class="action" id="diploma" hidden>Diploma</button></div>
+<section class="panel" id="programPanel" aria-label="Program to read"><div class="code-top"><span id="difficulty"></span><span id="pos"></span><button id="expandCode" aria-label="Expand code">⤢ Code</button></div><div class="code" id="code" role="region" aria-label="Code to interpret" tabindex="0"></div></section>
+<section id="boardPanel" aria-label="Challenge board"><div class="board-frame"><div class="ranks" aria-hidden="true"><span>8</span><span>7</span><span>6</span><span>5</span><span>4</span><span>3</span><span>2</span><span>1</span></div><div class="board" id="board" role="group" aria-label="Choose the final square"></div><div class="files" aria-hidden="true"><span>a</span><span>b</span><span>c</span><span>d</span><span>e</span><span>f</span><span>g</span><span>h</span></div></div><div class="boardmeta"><span id="selectionLabel">Pick: —</span><span id="noteStatus"></span></div></section>
+<div class="bottom-actions"><div class="feedback" id="feedback" aria-live="polite"></div><div class="actionbar"><button class="action" id="hint" aria-label="How to play" title="How to play">?</button><button class="action" id="step" aria-label="Pencil notes" title="Pencil notes" aria-pressed="false">✎</button><button class="action" id="restart" aria-label="Clear and retry" title="Clear and retry">↺</button><button class="action primary" id="check" disabled>Check ✓</button><button class="action primary" id="next" hidden>Next →</button></div></div>
+<div hidden aria-hidden="true"><span id="chapter"></span><h1 id="title"></h1><span id="description"></span><span id="badge"></span><span id="difficultyKey"></span><span id="mission"></span><button id="prev"></button><span id="advance"></span></div>
+</main></div>
+<dialog id="helpDialog" aria-labelledby="helpTitle"><h2 id="helpTitle">Read → Pick → Check</h2><p>Find where the piece finishes. Chess movement rules do not apply.</p><p><b>N ↑ · S ↓ · E → · W ←</b><br>NE ↗ · NW ↖ · SE ↘ · SW ↙</p><p><b>✎ Pencil:</b> tap squares to sketch your own route. Tap ✎ again to choose your answer. The game never moves the piece for you. ↺ clears your notes.</p><p><b>repeat</b> runs a block again. Check each <b>if</b> on the current square. Blue squares are dark. A function reuses instructions.</p><p>Green: levels 1–6 · Amber: 7–18 · Red: 19–30. Progress is saved in this browser.</p><button class="action primary dialog-close" id="closeHelp">Got it</button></dialog>
+<dialog id="codeDialog" aria-labelledby="codeTitle"><h2 id="codeTitle">Program</h2><pre id="expandedCode"></pre><button class="action primary dialog-close" id="closeCode">Back to board</button></dialog>
 <dialog id="completion" aria-labelledby="completionTitle">
 <h2 id="completionTitle">All 30 challenges completed!</h2>
 <p>Your algorithms earned a celebration. Add your name to your diploma; it stays in this browser.</p>
@@ -229,6 +218,7 @@ if(!award.completedAt||!Number.isFinite(Date.parse(award.completedAt))){delete a
 if(typeof award.localTime!=="string")delete award.localTime;
 if(progress.length!==30)award={};
 let levelIndex=0,selected=null,step=0,revealed=false,muted=false;
+let pencil=false,notes=[];
 const solutions=L.map(run);
 const safeText=s=>String(s).replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;");
 function storageWarning(){const n=$("storageNotice");n.hidden=false;n.textContent="Browser storage is unavailable or full. Keep this page open and print your diploma before leaving; changes may not be saved."}
@@ -248,22 +238,22 @@ function updateProgress(){
 function feedback(text,type=""){$("feedback").className="feedback "+type;$("feedback").textContent=text}
 function board(){
  const current=L[levelIndex],initial=current[3],trace=solutions[levelIndex],steps=trace.visited;
- const position=step?steps[Math.min(step,steps.length-1)]:initial;
+ const position=notes.length?notes[notes.length-1]:initial;
  $("board").innerHTML="";
  for(let y=7;y>=0;y--)for(let x=0;x<8;x++){
  const sq=toSq([x,y]),b=document.createElement("button");
  b.className=`square ${color([x,y])==="clara"?"light":"dark"}`;
  if(selected===sq)b.classList.add("picked");
- if(revealed&&trace.visited.includes(sq))b.classList.add("path");
+ if(notes.includes(sq))b.classList.add("sketched");
  b.type="button";b.setAttribute("aria-label",`Square ${sq}`);b.setAttribute("aria-pressed",String(selected===sq));
  if(sq===position){const symbol=document.createElement("span");symbol.className="piece";symbol.textContent=current[2];b.append(symbol)}
- {const label=document.createElement("span");label.className="coord";label.textContent=sq;b.append(label)}
- b.onclick=()=>{selected=sq;board();feedback(`Your pick: ${sq}. Ready? Check your answer.`);$("board").querySelector(`[aria-label="Square ${sq}"]`).focus({preventScroll:true})};
+ if(notes.includes(sq)){const label=document.createElement("span");label.className="note";label.textContent=notes.lastIndexOf(sq)+1;b.append(label)}
+ b.onclick=()=>{if(pencil){if(notes.length>=64)notes.shift();notes.push(sq)}else selected=sq;board();feedback(pencil?"Your notes. Tap ✎ to choose your answer.":`Pick: ${sq}. Tap Check.`);$("board").querySelector(`[aria-label="Square ${sq}"]`).focus({preventScroll:true})};
  $("board").append(b)
  }
- $("pos").textContent=step?`Running: ${position} · step ${step}/${steps.length-1}`:`Start: ${initial}`;
- $("step").disabled=step>=steps.length-1;
- $("selectionLabel").textContent=selected?"Your pick: "+selected:"Your pick: —";$("check").disabled=!selected;
+ $("pos").textContent=`Start: ${initial}`;
+ $("step").disabled=false;$("step").setAttribute("aria-pressed",String(pencil));$("noteStatus").textContent=pencil?"✎ Draw your route":"";
+ $("selectionLabel").textContent=selected?"Pick: "+selected:"Pick: —";$("check").disabled=!selected||pencil;
 }
 function render(){
  const l=L[levelIndex],name=l[1],opts=$("levels");
@@ -281,15 +271,18 @@ function render(){
  for(const [name,body] of Object.entries(funcs)){lines.push(`function ${name}() {`,...displayBlock(body,1),"}","")}
  lines.push("start {",...displayBlock(l[4],1),"}");
  $("code").innerHTML=lines.map(line=>{const kind=/^\s*move/.test(line)?"move":/^\s*repeat/.test(line)?"loop":/^\s*(if|} else)/.test(line)?"if":/^\s*(function|[a-zA-Z]+\(\);)/.test(line)?"function":"plain";return `<span class="code-line line-${kind}">${safeText(line)||" "}</span>`}).join("");
- selected=null;step=0;revealed=false;feedback("Read the code, then tap your answer on the board.");board();
- $("prev").disabled=levelIndex===0;$("next").disabled=levelIndex===29;$("next").hidden=!progress.includes(levelIndex)||levelIndex===29;$("advance").hidden=$("next").hidden;
+ selected=null;step=0;revealed=false;pencil=false;notes=[];$("check").hidden=false;feedback("Where will it finish? Tap a square.");board();
+ $("prev").disabled=levelIndex===0;$("next").disabled=levelIndex===29;$("next").hidden=true;$("advance").hidden=$("next").hidden;
 }
-function go(i){if(i<0||i>=30)return;levelIndex=i;render();$("programPanel").scrollIntoView({block:"start",behavior:"instant"})}
+function go(i){if(i<0||i>=30)return;levelIndex=i;render();window.scrollTo(0,0)}
 $("levels").onchange=e=>go(Number(e.target.value));
 $("prev").onclick=()=>go(levelIndex-1);$("next").onclick=()=>go(levelIndex+1);
-$("restart").onclick=()=>{selected=null;step=0;revealed=false;board();feedback("Restarted. Try again.")};
-$("hint").onclick=()=>{const t=solutions[levelIndex].history;feedback(t.length?`Hint: the first move ends on ${t[0].s}. Remember: if a move goes off the board, the piece stays put.`:"Look at the starting square.")};
-$("step").onclick=()=>{const t=solutions[levelIndex];if(step<t.visited.length-1)step++;revealed=false;board();feedback(`Step ${step}: ${t.history[step-1].description}. Continue, or try to predict the final square.`)};
+$("restart").onclick=()=>{selected=null;notes=[];pencil=false;$("next").hidden=true;$("check").hidden=false;board();feedback("Start again. Pick the final square.")};
+$("hint").onclick=()=>$("helpDialog").showModal();
+$("step").onclick=()=>{pencil=!pencil;board();feedback(pencil?"Tap squares to draw your own route.":"Now pick the final square.")};
+$("closeHelp").onclick=()=>$("helpDialog").close();
+$("expandCode").onclick=()=>{$("expandedCode").textContent=Array.from($("code").children,n=>n.textContent).join("\n");$("codeDialog").showModal()};
+$("closeCode").onclick=()=>$("codeDialog").close();
 $("check").onclick=()=>{
  if(!selected){feedback("Choose a square first.","bad");return}
  const right=solutions[levelIndex].finish;
@@ -299,15 +292,15 @@ $("check").onclick=()=>{
    if(newlyCompleted){progress.push(levelIndex);save()}
    const finishedAll=newlyCompleted&&progress.length===30;
    if(finishedAll){award={completedAt:acceptedAt.toISOString(),localTime:localTimestamp(acceptedAt),name:""};saveAward()}
-   revealed=true;step=0;board();$("done").textContent=progress.length;$("bar").style.width=100*progress.length/30+"%";
+   revealed=true;step=0;pencil=false;board();$("done").textContent=progress.length;$("bar").style.width=100*progress.length/30+"%";
    updateProgress();
-   feedback(progress.length===30?"Code Grandmaster! You have completed all 30 challenges.":`Correct! The piece finishes on ${right}. Completed: ${progress.length}/30.`, "good");
+   feedback(progress.length===30?"✓ All 30 completed!":`✓ Correct! ${right}`, "good");
    // refresh dropdown without changing active challenge
    $("levels").options[levelIndex].text="✓ "+String(levelIndex+1).padStart(2,"0")+" · "+L[levelIndex][0];
-   $("next").hidden=levelIndex===29;$("advance").hidden=levelIndex===29;$("check").disabled=true;
+   $("next").hidden=levelIndex===29;$("check").hidden=levelIndex!==29;$("check").disabled=true;
    playSound("success");
    if(finishedAll){celebrate();openDiploma()}
- }else {feedback(`Not quite! You chose ${selected}. Check the loops and conditions, then try again.`,"bad");playSound("error")}
+ }else {feedback("Try again. Check each command.","bad");playSound("error")}
 };
 $("sound").onclick=()=>{muted=!muted;$("sound").textContent="♪ Sound: "+(muted?"off":"on");$("sound").setAttribute("aria-pressed",String(!muted))};
 let audioContext;
@@ -347,12 +340,12 @@ $("printDiploma").onclick=()=>{if(progress.length===30&&award.name&&!$("printDip
 $("closeDiploma").onclick=()=>$("completion").close();
 $("diploma").onclick=openDiploma;
 $("completion").addEventListener("close",()=>$("diploma").focus());
-document.addEventListener("keydown",e=>{if(!$("welcome").hidden||$("completion").open||["SELECT","INPUT","TEXTAREA","BUTTON"].includes(e.target.tagName))return;if(e.key==="Enter"&&selected)$("check").click();if(e.key==="ArrowRight"&&e.altKey)go(levelIndex+1);if(e.key==="ArrowLeft"&&e.altKey)go(levelIndex-1)});
+document.addEventListener("keydown",e=>{if(!$("welcome").hidden||document.querySelector("dialog[open]")||["SELECT","INPUT","TEXTAREA","BUTTON"].includes(e.target.tagName))return;if(e.key==="Enter"&&selected)$("check").click();if(e.key==="ArrowRight"&&e.altKey)go(levelIndex+1);if(e.key==="ArrowLeft"&&e.altKey)go(levelIndex-1)});
 if(progress.length>0){const firstUnsolved=L.findIndex((_,i)=>!progress.includes(i));levelIndex=firstUnsolved<0?0:firstUnsolved;$("welcomeProgress").textContent=`${progress.length} / 30 challenges solved. Your progress is saved — keep going!`}
 render();
 $("continueGame").onclick=()=>{
  $("welcome").hidden=true;$("game").hidden=false;$("game").inert=false;
- window.scrollTo(0,0);$("title").setAttribute("tabindex","-1");$("title").focus({preventScroll:true});
+ window.scrollTo(0,0);$("levels").focus({preventScroll:true});
  if(progress.length===30&&!award.name)openDiploma();
 };
 </script>
