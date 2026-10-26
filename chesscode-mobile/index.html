@@ -1,0 +1,360 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CHESSCODE Mobile · Code Week 2026</title>
+<style>
+:root{font-family:Inter,system-ui,-apple-system,Segoe UI,sans-serif;color:#f4f0e6;background:#111924;--gold:#e8ae46;--muted:#a4afbe;--panel:#1b2634}
+*{box-sizing:border-box}body{margin:0;min-height:100vh;background:radial-gradient(ellipse at 70% 5%,#26374a 0%,#111924 62%)}
+header{border-bottom:1px solid #ffffff18;padding:15px clamp(16px,3vw,48px);display:flex;align-items:center;justify-content:space-between;gap:15px;flex-wrap:wrap}
+.brand{font-weight:900;letter-spacing:.08em;font-size:1.28rem}.brand span{color:var(--gold)}.sub{color:var(--muted);font-size:.82rem}
+main{max-width:1320px;margin:auto;padding:26px 18px 60px}.eyebrow{color:var(--gold);font-size:.76rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase}
+h1{font-size:clamp(1.6rem,3vw,2.65rem);line-height:1.13;margin:8px 0}p{line-height:1.6}.muted{color:var(--muted)}
+.layout{display:grid;grid-template-columns:minmax(300px,525px) minmax(300px,1fr);gap:25px;align-items:start;margin-top:22px}
+.panel{background:#1b2634e8;border:1px solid #ffffff18;border-radius:20px;padding:21px;box-shadow:0 14px 35px #0003}
+.board{display:grid;grid-template-columns:repeat(8,1fr);border:6px solid #384657;border-radius:9px;overflow:hidden;width:100%;aspect-ratio:1}
+.square{border:0;border-radius:0;position:relative;display:grid;place-items:center;cursor:pointer;min-width:0;aspect-ratio:1;color:#17212c;padding:0;font-size:clamp(1.3rem,3.5vw,2.8rem)}
+.light{background:#e8dbc1}.dark{background:#93a69f}.square:hover{box-shadow:inset 0 0 0 3px #edb74f}
+.square.goal{box-shadow:inset 0 0 0 4px #e9aa39}.square.path:after{content:"";position:absolute;width:17%;aspect-ratio:1;background:#4257a5;border-radius:100%;opacity:.55}
+.square.picked{box-shadow:inset 0 0 0 5px #fff}.square .coord{position:absolute;left:3px;bottom:1px;font-size:10px;font-weight:700;opacity:.55}
+.piece{position:relative;z-index:1;color:#111d2b;text-shadow:0 2px 0 #fff9,0 1px 6px #1114;line-height:1}
+.boardmeta{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;margin-top:13px;color:#abb8c6;font-size:.8rem}
+.topline{display:flex;align-items:center;justify-content:space-between;gap:10px}.tag{color:#0f1923;background:var(--gold);padding:6px 10px;border-radius:100px;font-size:.73rem;font-weight:900}
+h2{font-size:1.16rem;margin:12px 0 6px}.code{white-space:pre-wrap;tab-size:2;background:#0d1520;border:1px solid #314052;border-radius:12px;color:#e3ecfa;padding:17px 15px;font:500 clamp(.76rem,1.3vw,.98rem)/1.65 ui-monospace,SFMono-Regular,Consolas,monospace;overflow:auto;min-height:170px}
+.code .keyword{color:#e5b966}.code .active{display:block;background:#314c6e66;margin:0 -6px;padding:0 6px;border-radius:4px}
+.controls{display:flex;flex-wrap:wrap;gap:9px;margin-top:16px}button.action,select{border:1px solid #526073;border-radius:10px;background:#28384b;color:#f5f6fa;padding:11px 13px;font-weight:750;cursor:pointer}
+button.primary{background:var(--gold);color:#18212c;border-color:var(--gold)}button:disabled{opacity:.45;cursor:not-allowed}
+button.action:hover:not(:disabled),select:hover{filter:brightness(1.13)}button:focus-visible,select:focus-visible,.square:focus-visible{outline:3px solid #fbc969;outline-offset:2px}
+.feedback{padding:13px;margin-top:14px;min-height:54px;border-radius:10px;background:#29374a;color:#dbe5ed}.feedback.good{background:#214638;color:#d4ffde}.feedback.bad{background:#54332f;color:#ffe1d8}
+.progress{width:160px;height:8px;background:#405065;border-radius:20px;overflow:hidden;margin-top:6px}.fill{height:100%;background:var(--gold);transition:width .2s}
+nav{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.info{font-size:.83rem;color:var(--muted)}details{margin-top:14px;border-top:1px solid #ffffff20;padding-top:11px;color:var(--muted)}summary{cursor:pointer;color:#f6d69e;font-weight:700}
+.footer{padding-top:32px;text-align:center;font-size:.83rem;color:#96a3b2}
+@media(max-width:880px){.layout{grid-template-columns:1fr}.panel{padding:15px}.board{max-width:540px;margin:auto}.square{font-size:clamp(1.5rem,6vw,2.7rem)}}@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important}}
+
+:root{--difficulty:#61d9ba}
+.fill{background:var(--difficulty)}.progress{height:12px;width:190px}
+.difficulty-key{font-size:.75rem;max-width:240px;margin-top:5px;color:#cbd5e1}
+dialog{background:#1b2634;color:#f4f0e6;border:1px solid #74849a;border-radius:18px;width:min(94vw,800px);max-height:92vh;padding:25px}
+dialog::backdrop{background:#080f1bd9}dialog input{display:block;width:100%;font:inherit;padding:12px;margin:8px 0 16px;border:2px solid #74849a;border-radius:8px}
+input:focus-visible{outline:3px solid #fbc969;outline-offset:2px}
+.certificate{background:#fffdf5;color:#172536;border:8px double #947025;padding:30px;text-align:center;margin:20px 0;overflow-wrap:anywhere}
+.certificate h2{font-family:Georgia,serif;font-size:2rem}.certificate .student{font:700 2rem Georgia,serif;margin:24px 0}
+.certificate time{display:block;font-size:.95rem;margin:12px 0}.seal{font-size:3rem;color:#806021}
+#confetti{position:fixed;inset:0;overflow:hidden;pointer-events:none;z-index:10}
+#confetti span{position:absolute;top:-25px;width:10px;height:18px;animation:fall 3.5s ease-in forwards}
+@keyframes fall{to{transform:translate(var(--drift),110vh) rotate(650deg)}}
+#storageNotice{padding:10px 18px;background:#54332f;color:#ffe1d8;margin:0}
+@media(prefers-reduced-motion:reduce){#confetti span{animation:none;top:var(--top);transform:rotate(25deg)}}
+@page{size:A4 landscape;margin:12mm}
+@media print{body{background:white!important}body>*:not(#completion){display:none!important}#completion{display:block!important;position:static;width:100%;max-width:none;max-height:none;margin:0;padding:0;border:0;background:white;color:#172536;overflow:visible}#completion>*:not(.certificate){display:none!important}.certificate{margin:0;padding:20mm 12mm;break-inside:avoid;box-shadow:none}.certificate h2{font-size:30pt}.certificate .student{font-size:28pt}}
+
+@media print{#completion::backdrop{background:transparent!important}.certificate{padding:12mm}.certificate .student{font-size:24pt}}
+
+@media screen{
+:root{font-family:"Trebuchet MS",system-ui,sans-serif;color:#19394b;background:#fff9ed;--gold:#ffc82b;--muted:#4e6574}
+body{background:#fff9ed}button,select,input{font:inherit}button,a,select{touch-action:manipulation}[hidden]{display:none!important}
+header{background:#fff;border-bottom:2px solid #19394b;padding:12px max(16px,calc((100vw - 1080px)/2));flex-wrap:nowrap}
+.brand{font-size:1.35rem;font-weight:1000;letter-spacing:-.04em;white-space:nowrap}.brand span{color:#1561ce}.brand .horse{display:inline-grid;place-items:center;background:#ffce35;border:2px solid #19394b;border-radius:10px;width:36px;height:36px;margin-right:7px;box-shadow:0 3px 0 #19394b;color:#19394b;font-size:1.7rem}.sub{font-size:.6rem;font-weight:800;color:#4e6574;letter-spacing:.04em;margin-top:7px}
+main{max-width:1080px;padding:18px 16px 36px}.journey{display:flex;gap:14px;align-items:center;margin-bottom:20px}.journey>.info{flex:1;font-size:.85rem;font-weight:800}.journey .progress{width:100%;height:13px;border:2px solid #19394b;background:#e8e7df;border-radius:6px}.difficulty-key{color:#4e6574;font-size:.72rem;max-width:none}.eyebrow{color:#185bbc;font-size:.7rem}h1{font-size:clamp(1.6rem,5vw,2.4rem);letter-spacing:-.04em;line-height:1.1}#description{font-size:.88rem;margin:8px 0 14px}.muted,.info{color:#4e6574}
+.route{display:flex;gap:9px;margin:15px 0}.route a{flex:1;display:flex;justify-content:center;align-items:center;gap:8px;text-decoration:none;color:#19394b;font-weight:900;padding:12px 6px;border:2px solid #19394b;border-radius:12px;background:#ffde59}.route a:last-child{background:#91dfad}.number{display:inline-grid;place-items:center;width:25px;height:25px;background:#19394b;color:#fff;border-radius:50%;font-size:.8rem}
+.layout{grid-template-columns:1fr 1fr;gap:22px;margin-top:0}.panel{min-width:0;background:#fff;border:2px solid #19394b;border-radius:18px;box-shadow:0 5px 0 #19394b;padding:18px;scroll-margin-top:16px}.program-panel{border-top:8px solid #ffc82b}.board-panel{border-top:8px solid #2678e7}.topline{flex-wrap:wrap;margin-bottom:10px;gap:8px}h2{font-size:1.08rem;margin:0}.tag{background:#ffde59;color:#19394b;border-radius:6px;font-size:.7rem;padding:5px 8px}#difficulty{font-size:.7rem;font-weight:800}#mission{font-size:.87rem;margin:10px 0 14px}
+.code{background:#f4f7fc;color:#19394b;border:1px solid #d8e1ec;border-radius:10px;padding:12px 9px;font:700 .9rem/1.65 ui-monospace,Consolas,monospace;min-height:0;overflow-wrap:anywhere}.code-line{display:block;padding:1px 4px;border-radius:4px}.line-move{color:#144eaa}.line-loop{background:#fff0ae;color:#704700}.line-if{background:#ffe4d9;color:#993312}.line-function{background:#d9f4e2;color:#18643a}#rules{font-size:.75rem;line-height:1.6}.jump{display:block;text-align:center;min-height:44px;padding:12px;color:#144eaa;font-size:.85rem;font-weight:900}
+.board{border:5px solid #2157bd;border-radius:10px;background:#2157bd;margin-top:14px}.light{background:#fff3c1}.dark{background:#6aafe4}.square{color:#102e48;font-size:clamp(1.6rem,4vw,2.8rem)}.square:hover{box-shadow:inset 0 0 0 3px #19394b}.square.picked{background:#ffcf28;box-shadow:inset 0 0 0 4px #19394b}.square.picked:before{content:"✓";position:absolute;top:0;right:3px;font-size:13px;font-weight:900}.piece{color:#102e48;text-shadow:0 1px 0 #fff;line-height:1}.square .coord{color:#19394b;font:800 10px system-ui;opacity:1;bottom:2px}.square.path:after{background:#19394b}.boardmeta{color:#4e6574;font-size:.75rem;font-weight:800;gap:8px;margin-top:10px}
+button.action,select{background:#fff;color:#19394b;border:2px solid #19394b;border-radius:11px;min-height:46px;padding:11px 14px;font-weight:900;max-width:100%}button.action{box-shadow:0 3px 0 #19394b}button.primary{background:#ffcf28}button.action:hover:not(:disabled),select:hover{filter:brightness(.97)}button.action:active:not(:disabled){transform:translateY(2px);box-shadow:0 1px 0 #19394b}button:focus-visible,a:focus-visible,select:focus-visible,summary:focus-visible{outline:3px solid #bd3c11;outline-offset:3px}.check-row{display:grid;grid-template-columns:1fr}.check-row button{font-size:1.05rem;min-height:54px}#next{background:#51ce80;width:100%}#sound{font-size:.75rem;white-space:nowrap;padding:8px 10px}#restart{background:#eaf2ff}#hint{background:#ffdf60}#step{background:#c9edfa}.tools{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}.tools button{font-size:.76rem;padding:10px 3px}
+.feedback{background:#edf3fb;color:#254562;border:1px solid #c6d5e6;font-size:.86rem;line-height:1.45;min-height:48px}.feedback.good{background:#d7f5df;color:#16552b;border-color:#338453}.feedback.bad{background:#ffebe2;color:#893511;border-color:#c35e36}.extras{border:2px solid #19394b;border-radius:14px;padding:0 16px;background:#fff;margin-top:24px}.extras summary{color:#19394b;font-weight:900;padding:15px 0;min-height:50px}.extras select{width:100%;margin:8px 0}.extras p{font-size:.87rem;color:#4e6574}.level-label{font-weight:900;font-size:.85rem;display:block;margin-top:8px}.footer{color:#4e6574;font-size:.72rem;line-height:1.6;padding-top:24px}dialog{background:#fff9ed;color:#19394b;border:2px solid #19394b;box-shadow:0 5px 0 #19394b}#diploma{background:#ffdc51}
+}
+@media screen and (max-width:740px){header{padding:10px 14px}.brand{font-size:1.15rem}.brand .horse{width:32px;height:32px;font-size:1.6rem}.sub{font-size:.55rem}main{padding:14px 12px 28px}.layout{grid-template-columns:1fr;gap:20px}.panel{padding:14px}.square{font-size:clamp(1.5rem,7vw,2.8rem)}.board{max-width:500px;margin-left:auto;margin-right:auto}.route{margin:12px 0}.route a{font-size:.85rem}.code{font-size:.85rem}.journey{margin-bottom:14px}dialog{padding:18px}dialog .controls button{width:100%}.certificate{padding:16px}.certificate h2{font-size:1.5rem}.certificate time{font-size:.8rem}}
+
+@media screen{
+.welcome{min-height:100vh;min-height:100svh;display:grid;place-items:center;padding:28px 18px;background:#fff9ed}
+.welcome-card{width:min(100%,460px);text-align:center;background:#fff;border:2px solid #19394b;border-radius:24px;box-shadow:0 7px 0 #19394b;padding:30px 24px}
+.welcome-kicker{font-size:.72rem;letter-spacing:.1em;font-weight:900;color:#185bbc;margin:0 0 22px}
+.welcome-mascot{width:112px;height:112px;margin:0 auto 24px;display:grid;place-items:center;background:#ffcf28;border:3px solid #19394b;border-radius:28px;box-shadow:6px 6px 0 #2678e7;color:#19394b;font-size:5rem;line-height:1;transform:rotate(-6deg)}
+.welcome h1{font-size:clamp(2.1rem,9vw,3rem);letter-spacing:-.05em;margin:0 0 10px}.welcome h1 span{color:#1561ce}.welcome-intro{font-size:1.05rem;color:#4e6574;margin:0 0 22px}
+.welcome-steps{display:flex;justify-content:center;gap:8px;margin:0 0 24px}.welcome-steps span{flex:1;border:2px solid #19394b;border-radius:10px;padding:10px 4px;font-size:.77rem;font-weight:900;background:#ffdf60}.welcome-steps span:nth-child(2){background:#91dfad}.welcome-steps span:nth-child(3){background:#b9e4fa}
+#continueGame{width:100%;min-height:58px;font-size:1.12rem;background:#ffcf28}.welcome-save{font-size:.8rem;line-height:1.5;margin:18px 0 0;color:#4e6574}.welcome-footer{font-size:.65rem;color:#4e6574;margin:24px 0 0;line-height:1.6}
+}
+
+/* Portrait layout throughout the app. Print keeps its separate A4 layout. */
+@media screen{
+ body{overflow-wrap:break-word}
+ header{width:100%;max-width:480px;margin-inline:auto;padding:10px 14px}
+ main{width:100%;max-width:480px;padding:14px 12px 28px}
+ .layout{grid-template-columns:minmax(0,1fr);gap:20px}
+ .panel{padding:14px}
+ .square{font-size:clamp(1.5rem,7vw,2.8rem)}
+ .code{font-size:.85rem}
+ .route{margin:12px 0}.route a{font-size:.85rem}
+ .journey{margin-bottom:14px}
+ .brand{font-size:1.15rem}.brand .horse{width:32px;height:32px;font-size:1.6rem}.sub{font-size:.55rem}
+ #completion{width:calc(100% - 24px);max-width:456px;max-height:calc(100dvh - 24px);padding:18px;overflow-y:auto;overscroll-behavior:contain}
+ #completion .controls{display:grid;grid-template-columns:minmax(0,1fr)}
+ #completion .controls button{width:100%}
+ .certificate{padding:16px}.certificate h2{font-size:1.5rem}.certificate .student{font-size:1.6rem}.certificate time{font-size:.8rem}
+ .welcome{padding:24px 16px}.welcome-card{max-width:448px}
+ #storageNotice{max-width:480px;margin-inline:auto}
+}
+</style>
+</head>
+<body>
+<section class="welcome" id="welcome" aria-labelledby="welcomeTitle">
+<div class="welcome-card">
+<p class="welcome-kicker">MOBILE · CODE WEEK 2026</p><div class="welcome-mascot" aria-hidden="true">♞</div>
+<h1 id="welcomeTitle">CHESS<span>CODE</span></h1>
+<p class="welcome-intro">A little chess. A lot of clever thinking.</p>
+<div class="welcome-steps" aria-label="How to play"><span>1. Read</span><span>2. Tap</span><span>3. Solve!</span></div>
+<button class="action primary" id="continueGame" autofocus>Continue →</button>
+<p class="welcome-save" id="welcomeProgress">30 challenges to explore.<br>Your progress is saved in this browser.</p>
+<p class="welcome-footer">IES G. TORRENTE BALLESTER<br>Read the code. Find the final square.</p>
+</div></section>
+<div id="game" hidden inert>
+<header><div><div class="brand"><span class="horse" aria-hidden="true">♞</span>CHESS<span>CODE</span></div><div class="sub">MOBILE · CODE WEEK 2026</div></div><button class="action" id="sound" title="Toggle sound" aria-pressed="true">♪ Sound: on</button></header>
+<p id="storageNotice" role="status" hidden></p><div id="confetti" aria-hidden="true"></div>
+<main>
+<div class="journey"><div class="info"><b id="done">0</b> / 30 solved<div class="progress" id="progressMeter" role="progressbar" aria-label="Completed challenges" aria-valuemin="0" aria-valuemax="30" aria-valuenow="0"><div class="fill" id="bar"></div></div><div class="difficulty-key" id="difficultyKey"></div></div><button class="action" id="diploma" hidden>My diploma</button></div>
+<div class="eyebrow" id="chapter"></div><h1 id="title"></h1><p class="muted" id="description"></p>
+<nav class="route" aria-label="Challenge steps"><a href="#programPanel"><span class="number">1</span> Read the code</a><a href="#boardPanel"><span class="number">2</span> Pick a square</a></nav>
+<div class="layout">
+<section class="panel program-panel" id="programPanel" aria-label="Program to read">
+<div class="topline"><span class="tag" id="badge"></span><span class="info" id="difficulty"></span></div>
+<h2>1. Where will it finish?</h2><p id="mission"></p>
+<div class="code" id="code" role="region" aria-label="Code to interpret"></div>
+<p class="info" id="rules">N ↑ · S ↓ · E → · W ← · NE ↗ · NW ↖ · SE ↘ · SW ↙<br>One square per command. Normal chess moves do not apply.</p>
+<a class="jump" href="#boardPanel">Ready? Pick your square ↓</a>
+</section>
+<section class="panel board-panel" id="boardPanel" aria-label="Challenge board">
+<div class="topline"><h2>2. Tap the final square</h2><a href="#programPanel" class="info" style="font-size:.75rem;font-weight:900;padding:10px 0">Read code ↑</a></div>
+<div class="board" id="board" role="group" aria-label="Eight-by-eight board, white side at the bottom"></div>
+<div class="boardmeta"><span id="selectionLabel">Your pick: —</span><span id="pos"></span></div>
+<div class="controls check-row"><button class="action primary" id="check" disabled>Check answer ✓</button></div>
+<div class="feedback" id="feedback" aria-live="polite"></div>
+<div class="controls" id="advance"><button class="action primary" id="next" hidden>Next level →</button></div>
+<div class="controls tools"><button class="action" id="hint">? Hint</button><button class="action" id="step">▶ Trace</button><button class="action" id="restart">↺ Retry</button></div>
+</section>
+</div>
+<details class="extras"><summary>Levels &amp; how to play</summary>
+<label class="level-label" for="levels">Choose any level</label><select id="levels" aria-label="Choose a level"></select><button class="action" id="prev">← Previous level</button>
+<p>Read the program, then tap the square where the piece will finish. Tap <b>Check answer</b>. Use <b>Hint</b> for a clue or <b>Trace</b> to see one move at a time. Try as many times as you like.</p>
+<p><b>repeat:</b> run the whole block several times. <b>lightSquare():</b> test the current square; a1 is dark (blue). <b>onEdge():</b> rank 1 or 8, or file a or h. <b>evenFile():</b> b, d, f or h. <b>function:</b> reuse instructions. Moves are limited to the board.</p>
+<p><b>Difficulty colours:</b> green = Beginner (1–6), amber = Intermediate (7–18), red = Advanced (19–30). The bar shows how many levels you have solved; its colour shows the current level’s difficulty.</p>
+<p>Your progress and diploma stay in this browser. Complete all 30 levels to earn your diploma.</p></details>
+<div class="footer">IES G. TORRENTE BALLESTER · CODE WEEK 2026<br>30 challenges. One clever mind. Yours.</div>
+</main>
+</div>
+<dialog id="completion" aria-labelledby="completionTitle">
+<h2 id="completionTitle">All 30 challenges completed!</h2>
+<p>Your algorithms earned a celebration. Add your name to your diploma; it stays in this browser.</p>
+<form id="diplomaForm"><label for="studentName">Student name</label><input id="studentName" name="studentName" autocomplete="name" maxlength="100" required><button class="action primary" type="submit">Generate diploma</button></form>
+<section class="certificate" id="certificate" aria-label="Certificate of completion" hidden>
+<div class="eyebrow" style="color:#806021">CODE WEEK 2026 · CHESSCODE</div><div class="seal">♔</div>
+<h2>Certificate of Completion</h2><p>This diploma is awarded to</p><div class="student" id="certificateName"></div>
+<p>for completing all <strong>30 CHESSCODE challenges</strong><br>in sequences, loops, conditions and functions.</p>
+<time id="certificateTime"></time><p class="info" style="color:#46556a">IES G. TORRENTE BALLESTER · Computational thinking through play</p>
+</section>
+<div class="controls"><button class="action primary" id="printDiploma" disabled>Print / Save as PDF</button><button class="action" id="closeDiploma">Back to challenges</button></div>
+</dialog>
+<script>
+"use strict";
+// Educational block language: M=move, R=repeat, I=conditional, F=function call.
+const M=(d,n=1)=>({t:"M",d,n}),R=(n,body)=>({t:"R",n,body}),I=(test,yes,no=[])=>({t:"I",test,yes,no}),F=name=>({t:"F",name});
+const L=[
+["The First Move", "Sequences", "♔", "d4", [M("E"),M("N"),M("E")]],
+["Heading for the Centre","Sequences","♖","a1",[M("N",3),M("E",3)]],
+["Diagonal Strategy","Sequences","♗","b2",[M("NE",2),M("S"),M("E")]],
+["The Queen’s Route","Sequences","♕","h7",[M("O",2),M("S",3),M("NO")]],
+["A Coding Knight","Sequences","♘","c6",[M("S",2),M("E",3),M("N")]],
+["Stay on the Board","Sequences","♙","g7",[M("E",3),M("N",4),M("O",2),M("S")]],
+["Three Repeated Commands","Loops","♖","b2",[R(3,[M("N"),M("E")])]],
+["On Patrol","Loops","♔","e4",[R(2,[M("N"),M("E"),M("S")])]],
+["Two Rounds","Loops","♘","f3",[R(2,[M("O"),M("NO"),M("S")])]],
+["Move, Turn, Move","Loops","♗","a5",[R(3,[M("E"),M("SE")])]],
+["Loop and Return","Loops","♕","d2",[R(3,[M("N"),M("E"),M("S")]),M("N")]],
+["Loop Along the Way","Loops","♙","h1",[M("N",2),R(4,[M("O"),M("N")]),M("S",2)]],
+["Light and Dark Squares","Conditions","♔","c3",[I("clara",[M("N")],[M("E")]),M("NE")]],
+["Choose by Colour","Conditions","♖","d4",[M("N"),I("clara",[M("E",2)],[M("O",2)]),M("S")]],
+["The Edge of the Board","Conditions","♗","a4",[I("borde",[M("E",3)],[M("O",3)]),M("N")]],
+["Even-Numbered File","Conditions","♕","f5",[I("par",[M("SO")],[M("NE")]),M("S",2)]],
+["Two Decisions","Conditions","♘","c2",[I("clara",[M("E")],[M("N")]),I("par",[M("N",2)],[M("E",2)])]],
+["Every Decision Matters","Conditions","♙","h8",[M("O",2),I("borde",[M("S",3)],[M("SO",2)]),I("clara",[M("O")],[M("S")])]],
+["Repeat and Check","Smart Loops","♔","b2",[R(3,[I("clara",[M("N")],[M("E")])])]],
+["Conditional Patrol","Smart Loops","♖","c6",[R(4,[I("borde",[M("S")],[M("E")])])]],
+["A Board of Decisions","Smart Loops","♗","f2",[R(4,[M("N"),I("clara",[M("O")],[M("E")])])]],
+["Nested Loops","Smart Loops","♕","a1",[R(2,[R(2,[M("N"),M("E")]),M("S")])]],
+["The Spiral","Smart Loops","♘","e5",[R(2,[R(2,[M("O"),M("S")]),M("NE")])]],
+["The Master’s Test","Smart Loops","♙","g3",[R(3,[I("par",[M("N")],[M("O")]),I("clara",[M("SO")],[M("SE")])])]],
+["Your First Function","Functions","♔","a1",[F("stepUp"),F("stepUp"),M("N")],{"stepUp":[M("N"),M("E")]}],
+["A Reusable Pattern","Functions","♖","e2",[R(3,[F("jump")])],{"jump":[M("N"),M("O")]}],
+["Functions and Colours","Functions","♗","d6",[F("advance"),I("clara",[F("advance")],[M("SO")]),F("advance")],{"advance":[M("S"),M("E")]}],
+["Complex Strategy","Functions","♕","b1",[R(2,[F("zigzag"),M("N")])],{"zigzag":[M("E"),M("N"),M("O")]}],
+["The Logic Maze","Functions","♘","h6",[R(3,[I("clara",[F("left")],[F("down")]),M("O")])],{"left":[M("O"),M("S")],"down":[M("S"),M("O")]}],
+["Grand Finale: Checkmate the Code","Functions","♔","d4",[F("opening"),R(3,[I("clara",[F("attack")],[F("defence")])]),F("finish")],{"opening":[M("N"),M("E")],"attack":[M("E"),M("S")],"defence":[M("O"),M("N")],"finish":[M("SO"),M("S")]}]
+];
+const vector={N:[0,1],S:[0,-1],E:[1,0],O:[-1,0],NE:[1,1],NO:[-1,1],SE:[1,-1],SO:[-1,-1]};
+const files="abcdefgh";const toXY=s=>[files.indexOf(s[0]),Number(s[1])-1];const toSq=([x,y])=>files[x]+(y+1);
+const color=([x,y])=>(x+y)%2===1?"clara":"oscura"; // a1 oscura.
+function predicate(t,p){let [x,y]=p;return t==="clara"?color(p)==="clara":t==="borde"?(x===0||x===7||y===0||y===7):t==="par"?((x+1)%2===0):false}
+function run(level){
+ const p=toXY(level[3]),visited=[toSq(p)],history=[],funcs=level[5]||{},limit=1000;
+ function exec(block,depth=0){
+   if(depth>12)throw Error("Function nesting is too deep");
+   for(const node of block){
+     if(history.length>limit)throw Error("Program is too long");
+     if(node.t==="M"){for(let k=0;k<node.n;k++){const [dx,dy]=vector[node.d];p[0]=Math.max(0,Math.min(7,p[0]+dx));p[1]=Math.max(0,Math.min(7,p[1]+dy));const s=toSq(p);visited.push(s);history.push({s,description:`${({O:"W",NO:"NW",SO:"SW"})[node.d]||node.d} → ${s}`})}}
+     if(node.t==="R")for(let j=0;j<node.n;j++)exec(node.body,depth+1);
+     if(node.t==="I")exec(predicate(node.test,p)?node.yes:node.no,depth+1);
+     if(node.t==="F"){if(!funcs[node.name])throw Error("Unknown function");exec(funcs[node.name],depth+1)}
+   }
+ }
+ exec(level[4]);return {finish:toSq(p),visited,history};
+}
+function displayBlock(block,indent=0){
+ const sp="  ".repeat(indent),lines=[];
+ for(const n of block){
+  if(n.t==="M")lines.push(sp+`move("${({O:"W",NO:"NW",SO:"SW"})[n.d]||n.d}"${n.n>1?", "+n.n:""});`);
+  if(n.t==="F")lines.push(sp+`${n.name}();`);
+  if(n.t==="R"){lines.push(sp+`repeat (${n.n}) {`);lines.push(...displayBlock(n.body,indent+1));lines.push(sp+"}")}
+  if(n.t==="I"){const tests={clara:"lightSquare()",borde:"onEdge()",par:"evenFile()"};lines.push(sp+`if (${tests[n.test]}) {`);lines.push(...displayBlock(n.yes,indent+1));if(n.no.length){lines.push(sp+"} else {");lines.push(...displayBlock(n.no,indent+1))}lines.push(sp+"}")}
+ }
+ return lines;
+}
+const $=id=>document.getElementById(id),key="chesscode_2026_en_v1";
+let progress;try{progress=JSON.parse(localStorage.getItem(key)||"[]")}catch{progress=[]}
+if(!Array.isArray(progress))progress=[];
+progress=[...new Set(progress.filter(n=>Number.isInteger(n)&&n>=0&&n<L.length))];
+const awardKey=key+"_award_v2";
+let award={};try{const data=JSON.parse(localStorage.getItem(awardKey)||"{}");if(data&&typeof data==="object"&&!Array.isArray(data))award=data}catch{}
+if(typeof award.name!=="string")award.name="";
+award.name=award.name.slice(0,100);
+if(!award.completedAt||!Number.isFinite(Date.parse(award.completedAt))){delete award.completedAt;delete award.localTime}
+if(typeof award.localTime!=="string")delete award.localTime;
+if(progress.length!==30)award={};
+let levelIndex=0,selected=null,step=0,revealed=false,muted=false;
+const solutions=L.map(run);
+const safeText=s=>String(s).replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;");
+function storageWarning(){const n=$("storageNotice");n.hidden=false;n.textContent="Browser storage is unavailable or full. Keep this page open and print your diploma before leaving; changes may not be saved."}
+function save(){try{localStorage.setItem(key,JSON.stringify(progress))}catch{storageWarning()}}
+function saveAward(){try{localStorage.setItem(awardKey,JSON.stringify(award))}catch{storageWarning()}}
+function updateProgress(){
+ const advanced=levelIndex>=18,intermediate=levelIndex>=6;
+ const label=advanced?"Advanced · levels 19–30":intermediate?"Intermediate · levels 7–18":"Beginner · levels 1–6";
+ document.documentElement.style.setProperty("--difficulty",advanced?"#d94836":intermediate?"#b67b08":"#14824b");
+ $("difficulty").textContent=advanced?"●●● Advanced":intermediate?"●● Intermediate":"● Beginner";
+ $("difficultyKey").textContent="Current difficulty: "+label;
+ $("done").textContent=progress.length;$("bar").style.width=100*progress.length/30+"%";
+ $("progressMeter").setAttribute("aria-valuenow",progress.length);
+ $("progressMeter").setAttribute("aria-valuetext",`${progress.length} of 30 completed. Current difficulty: ${label}`);
+ $("diploma").hidden=progress.length!==30;
+}
+function feedback(text,type=""){$("feedback").className="feedback "+type;$("feedback").textContent=text}
+function board(){
+ const current=L[levelIndex],initial=current[3],trace=solutions[levelIndex],steps=trace.visited;
+ const position=step?steps[Math.min(step,steps.length-1)]:initial;
+ $("board").innerHTML="";
+ for(let y=7;y>=0;y--)for(let x=0;x<8;x++){
+ const sq=toSq([x,y]),b=document.createElement("button");
+ b.className=`square ${color([x,y])==="clara"?"light":"dark"}`;
+ if(selected===sq)b.classList.add("picked");
+ if(revealed&&trace.visited.includes(sq))b.classList.add("path");
+ b.type="button";b.setAttribute("aria-label",`Square ${sq}`);b.setAttribute("aria-pressed",String(selected===sq));
+ if(sq===position){const symbol=document.createElement("span");symbol.className="piece";symbol.textContent=current[2];b.append(symbol)}
+ {const label=document.createElement("span");label.className="coord";label.textContent=sq;b.append(label)}
+ b.onclick=()=>{selected=sq;board();feedback(`Your pick: ${sq}. Ready? Check your answer.`);$("board").querySelector(`[aria-label="Square ${sq}"]`).focus({preventScroll:true})};
+ $("board").append(b)
+ }
+ $("pos").textContent=step?`Running: ${position} · step ${step}/${steps.length-1}`:`Start: ${initial}`;
+ $("step").disabled=step>=steps.length-1;
+ $("selectionLabel").textContent=selected?"Your pick: "+selected:"Your pick: —";$("check").disabled=!selected;
+}
+function render(){
+ const l=L[levelIndex],name=l[1],opts=$("levels");
+ opts.innerHTML=L.map((lv,i)=>`<option value="${i}">${progress.includes(i)?"✓ ":""}${String(i+1).padStart(2,"0")} · ${lv[0]}</option>`).join("");
+ opts.value=levelIndex;
+ $("done").textContent=progress.length;$("bar").style.width=100*progress.length/30+"%";
+ const chapterNum=1+Math.floor(levelIndex/6);
+ $("chapter").textContent=`Chapter ${chapterNum} · ${name}`;
+ $("title").textContent=l[0];$("description").textContent=`Level ${levelIndex+1} of 30 · Trace the code from ${l[3]} to its final square.`;
+ $("badge").textContent=`LEVEL ${String(levelIndex+1).padStart(2,"0")} / 30`;
+ updateProgress();
+ $("mission").textContent=`The ${({"♔":"king","♕":"queen","♖":"rook","♗":"bishop","♘":"knight","♙":"pawn"})[l[2]]||"piece"} starts on ${l[3]}. Read the commands and select the final square.`;
+ let lines=[];
+ const funcs=l[5]||{};
+ for(const [name,body] of Object.entries(funcs)){lines.push(`function ${name}() {`,...displayBlock(body,1),"}","")}
+ lines.push("start {",...displayBlock(l[4],1),"}");
+ $("code").innerHTML=lines.map(line=>{const kind=/^\s*move/.test(line)?"move":/^\s*repeat/.test(line)?"loop":/^\s*(if|} else)/.test(line)?"if":/^\s*(function|[a-zA-Z]+\(\);)/.test(line)?"function":"plain";return `<span class="code-line line-${kind}">${safeText(line)||" "}</span>`}).join("");
+ selected=null;step=0;revealed=false;feedback("Read the code, then tap your answer on the board.");board();
+ $("prev").disabled=levelIndex===0;$("next").disabled=levelIndex===29;$("next").hidden=!progress.includes(levelIndex)||levelIndex===29;$("advance").hidden=$("next").hidden;
+}
+function go(i){if(i<0||i>=30)return;levelIndex=i;render();$("programPanel").scrollIntoView({block:"start",behavior:"instant"})}
+$("levels").onchange=e=>go(Number(e.target.value));
+$("prev").onclick=()=>go(levelIndex-1);$("next").onclick=()=>go(levelIndex+1);
+$("restart").onclick=()=>{selected=null;step=0;revealed=false;board();feedback("Restarted. Try again.")};
+$("hint").onclick=()=>{const t=solutions[levelIndex].history;feedback(t.length?`Hint: the first move ends on ${t[0].s}. Remember: if a move goes off the board, the piece stays put.`:"Look at the starting square.")};
+$("step").onclick=()=>{const t=solutions[levelIndex];if(step<t.visited.length-1)step++;revealed=false;board();feedback(`Step ${step}: ${t.history[step-1].description}. Continue, or try to predict the final square.`)};
+$("check").onclick=()=>{
+ if(!selected){feedback("Choose a square first.","bad");return}
+ const right=solutions[levelIndex].finish;
+ if(selected===right){
+   const acceptedAt=new Date();
+   const newlyCompleted=!progress.includes(levelIndex);
+   if(newlyCompleted){progress.push(levelIndex);save()}
+   const finishedAll=newlyCompleted&&progress.length===30;
+   if(finishedAll){award={completedAt:acceptedAt.toISOString(),localTime:localTimestamp(acceptedAt),name:""};saveAward()}
+   revealed=true;step=0;board();$("done").textContent=progress.length;$("bar").style.width=100*progress.length/30+"%";
+   updateProgress();
+   feedback(progress.length===30?"Code Grandmaster! You have completed all 30 challenges.":`Correct! The piece finishes on ${right}. Completed: ${progress.length}/30.`, "good");
+   // refresh dropdown without changing active challenge
+   $("levels").options[levelIndex].text="✓ "+String(levelIndex+1).padStart(2,"0")+" · "+L[levelIndex][0];
+   $("next").hidden=levelIndex===29;$("advance").hidden=levelIndex===29;$("check").disabled=true;
+   playSound("success");
+   if(finishedAll){celebrate();openDiploma()}
+ }else {feedback(`Not quite! You chose ${selected}. Check the loops and conditions, then try again.`,"bad");playSound("error")}
+};
+$("sound").onclick=()=>{muted=!muted;$("sound").textContent="♪ Sound: "+(muted?"off":"on");$("sound").setAttribute("aria-pressed",String(!muted))};
+let audioContext;
+async function playSound(kind){
+ if(muted)return;
+ try{
+  const Audio=window.AudioContext||window.webkitAudioContext;if(!Audio)return;
+  if(!audioContext||audioContext.state==="closed")audioContext=new Audio();
+  if(audioContext.state==="suspended")await audioContext.resume();
+  if(muted)return;
+  const t=audioContext.currentTime;
+  const notes=kind==="error"?[[220,0,.14],[165,.15,.22]]:[[523.25,0,.14],[659.25,.12,.14],[783.99,.24,.14],[1046.5,.38,.4],[659.25,.38,.4],[783.99,.38,.4]];
+  for(const [freq,delay,duration] of notes){const o=audioContext.createOscillator(),g=audioContext.createGain();o.type=kind==="error"?"triangle":"sine";o.frequency.value=freq;g.gain.setValueAtTime(0,t+delay);g.gain.linearRampToValueAtTime(.035,t+delay+.015);g.gain.exponentialRampToValueAtTime(.001,t+delay+duration);o.connect(g);g.connect(audioContext.destination);o.start(t+delay);o.stop(t+delay+duration+.02);o.onended=()=>{o.disconnect();g.disconnect()}}
+ }catch{/* Audio support must never block a challenge. */}
+}
+function localTimestamp(date){
+ const pad=(n,len=2)=>String(n).padStart(len,"0"),offset=-date.getTimezoneOffset(),sign=offset>=0?"+":"−";
+ let zone="local time";try{zone=Intl.DateTimeFormat().resolvedOptions().timeZone||zone}catch{}
+ return `${date.getFullYear()}-${pad(date.getMonth()+1)}-${pad(date.getDate())} ${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}.${pad(date.getMilliseconds(),3)} · ${zone} (UTC${sign}${pad(Math.floor(Math.abs(offset)/60))}:${pad(Math.abs(offset)%60)})`;
+}
+let confettiTimer;
+function celebrate(){
+ const container=$("confetti");container.replaceChildren();clearTimeout(confettiTimer);
+ const reduced=window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+ for(let i=0;i<(reduced?35:110);i++){const p=document.createElement("span");p.style.left=Math.random()*100+"%";p.style.background=["#f2c46d","#61d9ba","#ff8585","#a7bfff"][i%4];p.style.setProperty("--drift",(Math.random()*160-80)+"px");p.style.setProperty("--top",Math.random()*100+"vh");p.style.animationDelay=Math.random()*.6+"s";container.append(p)}
+ confettiTimer=setTimeout(()=>container.replaceChildren(),4300);
+}
+function openDiploma(){if(progress.length!==30)return;$("studentName").value=award.name;$("certificate").hidden=!award.name;$("printDiploma").disabled=!award.name;if(award.name)fillCertificate();if(!$("completion").open)$("completion").showModal();$("studentName").focus()}
+function fillCertificate(){
+ $("certificateName").textContent=award.name;
+ $("certificateTime").textContent=award.completedAt?"Completed (device local time): "+(award.localTime||localTimestamp(new Date(award.completedAt))):"Completion date and time were not recorded by the previous version.";
+ if(award.completedAt)$("certificateTime").dateTime=award.completedAt;else $("certificateTime").removeAttribute("datetime");
+}
+$("diplomaForm").onsubmit=e=>{e.preventDefault();const input=$("studentName"),name=input.value.trim();input.setCustomValidity(name?"":"Please enter your name.");if(!input.reportValidity())return;award.name=name;saveAward();fillCertificate();$("certificate").hidden=false;$("printDiploma").disabled=false};
+$("studentName").oninput=()=>{$("studentName").setCustomValidity("");$("printDiploma").disabled=true};
+$("printDiploma").onclick=()=>{if(progress.length===30&&award.name&&!$("printDiploma").disabled)window.print()};
+$("closeDiploma").onclick=()=>$("completion").close();
+$("diploma").onclick=openDiploma;
+$("completion").addEventListener("close",()=>$("diploma").focus());
+document.addEventListener("keydown",e=>{if(!$("welcome").hidden||$("completion").open||["SELECT","INPUT","TEXTAREA","BUTTON"].includes(e.target.tagName))return;if(e.key==="Enter"&&selected)$("check").click();if(e.key==="ArrowRight"&&e.altKey)go(levelIndex+1);if(e.key==="ArrowLeft"&&e.altKey)go(levelIndex-1)});
+if(progress.length>0){const firstUnsolved=L.findIndex((_,i)=>!progress.includes(i));levelIndex=firstUnsolved<0?0:firstUnsolved;$("welcomeProgress").textContent=`${progress.length} / 30 challenges solved. Your progress is saved — keep going!`}
+render();
+$("continueGame").onclick=()=>{
+ $("welcome").hidden=true;$("game").hidden=false;$("game").inert=false;
+ window.scrollTo(0,0);$("title").setAttribute("tabindex","-1");$("title").focus({preventScroll:true});
+ if(progress.length===30&&!award.name)openDiploma();
+};
+</script>
+</body></html>
+
