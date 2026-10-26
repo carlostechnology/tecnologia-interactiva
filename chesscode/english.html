@@ -30,12 +30,32 @@ button.action:hover:not(:disabled),select:hover{filter:brightness(1.13)}button:f
 nav{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.info{font-size:.83rem;color:var(--muted)}details{margin-top:14px;border-top:1px solid #ffffff20;padding-top:11px;color:var(--muted)}summary{cursor:pointer;color:#f6d69e;font-weight:700}
 .footer{padding-top:32px;text-align:center;font-size:.83rem;color:#96a3b2}
 @media(max-width:880px){.layout{grid-template-columns:1fr}.panel{padding:15px}.board{max-width:540px;margin:auto}.square{font-size:clamp(1.5rem,6vw,2.7rem)}}@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important}}
+
+:root{--difficulty:#61d9ba}
+.fill{background:var(--difficulty)}.progress{height:12px;width:190px}
+.difficulty-key{font-size:.75rem;max-width:240px;margin-top:5px;color:#cbd5e1}
+dialog{background:#1b2634;color:#f4f0e6;border:1px solid #74849a;border-radius:18px;width:min(94vw,800px);max-height:92vh;padding:25px}
+dialog::backdrop{background:#080f1bd9}dialog input{display:block;width:100%;font:inherit;padding:12px;margin:8px 0 16px;border:2px solid #74849a;border-radius:8px}
+input:focus-visible{outline:3px solid #fbc969;outline-offset:2px}
+.certificate{background:#fffdf5;color:#172536;border:8px double #947025;padding:30px;text-align:center;margin:20px 0;overflow-wrap:anywhere}
+.certificate h2{font-family:Georgia,serif;font-size:2rem}.certificate .student{font:700 2rem Georgia,serif;margin:24px 0}
+.certificate time{display:block;font-size:.95rem;margin:12px 0}.seal{font-size:3rem;color:#806021}
+#confetti{position:fixed;inset:0;overflow:hidden;pointer-events:none;z-index:10}
+#confetti span{position:absolute;top:-25px;width:10px;height:18px;animation:fall 3.5s ease-in forwards}
+@keyframes fall{to{transform:translate(var(--drift),110vh) rotate(650deg)}}
+#storageNotice{padding:10px 18px;background:#54332f;color:#ffe1d8;margin:0}
+@media(prefers-reduced-motion:reduce){#confetti span{animation:none;top:var(--top);transform:rotate(25deg)}}
+@page{size:A4 landscape;margin:12mm}
+@media print{body{background:white!important}body>*:not(#completion){display:none!important}#completion{display:block!important;position:static;width:100%;max-width:none;max-height:none;margin:0;padding:0;border:0;background:white;color:#172536;overflow:visible}#completion>*:not(.certificate){display:none!important}.certificate{margin:0;padding:20mm 12mm;break-inside:avoid;box-shadow:none}.certificate h2{font-size:30pt}.certificate .student{font-size:28pt}}
+
+@media print{#completion::backdrop{background:transparent!important}.certificate{padding:12mm}.certificate .student{font-size:24pt}}
 </style>
 </head>
 <body>
 <header><div><div class="brand">♞ CHESS<span>CODE</span></div><div class="sub">CODE WEEK 2026 · IES G. TORRENTE BALLESTER</div></div>
-<nav><div class="info"><b id="done">0</b> / 30 completed<div class="progress"><div class="fill" id="bar"></div></div></div><select id="levels" aria-label="Choose a level"></select><button class="action" id="sound" title="Toggle sound">♪ Sound: on</button></nav>
+<nav><div class="info"><b id="done">0</b> / 30 completed<div class="progress" id="progressMeter" role="progressbar" aria-label="Completed challenges" aria-valuemin="0" aria-valuemax="30" aria-valuenow="0"><div class="fill" id="bar"></div></div><div class="difficulty-key" id="difficultyKey"></div></div><select id="levels" aria-label="Choose a level"></select><button class="action" id="sound" title="Toggle sound" aria-pressed="true">♪ Sound: on</button><button class="action" id="diploma" hidden>View diploma</button></nav>
 </header>
+<p id="storageNotice" role="status" hidden></p><div id="confetti" aria-hidden="true"></div>
 <main>
 <div class="eyebrow" id="chapter">Chapter 1 · Sequences</div>
 <h1 id="title">Read the algorithm. Find the square.</h1>
@@ -66,6 +86,18 @@ nav{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.info{font-size:.83re
 </div>
 <div class="footer">CHESSCODE · Learn computational thinking through play · Code Week, 26–30 October 2026 · No accounts, servers or internet connection required.</div>
 </main>
+<dialog id="completion" aria-labelledby="completionTitle">
+<h2 id="completionTitle">All 30 challenges completed!</h2>
+<p>Your algorithms earned a celebration. Add your name to your diploma; it stays in this browser.</p>
+<form id="diplomaForm"><label for="studentName">Student name</label><input id="studentName" name="studentName" autocomplete="name" maxlength="100" required><button class="action primary" type="submit">Generate diploma</button></form>
+<section class="certificate" id="certificate" aria-label="Certificate of completion" hidden>
+<div class="eyebrow" style="color:#806021">CODE WEEK 2026 · CHESSCODE</div><div class="seal">♔</div>
+<h2>Certificate of Completion</h2><p>This diploma is awarded to</p><div class="student" id="certificateName"></div>
+<p>for completing all <strong>30 CHESSCODE challenges</strong><br>in sequences, loops, conditions and functions.</p>
+<time id="certificateTime"></time><p class="info" style="color:#46556a">IES G. TORRENTE BALLESTER · Computational thinking through play</p>
+</section>
+<div class="controls"><button class="action primary" id="printDiploma" disabled>Print / Save as PDF</button><button class="action" id="closeDiploma">Back to challenges</button></div>
+</dialog>
 <script>
 "use strict";
 // Educational block language: M=move, R=repeat, I=conditional, F=function call.
@@ -133,10 +165,31 @@ function displayBlock(block,indent=0){
 const $=id=>document.getElementById(id),key="chesscode_2026_en_v1";
 let progress;try{progress=JSON.parse(localStorage.getItem(key)||"[]")}catch{progress=[]}
 if(!Array.isArray(progress))progress=[];
+progress=[...new Set(progress.filter(n=>Number.isInteger(n)&&n>=0&&n<L.length))];
+const awardKey=key+"_award_v2";
+let award={};try{const data=JSON.parse(localStorage.getItem(awardKey)||"{}");if(data&&typeof data==="object"&&!Array.isArray(data))award=data}catch{}
+if(typeof award.name!=="string")award.name="";
+award.name=award.name.slice(0,100);
+if(!award.completedAt||!Number.isFinite(Date.parse(award.completedAt))){delete award.completedAt;delete award.localTime}
+if(typeof award.localTime!=="string")delete award.localTime;
+if(progress.length!==30)award={};
 let levelIndex=0,selected=null,step=0,revealed=false,muted=false;
 const solutions=L.map(run);
 const safeText=s=>String(s).replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;");
-function save(){try{localStorage.setItem(key,JSON.stringify(progress))}catch{}}
+function storageWarning(){const n=$("storageNotice");n.hidden=false;n.textContent="Browser storage is unavailable or full. Keep this page open and print your diploma before leaving; changes may not be saved."}
+function save(){try{localStorage.setItem(key,JSON.stringify(progress))}catch{storageWarning()}}
+function saveAward(){try{localStorage.setItem(awardKey,JSON.stringify(award))}catch{storageWarning()}}
+function updateProgress(){
+ const advanced=levelIndex>=18,intermediate=levelIndex>=6;
+ const label=advanced?"Advanced · levels 19–30":intermediate?"Intermediate · levels 7–18":"Beginner · levels 1–6";
+ document.documentElement.style.setProperty("--difficulty",advanced?"#ff8585":intermediate?"#f2c46d":"#61d9ba");
+ $("difficulty").textContent=(advanced?"●●● ":intermediate?"●● ":"● ")+label;
+ $("difficultyKey").textContent="Current difficulty: "+label;
+ $("done").textContent=progress.length;$("bar").style.width=100*progress.length/30+"%";
+ $("progressMeter").setAttribute("aria-valuenow",progress.length);
+ $("progressMeter").setAttribute("aria-valuetext",`${progress.length} of 30 completed. Current difficulty: ${label}`);
+ $("diploma").hidden=progress.length!==30;
+}
 function feedback(text,type=""){$("feedback").className="feedback "+type;$("feedback").textContent=text}
 function board(){
  const current=L[levelIndex],initial=current[3],trace=solutions[levelIndex],steps=trace.visited;
@@ -165,7 +218,7 @@ function render(){
  $("chapter").textContent=`Chapter ${chapterNum} · ${name}`;
  $("title").textContent=l[0];$("description").textContent=`Level ${levelIndex+1} of 30 · Trace the code from ${l[3]} to its final square.`;
  $("badge").textContent=`LEVEL ${String(levelIndex+1).padStart(2,"0")} / 30`;
- $("difficulty").textContent=levelIndex<6?"● Beginner":levelIndex<18?"●● Intermediate":"●●● Advanced";
+ updateProgress();
  $("mission").textContent=`The ${({"♔":"king","♕":"queen","♖":"rook","♗":"bishop","♘":"knight","♙":"pawn"})[l[2]]||"piece"} starts on ${l[3]}. Read the commands and select the final square.`;
  let lines=[];
  const funcs=l[5]||{};
@@ -185,17 +238,61 @@ $("check").onclick=()=>{
  if(!selected){feedback("Choose a square first.","bad");return}
  const right=solutions[levelIndex].finish;
  if(selected===right){
-   if(!progress.includes(levelIndex)){progress.push(levelIndex);save()}
+   const acceptedAt=new Date();
+   const newlyCompleted=!progress.includes(levelIndex);
+   if(newlyCompleted){progress.push(levelIndex);save()}
+   const finishedAll=newlyCompleted&&progress.length===30;
+   if(finishedAll){award={completedAt:acceptedAt.toISOString(),localTime:localTimestamp(acceptedAt),name:""};saveAward()}
    revealed=true;step=0;board();$("done").textContent=progress.length;$("bar").style.width=100*progress.length/30+"%";
-   feedback(levelIndex===29?"Code Grandmaster! You have completed the final challenge.":`Correct! The piece finishes on ${right}. Completed: ${progress.length}/30.`, "good");
+   updateProgress();
+   feedback(progress.length===30?"Code Grandmaster! You have completed all 30 challenges.":`Correct! The piece finishes on ${right}. Completed: ${progress.length}/30.`, "good");
    // refresh dropdown without changing active challenge
    $("levels").options[levelIndex].text="✓ "+String(levelIndex+1).padStart(2,"0")+" · "+L[levelIndex][0];
-   if(!muted)tone();
- }else feedback(`Not quite! You chose ${selected}. Check the loops and conditions, then try again.`,"bad");
+   playSound("success");
+   if(finishedAll){celebrate();openDiploma()}
+ }else {feedback(`Not quite! You chose ${selected}. Check the loops and conditions, then try again.`,"bad");playSound("error")}
 };
-$("sound").onclick=()=>{muted=!muted;$("sound").textContent="♪ Sound: "+(muted?"off":"on")};
-function tone(){try{const ac=new (window.AudioContext||window.webkitAudioContext)(),o=ac.createOscillator(),g=ac.createGain();o.connect(g);g.connect(ac.destination);o.frequency.setValueAtTime(650,ac.currentTime);o.frequency.linearRampToValueAtTime(880,ac.currentTime+.12);g.gain.setValueAtTime(.05,ac.currentTime);g.gain.exponentialRampToValueAtTime(.001,ac.currentTime+.22);o.start();o.stop(ac.currentTime+.23);o.onended=()=>ac.close()}catch{}}
-document.addEventListener("keydown",e=>{if(e.target.tagName==="SELECT")return;if(e.key==="Enter"&&selected)$("check").click();if(e.key==="ArrowRight"&&e.altKey)go(levelIndex+1);if(e.key==="ArrowLeft"&&e.altKey)go(levelIndex-1)});
+$("sound").onclick=()=>{muted=!muted;$("sound").textContent="♪ Sound: "+(muted?"off":"on");$("sound").setAttribute("aria-pressed",String(!muted))};
+let audioContext;
+async function playSound(kind){
+ if(muted)return;
+ try{
+  const Audio=window.AudioContext||window.webkitAudioContext;if(!Audio)return;
+  if(!audioContext||audioContext.state==="closed")audioContext=new Audio();
+  if(audioContext.state==="suspended")await audioContext.resume();
+  if(muted)return;
+  const t=audioContext.currentTime;
+  const notes=kind==="error"?[[220,0,.14],[165,.15,.22]]:[[523.25,0,.14],[659.25,.12,.14],[783.99,.24,.14],[1046.5,.38,.4],[659.25,.38,.4],[783.99,.38,.4]];
+  for(const [freq,delay,duration] of notes){const o=audioContext.createOscillator(),g=audioContext.createGain();o.type=kind==="error"?"triangle":"sine";o.frequency.value=freq;g.gain.setValueAtTime(0,t+delay);g.gain.linearRampToValueAtTime(.035,t+delay+.015);g.gain.exponentialRampToValueAtTime(.001,t+delay+duration);o.connect(g);g.connect(audioContext.destination);o.start(t+delay);o.stop(t+delay+duration+.02);o.onended=()=>{o.disconnect();g.disconnect()}}
+ }catch{/* Audio support must never block a challenge. */}
+}
+function localTimestamp(date){
+ const pad=(n,len=2)=>String(n).padStart(len,"0"),offset=-date.getTimezoneOffset(),sign=offset>=0?"+":"−";
+ let zone="local time";try{zone=Intl.DateTimeFormat().resolvedOptions().timeZone||zone}catch{}
+ return `${date.getFullYear()}-${pad(date.getMonth()+1)}-${pad(date.getDate())} ${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}.${pad(date.getMilliseconds(),3)} · ${zone} (UTC${sign}${pad(Math.floor(Math.abs(offset)/60))}:${pad(Math.abs(offset)%60)})`;
+}
+let confettiTimer;
+function celebrate(){
+ const container=$("confetti");container.replaceChildren();clearTimeout(confettiTimer);
+ const reduced=window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+ for(let i=0;i<(reduced?35:110);i++){const p=document.createElement("span");p.style.left=Math.random()*100+"%";p.style.background=["#f2c46d","#61d9ba","#ff8585","#a7bfff"][i%4];p.style.setProperty("--drift",(Math.random()*160-80)+"px");p.style.setProperty("--top",Math.random()*100+"vh");p.style.animationDelay=Math.random()*.6+"s";container.append(p)}
+ confettiTimer=setTimeout(()=>container.replaceChildren(),4300);
+}
+function openDiploma(){if(progress.length!==30)return;$("studentName").value=award.name;$("certificate").hidden=!award.name;$("printDiploma").disabled=!award.name;if(award.name)fillCertificate();if(!$("completion").open)$("completion").showModal();$("studentName").focus()}
+function fillCertificate(){
+ $("certificateName").textContent=award.name;
+ $("certificateTime").textContent=award.completedAt?"Completed (device local time): "+(award.localTime||localTimestamp(new Date(award.completedAt))):"Completion date and time were not recorded by the previous version.";
+ if(award.completedAt)$("certificateTime").dateTime=award.completedAt;else $("certificateTime").removeAttribute("datetime");
+}
+$("diplomaForm").onsubmit=e=>{e.preventDefault();const input=$("studentName"),name=input.value.trim();input.setCustomValidity(name?"":"Please enter your name.");if(!input.reportValidity())return;award.name=name;saveAward();fillCertificate();$("certificate").hidden=false;$("printDiploma").disabled=false};
+$("studentName").oninput=()=>{$("studentName").setCustomValidity("");$("printDiploma").disabled=true};
+$("printDiploma").onclick=()=>{if(progress.length===30&&award.name&&!$("printDiploma").disabled)window.print()};
+$("closeDiploma").onclick=()=>$("completion").close();
+$("diploma").onclick=openDiploma;
+$("completion").addEventListener("close",()=>$("diploma").focus());
+document.addEventListener("keydown",e=>{if($("completion").open||["SELECT","INPUT","TEXTAREA","BUTTON"].includes(e.target.tagName))return;if(e.key==="Enter"&&selected)$("check").click();if(e.key==="ArrowRight"&&e.altKey)go(levelIndex+1);if(e.key==="ArrowLeft"&&e.altKey)go(levelIndex-1)});
 render();
+if(progress.length===30&&!award.name)openDiploma();
 </script>
 </body></html>
+
