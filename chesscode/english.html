@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CHESS CODE · Code Week 2026</title>
+<style>
+:root{font-family:Inter,system-ui,-apple-system,Segoe UI,sans-serif;color:#f4f0e6;background:#111924;--gold:#e8ae46;--muted:#a4afbe;--panel:#1b2634}
+*{box-sizing:border-box}body{margin:0;min-height:100vh;background:radial-gradient(ellipse at 70% 5%,#26374a 0%,#111924 62%)}
+header{border-bottom:1px solid #ffffff18;padding:15px clamp(16px,3vw,48px);display:flex;align-items:center;justify-content:space-between;gap:15px;flex-wrap:wrap}
+.brand{font-weight:900;letter-spacing:.08em;font-size:1.28rem}.brand span{color:var(--gold)}.sub{color:var(--muted);font-size:.82rem}
+main{max-width:1320px;margin:auto;padding:26px 18px 60px}.eyebrow{color:var(--gold);font-size:.76rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase}
+h1{font-size:clamp(1.6rem,3vw,2.65rem);line-height:1.13;margin:8px 0}p{line-height:1.6}.muted{color:var(--muted)}
+.layout{display:grid;grid-template-columns:minmax(300px,525px) minmax(300px,1fr);gap:25px;align-items:start;margin-top:22px}
+.panel{background:#1b2634e8;border:1px solid #ffffff18;border-radius:20px;padding:21px;box-shadow:0 14px 35px #0003}
+.board{display:grid;grid-template-columns:repeat(8,1fr);border:6px solid #384657;border-radius:9px;overflow:hidden;width:100%;aspect-ratio:1}
+.square{border:0;border-radius:0;position:relative;display:grid;place-items:center;cursor:pointer;min-width:0;aspect-ratio:1;color:#17212c;padding:0;font-size:clamp(1.3rem,3.5vw,2.8rem)}
+.light{background:#e8dbc1}.dark{background:#93a69f}.square:hover{box-shadow:inset 0 0 0 3px #edb74f}
+.square.goal{box-shadow:inset 0 0 0 4px #e9aa39}.square.path:after{content:"";position:absolute;width:17%;aspect-ratio:1;background:#4257a5;border-radius:100%;opacity:.55}
+.square.picked{box-shadow:inset 0 0 0 5px #fff}.square .coord{position:absolute;left:3px;bottom:1px;font-size:10px;font-weight:700;opacity:.55}
+.piece{position:relative;z-index:1;color:#111d2b;text-shadow:0 2px 0 #fff9,0 1px 6px #1114;line-height:1}
+.boardmeta{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;margin-top:13px;color:#abb8c6;font-size:.8rem}
+.topline{display:flex;align-items:center;justify-content:space-between;gap:10px}.tag{color:#0f1923;background:var(--gold);padding:6px 10px;border-radius:100px;font-size:.73rem;font-weight:900}
+h2{font-size:1.16rem;margin:12px 0 6px}.code{white-space:pre-wrap;tab-size:2;background:#0d1520;border:1px solid #314052;border-radius:12px;color:#e3ecfa;padding:17px 15px;font:500 clamp(.76rem,1.3vw,.98rem)/1.65 ui-monospace,SFMono-Regular,Consolas,monospace;overflow:auto;min-height:170px}
+.code .keyword{color:#e5b966}.code .active{display:block;background:#314c6e66;margin:0 -6px;padding:0 6px;border-radius:4px}
+.controls{display:flex;flex-wrap:wrap;gap:9px;margin-top:16px}button.action,select{border:1px solid #526073;border-radius:10px;background:#28384b;color:#f5f6fa;padding:11px 13px;font-weight:750;cursor:pointer}
+button.primary{background:var(--gold);color:#18212c;border-color:var(--gold)}button:disabled{opacity:.45;cursor:not-allowed}
+button.action:hover:not(:disabled),select:hover{filter:brightness(1.13)}button:focus-visible,select:focus-visible,.square:focus-visible{outline:3px solid #fbc969;outline-offset:2px}
+.feedback{padding:13px;margin-top:14px;min-height:54px;border-radius:10px;background:#29374a;color:#dbe5ed}.feedback.good{background:#214638;color:#d4ffde}.feedback.bad{background:#54332f;color:#ffe1d8}
+.progress{width:160px;height:8px;background:#405065;border-radius:20px;overflow:hidden;margin-top:6px}.fill{height:100%;background:var(--gold);transition:width .2s}
+nav{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.info{font-size:.83rem;color:var(--muted)}details{margin-top:14px;border-top:1px solid #ffffff20;padding-top:11px;color:var(--muted)}summary{cursor:pointer;color:#f6d69e;font-weight:700}
+.footer{padding-top:32px;text-align:center;font-size:.83rem;color:#96a3b2}
+@media(max-width:880px){.layout{grid-template-columns:1fr}.panel{padding:15px}.board{max-width:540px;margin:auto}.square{font-size:clamp(1.5rem,6vw,2.7rem)}}@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important}}
+</style>
+</head>
+<body>
+<header><div><div class="brand">♞ CHESS<span>CODE</span></div><div class="sub">CODE WEEK 2026 · IES G. TORRENTE BALLESTER</div></div>
+<nav><div class="info"><b id="done">0</b> / 30 completed<div class="progress"><div class="fill" id="bar"></div></div></div><select id="levels" aria-label="Choose a level"></select><button class="action" id="sound" title="Toggle sound">♪ Sound: on</button></nav>
+</header>
+<main>
+<div class="eyebrow" id="chapter">Chapter 1 · Sequences</div>
+<h1 id="title">Read the algorithm. Find the square.</h1>
+<p class="muted" id="description">Read the program as if you were the computer. Where will the chess piece finish?</p>
+<div class="layout">
+<section class="panel" aria-label="Challenge board">
+<div class="board" id="board" role="group" aria-label="Eight-by-eight board, white side at the bottom"></div>
+<div class="boardmeta"><span>Click the <strong>final square</strong> you predict</span><span id="pos">Start: a1</span></div>
+<div class="controls">
+<button class="action primary" id="check">✓ Check answer</button>
+<button class="action" id="restart">↺ Restart</button>
+<button class="action" id="step">▶ Step through</button>
+<button class="action" id="hint">? Hint</button>
+</div>
+<div class="feedback" id="feedback" aria-live="polite">Select a square to submit your answer. Try tracing the code on paper first.</div>
+</section>
+<section class="panel">
+<div class="topline"><span class="tag" id="badge">LEVEL 01 / 30</span><span class="info" id="difficulty">● Beginner</span></div>
+<h2>Your mission</h2><p id="mission"></p>
+<h2>Program</h2><div class="code" id="code" role="region" aria-label="Code to interpret"></div>
+<p class="info" id="rules">North = up · South = down · East = right · West = left. Squares are labelled a–h and 1–8.</p>
+<div class="controls"><button class="action" id="prev">← Previous</button><button class="action primary" id="next">Next →</button></div>
+<details><summary>How to play and what you will learn</summary>
+<p>This game follows the idea behind <em>Compute It</em>: read a program, mentally trace its execution, and predict the result. The chess piece acts as a coding cursor: <strong>normal chess movement rules do not apply</strong>. Commands N, S, E, W and diagonals move the cursor one square. If it tries to leave the board, it stays in place.</p>
+<p><b>if lightSquare():</b> check the current square before choosing; a1 is dark. <b>if onEdge():</b> the piece is on rank 1 or 8, or file a or h. <b>if evenFile():</b> check the file number (a=1, b=2...). <b>repeat:</b> run the whole block several times. <b>function:</b> reuse a group of instructions.</p>
+<p>Levels 1–6 teach sequences; 7–12, loops; 13–18, conditions; 19–24, nested loops; and 25–30, functions and combined algorithms. Progress is stored <em>only in this browser</em>.</p></details>
+</section>
+</div>
+<div class="footer">CHESSCODE · Learn computational thinking through play · Code Week, 26–30 October 2026 · No accounts, servers or internet connection required.</div>
+</main>
+<script>
+"use strict";
+// Educational block language: M=move, R=repeat, I=conditional, F=function call.
+const M=(d,n=1)=>({t:"M",d,n}),R=(n,body)=>({t:"R",n,body}),I=(test,yes,no=[])=>({t:"I",test,yes,no}),F=name=>({t:"F",name});
+const L=[
+["The First Move", "Sequences", "♔", "d4", [M("E"),M("N"),M("E")]],
+["Heading for the Centre","Sequences","♖","a1",[M("N",3),M("E",3)]],
+["Diagonal Strategy","Sequences","♗","b2",[M("NE",2),M("S"),M("E")]],
+["The Queen’s Route","Sequences","♕","h7",[M("O",2),M("S",3),M("NO")]],
+["A Coding Knight","Sequences","♘","c6",[M("S",2),M("E",3),M("N")]],
+["Stay on the Board","Sequences","♙","g7",[M("E",3),M("N",4),M("O",2),M("S")]],
+["Three Repeated Commands","Loops","♖","b2",[R(3,[M("N"),M("E")])]],
+["On Patrol","Loops","♔","e4",[R(2,[M("N"),M("E"),M("S")])]],
+["Two Rounds","Loops","♘","f3",[R(2,[M("O"),M("NO"),M("S")])]],
+["Move, Turn, Move","Loops","♗","a5",[R(3,[M("E"),M("SE")])]],
+["Loop and Return","Loops","♕","d2",[R(3,[M("N"),M("E"),M("S")]),M("N")]],
+["Loop Along the Way","Loops","♙","h1",[M("N",2),R(4,[M("O"),M("N")]),M("S",2)]],
+["Light and Dark Squares","Conditions","♔","c3",[I("clara",[M("N")],[M("E")]),M("NE")]],
+["Choose by Colour","Conditions","♖","d4",[M("N"),I("clara",[M("E",2)],[M("O",2)]),M("S")]],
+["The Edge of the Board","Conditions","♗","a4",[I("borde",[M("E",3)],[M("O",3)]),M("N")]],
+["Even-Numbered File","Conditions","♕","f5",[I("par",[M("SO")],[M("NE")]),M("S",2)]],
+["Two Decisions","Conditions","♘","c2",[I("clara",[M("E")],[M("N")]),I("par",[M("N",2)],[M("E",2)])]],
+["Every Decision Matters","Conditions","♙","h8",[M("O",2),I("borde",[M("S",3)],[M("SO",2)]),I("clara",[M("O")],[M("S")])]],
+["Repeat and Check","Smart Loops","♔","b2",[R(3,[I("clara",[M("N")],[M("E")])])]],
+["Conditional Patrol","Smart Loops","♖","c6",[R(4,[I("borde",[M("S")],[M("E")])])]],
+["A Board of Decisions","Smart Loops","♗","f2",[R(4,[M("N"),I("clara",[M("O")],[M("E")])])]],
+["Nested Loops","Smart Loops","♕","a1",[R(2,[R(2,[M("N"),M("E")]),M("S")])]],
+["The Spiral","Smart Loops","♘","e5",[R(2,[R(2,[M("O"),M("S")]),M("NE")])]],
+["The Master’s Test","Smart Loops","♙","g3",[R(3,[I("par",[M("N")],[M("O")]),I("clara",[M("SO")],[M("SE")])])]],
+["Your First Function","Functions","♔","a1",[F("stepUp"),F("stepUp"),M("N")],{"stepUp":[M("N"),M("E")]}],
+["A Reusable Pattern","Functions","♖","e2",[R(3,[F("jump")])],{"jump":[M("N"),M("O")]}],
+["Functions and Colours","Functions","♗","d6",[F("advance"),I("clara",[F("advance")],[M("SO")]),F("advance")],{"advance":[M("S"),M("E")]}],
+["Complex Strategy","Functions","♕","b1",[R(2,[F("zigzag"),M("N")])],{"zigzag":[M("E"),M("N"),M("O")]}],
+["The Logic Maze","Functions","♘","h6",[R(3,[I("clara",[F("left")],[F("down")]),M("O")])],{"left":[M("O"),M("S")],"down":[M("S"),M("O")]}],
+["Grand Finale: Checkmate the Code","Functions","♔","d4",[F("opening"),R(3,[I("clara",[F("attack")],[F("defence")])]),F("finish")],{"opening":[M("N"),M("E")],"attack":[M("E"),M("S")],"defence":[M("O"),M("N")],"finish":[M("SO"),M("S")]}]
+];
+const vector={N:[0,1],S:[0,-1],E:[1,0],O:[-1,0],NE:[1,1],NO:[-1,1],SE:[1,-1],SO:[-1,-1]};
+const files="abcdefgh";const toXY=s=>[files.indexOf(s[0]),Number(s[1])-1];const toSq=([x,y])=>files[x]+(y+1);
+const color=([x,y])=>(x+y)%2===1?"clara":"oscura"; // a1 oscura.
+function predicate(t,p){let [x,y]=p;return t==="clara"?color(p)==="clara":t==="borde"?(x===0||x===7||y===0||y===7):t==="par"?((x+1)%2===0):false}
+function run(level){
+ const p=toXY(level[3]),visited=[toSq(p)],history=[],funcs=level[5]||{},limit=1000;
+ function exec(block,depth=0){
+   if(depth>12)throw Error("Function nesting is too deep");
+   for(const node of block){
+     if(history.length>limit)throw Error("Program is too long");
+     if(node.t==="M"){for(let k=0;k<node.n;k++){const [dx,dy]=vector[node.d];p[0]=Math.max(0,Math.min(7,p[0]+dx));p[1]=Math.max(0,Math.min(7,p[1]+dy));const s=toSq(p);visited.push(s);history.push({s,description:`${({O:"W",NO:"NW",SO:"SW"})[node.d]||node.d} → ${s}`})}}
+     if(node.t==="R")for(let j=0;j<node.n;j++)exec(node.body,depth+1);
+     if(node.t==="I")exec(predicate(node.test,p)?node.yes:node.no,depth+1);
+     if(node.t==="F"){if(!funcs[node.name])throw Error("Unknown function");exec(funcs[node.name],depth+1)}
+   }
+ }
+ exec(level[4]);return {finish:toSq(p),visited,history};
+}
+function displayBlock(block,indent=0){
+ const sp="  ".repeat(indent),lines=[];
+ for(const n of block){
+  if(n.t==="M")lines.push(sp+`move("${({O:"W",NO:"NW",SO:"SW"})[n.d]||n.d}"${n.n>1?", "+n.n:""});`);
+  if(n.t==="F")lines.push(sp+`${n.name}();`);
+  if(n.t==="R"){lines.push(sp+`repeat (${n.n}) {`);lines.push(...displayBlock(n.body,indent+1));lines.push(sp+"}")}
+  if(n.t==="I"){const tests={clara:"lightSquare()",borde:"onEdge()",par:"evenFile()"};lines.push(sp+`if (${tests[n.test]}) {`);lines.push(...displayBlock(n.yes,indent+1));if(n.no.length){lines.push(sp+"} else {");lines.push(...displayBlock(n.no,indent+1))}lines.push(sp+"}")}
+ }
+ return lines;
+}
+const $=id=>document.getElementById(id),key="chesscode_2026_en_v1";
+let progress;try{progress=JSON.parse(localStorage.getItem(key)||"[]")}catch{progress=[]}
+if(!Array.isArray(progress))progress=[];
+let levelIndex=0,selected=null,step=0,revealed=false,muted=false;
+const solutions=L.map(run);
+const safeText=s=>String(s).replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;");
+function save(){try{localStorage.setItem(key,JSON.stringify(progress))}catch{}}
+function feedback(text,type=""){$("feedback").className="feedback "+type;$("feedback").textContent=text}
+function board(){
+ const current=L[levelIndex],initial=current[3],trace=solutions[levelIndex],steps=trace.visited;
+ const position=step?steps[Math.min(step,steps.length-1)]:initial;
+ $("board").innerHTML="";
+ for(let y=7;y>=0;y--)for(let x=0;x<8;x++){
+ const sq=toSq([x,y]),b=document.createElement("button");
+ b.className=`square ${color([x,y])==="clara"?"light":"dark"}`;
+ if(selected===sq)b.classList.add("picked");
+ if(revealed&&trace.visited.includes(sq))b.classList.add("path");
+ b.type="button";b.setAttribute("aria-label",`Square ${sq}`);
+ if(sq===position){const symbol=document.createElement("span");symbol.className="piece";symbol.textContent=current[2];b.append(symbol)}
+ if(y===0||x===0){const label=document.createElement("span");label.className="coord";label.textContent=(y===0?files[x]:"")+(x===0?String(y+1):"");b.append(label)}
+ b.onclick=()=>{selected=sq;board();feedback(`You selected ${sq}. Press “Check answer”.`)};
+ $("board").append(b)
+ }
+ $("pos").textContent=step?`Running: ${position} · step ${step}/${steps.length-1}`:`Start: ${initial}`;
+ $("step").disabled=step>=steps.length-1;
+}
+function render(){
+ const l=L[levelIndex],name=l[1],opts=$("levels");
+ opts.innerHTML=L.map((lv,i)=>`<option value="${i}">${progress.includes(i)?"✓ ":""}${String(i+1).padStart(2,"0")} · ${lv[0]}</option>`).join("");
+ opts.value=levelIndex;
+ $("done").textContent=progress.length;$("bar").style.width=100*progress.length/30+"%";
+ const chapterNum=1+Math.floor(levelIndex/6);
+ $("chapter").textContent=`Chapter ${chapterNum} · ${name}`;
+ $("title").textContent=l[0];$("description").textContent=`Level ${levelIndex+1} of 30 · Trace the code from ${l[3]} to its final square.`;
+ $("badge").textContent=`LEVEL ${String(levelIndex+1).padStart(2,"0")} / 30`;
+ $("difficulty").textContent=levelIndex<6?"● Beginner":levelIndex<18?"●● Intermediate":"●●● Advanced";
+ $("mission").textContent=`The ${({"♔":"king","♕":"queen","♖":"rook","♗":"bishop","♘":"knight","♙":"pawn"})[l[2]]||"piece"} starts on ${l[3]}. Read the commands and select the final square.`;
+ let lines=[];
+ const funcs=l[5]||{};
+ for(const [name,body] of Object.entries(funcs)){lines.push(`function ${name}() {`,...displayBlock(body,1),"}","")}
+ lines.push("start {",...displayBlock(l[4],1),"}");
+ $("code").textContent=lines.join("\n");
+ selected=null;step=0;revealed=false;feedback("Select the final square. Think before running the code.");board();
+ $("prev").disabled=levelIndex===0;$("next").disabled=levelIndex===29;
+}
+function go(i){if(i<0||i>=30)return;levelIndex=i;render()}
+$("levels").onchange=e=>go(Number(e.target.value));
+$("prev").onclick=()=>go(levelIndex-1);$("next").onclick=()=>go(levelIndex+1);
+$("restart").onclick=()=>{selected=null;step=0;revealed=false;board();feedback("Restarted. Try again.")};
+$("hint").onclick=()=>{const t=solutions[levelIndex].history;feedback(t.length?`Hint: the first move ends on ${t[0].s}. Remember: if a move goes off the board, the piece stays put.`:"Look at the starting square.")};
+$("step").onclick=()=>{const t=solutions[levelIndex];if(step<t.visited.length-1)step++;revealed=false;board();feedback(`Step ${step}: ${t.history[step-1].description}. Continue, or try to predict the final square.`)};
+$("check").onclick=()=>{
+ if(!selected){feedback("Choose a square first.","bad");return}
+ const right=solutions[levelIndex].finish;
+ if(selected===right){
+   if(!progress.includes(levelIndex)){progress.push(levelIndex);save()}
+   revealed=true;step=0;board();$("done").textContent=progress.length;$("bar").style.width=100*progress.length/30+"%";
+   feedback(levelIndex===29?"Code Grandmaster! You have completed the final challenge.":`Correct! The piece finishes on ${right}. Completed: ${progress.length}/30.`, "good");
+   // refresh dropdown without changing active challenge
+   $("levels").options[levelIndex].text="✓ "+String(levelIndex+1).padStart(2,"0")+" · "+L[levelIndex][0];
+   if(!muted)tone();
+ }else feedback(`Not quite! You chose ${selected}. Check the loops and conditions, then try again.`,"bad");
+};
+$("sound").onclick=()=>{muted=!muted;$("sound").textContent="♪ Sound: "+(muted?"off":"on")};
+function tone(){try{const ac=new (window.AudioContext||window.webkitAudioContext)(),o=ac.createOscillator(),g=ac.createGain();o.connect(g);g.connect(ac.destination);o.frequency.setValueAtTime(650,ac.currentTime);o.frequency.linearRampToValueAtTime(880,ac.currentTime+.12);g.gain.setValueAtTime(.05,ac.currentTime);g.gain.exponentialRampToValueAtTime(.001,ac.currentTime+.22);o.start();o.stop(ac.currentTime+.23);o.onended=()=>ac.close()}catch{}}
+document.addEventListener("keydown",e=>{if(e.target.tagName==="SELECT")return;if(e.key==="Enter"&&selected)$("check").click();if(e.key==="ArrowRight"&&e.altKey)go(levelIndex+1);if(e.key==="ArrowLeft"&&e.altKey)go(levelIndex-1)});
+render();
+</script>
+</body></html>
