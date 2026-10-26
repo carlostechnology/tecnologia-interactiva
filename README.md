@@ -26,6 +26,8 @@ la inteligencia artificial y la producción audiovisual.
 | [⚡ **Arduino from Zero**](https://carlostechnology.github.io/tecnologia-interactiva/arduino/) | Electrónica y programación con 10 prácticas interactivas. | 3.º ESO · CLIL |
 | [♟ **Hexapawn Lab**](https://carlostechnology.github.io/tecnologia-interactiva/hexapawn/) | Ajedrez, algoritmos e inteligencia artificial. | 2.º Bachillerato |
 | [🎬 **Cinema Quest 2**](https://carlostechnology.github.io/tecnologia-interactiva/cinema-quest/) | Videojuego de edición cinematográfica con 54 retos. | Inglés B1+ |
+| [♞ **ChessCode**](https://carlostechnology.github.io/tecnologia-interactiva/chesscode/) | 30 retos de secuencias, bucles, condiciones y funciones. | Pensamiento computacional |
+| [📱 **CHESSCODE Mobile**](https://carlostechnology.github.io/tecnologia-interactiva/chesscode-mobile/) | 30 retos en inglés, diseñados para móviles en vertical. | Alumnado bilingüe · Inglés |
 | [🎥 **Luz, cámara… ¡Claustro!**](https://carlostechnology.github.io/tecnologia-interactiva/filma-academy/) | Simulador de producción y rodaje cinematográfico. | Profesorado · PIE Filma |
 | ♙ **SmartChess Lab** | Diseño y fabricación de un tablero inteligente. | STEM · En desarrollo |
 
@@ -81,6 +83,45 @@ dificultad progresiva.
 **[▶ PLAY CINEMA QUEST](https://carlostechnology.github.io/tecnologia-interactiva/cinema-quest/)**
 
 [Ver tutorial original](https://tecnologiaingenieria.wordpress.com/2025/11/04/pie-filma-4-edicion-de-cine/)
+
+---
+
+## ♞ ChessCode
+
+**Read the code. Find the final square.**
+
+Juego educativo de pensamiento computacional con **30 niveles**:
+secuencias, bucles, condiciones, bucles anidados y funciones.
+
+La pieza actúa como cursor: el alumnado interpreta el programa
+y predice su posición final en el tablero.
+
+**[▶ JUGAR A CHESSCODE](https://carlostechnology.github.io/tecnologia-interactiva/chesscode/)** ·
+**[ENGLISH VERSION](https://carlostechnology.github.io/tecnologia-interactiva/chesscode/english.html)**
+
+---
+
+## 📱 CHESSCODE Mobile
+
+**Think. Tap. Solve.**
+
+Versión en inglés diseñada para **móviles en vertical**, con una
+pantalla de bienvenida, botones grandes y un recorrido sencillo:
+leer el código, tocar una casilla y comprobar la respuesta.
+
+**30 retos** · Guardado local · Pistas · Ejecución paso a paso
+
+- Diseño colorido en una sola columna en todas las pantallas.
+- Sonidos de acierto y error, con opción de silenciarlos.
+- Barra de progreso con color y etiqueta de dificultad.
+- Confeti al completar los 30 niveles, respetando la preferencia de movimiento reducido.
+- Diploma imprimible con el nombre del alumno y la fecha, hora local y zona horaria de finalización registradas por el dispositivo.
+
+Todo el juego está contenido en **un único archivo HTML/CSS/JavaScript**,
+sin cuentas ni servidores. El progreso y el diploma se guardan
+solo en el navegador utilizado.
+
+**[▶ JUGAR A CHESSCODE MOBILE](https://carlostechnology.github.io/tecnologia-interactiva/chesscode-mobile/)**
 
 ---
 
@@ -142,3 +183,4 @@ a través de proyectos y problemas reales.
 *Tecnología y Digitalización · STEM · Bilingual Education*
 
 </div>
+
