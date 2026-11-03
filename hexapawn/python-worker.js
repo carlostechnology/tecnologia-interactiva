@@ -33,7 +33,7 @@ self.onmessage = async event => {
   globals.set("__name__", "__main__");
   try {
     await pyodide.runPythonAsync(code, { globals });
-    let board = null;
+    let board = null, row = null;
     try {
       if (globals.has("tablero")) {
         const proxy = globals.get("tablero");
@@ -44,7 +44,16 @@ self.onmessage = async event => {
         if (proxy?.destroy) proxy.destroy();
       }
     } catch { /* Optional board preview should never fail execution. */ }
-    self.postMessage({ type: "result", id, output: stdout.join("\n"), stderr: stderr.join("\n"), board });
+    try {
+      if (globals.has("fila")) {
+        const proxy = globals.get("fila");
+        const value = proxy?.toJs ? proxy.toJs() : proxy;
+        if (Array.isArray(value) && value.length === 3 &&
+            value.every(cell => ["B", "N", "."].includes(cell))) row = value;
+        if (proxy?.destroy) proxy.destroy();
+      }
+    } catch { /* Some lessons do not define a row. */ }
+    self.postMessage({ type: "result", id, output: stdout.join("\n"), stderr: stderr.join("\n"), board, row });
   } catch (error) {
     self.postMessage({ type: "error", id, output: stdout.join("\n"), stderr: stderr.join("\n"), error: String(error) });
   } finally {
