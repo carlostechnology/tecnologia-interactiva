@@ -265,6 +265,17 @@ function examCenter(){if(!state.exam)return examStartPanel();if(state.exam.done&
 function examInspector(){const ex=state.exam;return `<aside class="panel inspector"><div class="panel-head"><h2>EXAM OVERVIEW</h2><span class="cap">ASSESSMENT</span></div><div class="panel-body">${!ex?`<span class="pill">● READY</span><h2 style="margin-top:18px">ASSESSMENT SETTINGS</h2><p>Un mismo recorrido didáctico conecta la exploración del código con su evaluación.</p><div class="kv"><span>QUESTION BANK</span><b>60</b></div><div class="kv"><span>BLOCKS</span><b>6</b></div><div class="kv"><span>DIFFICULTY</span><b>1–5</b></div><div class="note"><b>TIP</b>Primero completa las lecciones del modo APRENDER. Después comprueba lo que has entendido.</div>`:ex.done&&!ex.feedback?`<span class="pill">✓ COMPLETE</span><h2 style="margin-top:17px">RESULTS SAVED LOCALLY</h2><p>${esc(ex.name)} · ${ex.answers.length} respuestas</p><div class="note">Puedes exportar tu informe HTML o JSON y entregarlo al profesor.</div><button data-action="new-exam" style="margin-top:15px">NEW ATTEMPT</button>`:`<span class="pill">● ${ex.mode==="practice"?"PRACTICE":"EXAM"}</span><h2 style="margin-top:17px">LIVE PROGRESS</h2><div class="result-num" style="font-size:42px">${ex.answers.length}<small> / ${ex.mode==="practice"?60:45}</small></div><div class="meter" style="height:10px"><i style="width:${Math.round(ex.answers.length/(ex.mode==="practice"?60:45)*100)}%"></i></div><div class="kv"><span>STUDENT</span><b>${esc(ex.name)}</b></div><div class="kv"><span>DIFFICULTY</span><b>${ex.level}/5</b></div><div class="kv"><span>ANSWERED</span><b>${ex.answers.length}</b></div><div class="note"><b>REMEMBER</b>Piensa en el estado del tablero y en los valores de las variables antes de elegir.</div>`}</div></aside>`;}
 function examTrace(){const ex=state.exam;return `<section class="panel trace"><div class="panel-head"><h2>ASSESSMENT LOG</h2><span class="cap">LOCAL SESSION</span></div><div style="overflow:auto"><table><thead><tr><th>NO.</th><th>BLOCK</th><th>DIFFICULTY</th><th>STATUS</th></tr></thead><tbody>${ex?.answers.length?ex.answers.map((a,i)=>{const q=QS[a.id];return `<tr><td>${String(i+1).padStart(2,"0")}</td><td>${esc(BANK[q.topic].name)}</td><td>${q.difficulty}/5</td><td>${ex.mode==="exam"&&!ex.done?"RECORDED":a.ok?"✓ CORRECT":"✗ REVIEW"}</td></tr>`;}).join(""):'<tr><td colspan="4">Comienza un intento para registrar respuestas.</td></tr>'}</tbody></table></div></section>`;}
 function render(){document.body.classList.toggle("dark",state.theme==="dark");mount.innerHTML=header()+`<div class="workspace">${sidebar()}${state.mode==="learn"?learnCenter()+learnInspector()+learnTrace():examCenter()+examInspector()+examTrace()}</div>`;}
+function applyPythonBoard(nextBoard){
+ if(!Array.isArray(nextBoard)||nextBoard.length!==3||!nextBoard.every(row=>Array.isArray(row)&&row.length===3&&row.every(cell=>cell==="B"||cell==="N"||cell===".")))return false;
+ state.board=nextBoard.map(row=>row.slice());
+ state.turn="B";state.selected=null;state.lastMove="Actualizado desde RUN PYTHON";
+ save();
+ const diagram=mount.querySelector(".board-column .diagram");
+ if(diagram)diagram.innerHTML=svgBoard();
+ return true;
+}
+window.smartChessUpdateFromPython=applyPythonBoard;
+
 function stepForward(){const n=lines().length;if(state.step>=n){stop();return;}state.step++;if(state.step===n&&(currentLesson().id===28||currentLesson().id===29)){const c=currentLesson().id===29?1:1;state.board[2][c]=".";state.board[1][c]="B";state.lastMove="b1-b2";}save();render();}
 function startPlay(){if(timer){stop();render();return;}timer=setInterval(()=>{if(state.step>=lines().length){stop();render();return;}stepForward();},650);render();}
 function valid(r,c){return r>=0&&r<3&&c>=0&&c<3;}
@@ -343,13 +354,16 @@ render();
     if (panel) drafts.set(panel.dataset.lesson, event.target.value);
   });
   function boardPreview(board) {
-    const panel = getPanel(); if (!panel) return;
-    const target = panel.querySelector(".py-board-preview");
-    if (!board) { target.classList.remove("visible"); target.replaceChildren(); return; }
-    const grid = document.createElement("div"); grid.className = "py-board-grid";
-    board.flat().forEach(cell => { const item=document.createElement("span"); item.className="py-board-cell"; item.textContent=cell; grid.appendChild(item); });
-    const caption = document.createElement("span"); caption.className="py-board-caption"; caption.textContent="VARIABLE tablero · resultado del programa";
-    target.replaceChildren(grid,caption); target.classList.add("visible");
+    const panel=getPanel(); if(!panel)return;
+    const target=panel.querySelector(".py-board-preview");
+    if(!board){target.classList.remove("visible");target.replaceChildren();return;}
+    const synced=typeof window.smartChessUpdateFromPython==="function" && window.smartChessUpdateFromPython(board);
+    const message=document.createElement("span");
+    message.className="py-board-caption";
+    message.textContent=synced
+      ?"✓ Variable tablero detectada: el tablero interactivo de la izquierda se ha actualizado."
+      :"La variable tablero se ha generado, pero no se pudo conectar con la vista.";
+    target.replaceChildren(message);target.classList.add("visible");
   }
   function stop(message) {
     if (worker) { worker.terminate(); worker=null; }
