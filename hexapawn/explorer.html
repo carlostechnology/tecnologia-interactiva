@@ -198,7 +198,7 @@ function translateUI(){
      let m=raw.match(/^(\d+)\/30 COMPLETE$/);if(m)translated=m[1]+"/30 COMPLETED";
    }
    if(!translated){
-     const group=raw.match(/^(\\d{2}) · (.+)$/);
+     const group=raw.match(/^(\d{2}) · (.+)$/);
      if(group&&EN_TRANSLATIONS[group[2]])translated=group[1]+" · "+EN_TRANSLATIONS[group[2]].toUpperCase();
    }
    if(translated)node.textContent=node.textContent.replace(raw,translated);
