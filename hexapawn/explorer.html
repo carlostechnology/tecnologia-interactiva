@@ -139,6 +139,18 @@ pre.output{white-space:pre-wrap;font:12px/1.5 ui-monospace,monospace;color:var(-
 body.dark .mission-intro{background:linear-gradient(110deg,#152d4f,#1b2840);border-bottom-color:#365683}
 body.dark .mission-steps span{background:#1d304d;border-color:#48638c}
 @media(max-width:800px){.mission-intro{padding:15px}.mission-intro h2{font-size:21px}.mission-target{font-size:16px}.mission-steps{display:grid;gap:5px}.study-layout .column-heading.main-heading b{font-size:15px}}
+
+/* Mission overview: task on the left, how-to steps on the right. */
+@media(min-width:900px){
+ .mission-intro{display:grid;grid-template-columns:minmax(0,1fr) minmax(300px,385px);align-items:center;gap:26px;padding:17px 24px}
+ .mission-copy{min-width:0}
+ .mission-steps{display:flex;flex-direction:column;align-items:stretch;gap:7px;border-left:1px solid #c1d2ec;padding-left:22px}
+ .mission-steps span{width:100%;box-sizing:border-box;font-size:12px;padding:8px 11px}
+ .mission-target{margin-bottom:0}
+}
+@media(min-width:900px) and (max-width:1200px){.mission-intro{grid-template-columns:minmax(0,1fr) minmax(275px,34%);gap:14px}.mission-steps{padding-left:14px}}
+@media(max-width:899px){.mission-steps{display:flex;flex-wrap:wrap}.mission-intro{display:flex;flex-direction:column;align-items:stretch}}
+body.dark .mission-steps{border-left-color:#48638c}
 </style>
 
 <style id="python-runtime-style">
@@ -385,10 +397,12 @@ function codePanel(){const a=lines(),current=state.step,en=state.lang==="en";ret
 function learnCenter(){const l=currentLesson(),n=lines().length,t=guideTask(),en=state.lang==="en";return `<main class="panel center">
 <div class="panel-head"><h2>PYTHON LAB · HEXAPAWN</h2><span class="pill">${en?"PRACTICE":"PRÁCTICA"} ${String(l.id).padStart(2,"0")} / 30</span></div>
 <section class="mission-intro" aria-label="${en?"Current mission":"Misión actual"}">
+ <div class="mission-copy">
  <div class="mission-kicker">🚀 ${en?"START HERE · YOUR MISSION":"EMPIEZA AQUÍ · TU MISIÓN"}</div>
  <h2>${esc(en?(EN_TRANSLATIONS[l.title]||l.title):l.title)}</h2>
  <p class="mission-target">${esc(en?t.changeEn:t.change)}</p>
- <div class="mission-steps">
+ </div>
+ <div class="mission-steps" aria-label="${en?"Steps to complete":"Pasos para completar"}">
  <span><b>1</b> ${en?"Read the mission":"Lee el reto"}</span>
  <span><b>2</b> ${en?"Edit the code and press RUN PYTHON":"Modifica el código y pulsa RUN PYTHON"}</span>
  <span><b>3</b> ${en?"Explain and check":"Explica y comprueba"}</span>
