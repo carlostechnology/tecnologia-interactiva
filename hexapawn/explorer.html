@@ -118,6 +118,27 @@ pre.output{white-space:pre-wrap;font:12px/1.5 ui-monospace,monospace;color:var(-
 }
 .guide-next{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
 .guide-next button{font-size:11px}
+
+/* Learning hierarchy: one highlighted mission, two clear work zones, quiet support cards. */
+.mission-intro{padding:19px 22px 18px;background:linear-gradient(110deg,#e7f0ff,#f6f9ff 70%);border-bottom:2px solid #adc7f1;display:flex;flex-direction:column;gap:7px}
+.mission-kicker{font-size:12px;font-weight:950;letter-spacing:.09em;color:#174caa}
+.mission-intro h2{font-size:23px;line-height:1.2;letter-spacing:-.02em;font-weight:900;color:var(--blue);margin:0}
+.mission-target{font-size:17px;line-height:1.5;font-weight:750;color:var(--ink);margin:1px 0 7px;max-width:950px}
+.mission-steps{display:flex;flex-wrap:wrap;gap:8px 13px}
+.mission-steps span{display:flex;align-items:center;gap:7px;font-size:12px;font-weight:750;color:var(--ink);background:#fff;border:1px solid #c8d7ee;border-radius:5px;padding:6px 9px}
+.mission-steps b{font-size:13px;background:#174caa;color:#fff;width:21px;height:21px;border-radius:50%;display:grid;place-items:center}
+.study-layout .column-heading.main-heading{padding:15px 15px;background:#f1f5fc}
+.study-layout .column-heading.main-heading b{font-size:16px;font-weight:950;letter-spacing:.035em;line-height:1.4}
+.study-layout .column-heading.main-heading span{font-size:10px}
+.lesson-guide .guide-card h3{font-size:14px;letter-spacing:.02em;margin-bottom:9px;font-weight:900}
+.lesson-guide .guide-card p{font-size:13px;line-height:1.55}
+.lesson-guide .guide-hint summary{font-size:14px}
+.lesson-guide .quiz-option{font-size:13px}
+.study-layout .py-heading{font-size:14px;font-weight:900}
+.study-layout [data-py-action="run"]{font-size:13px;font-weight:900;padding:11px 16px}
+body.dark .mission-intro{background:linear-gradient(110deg,#152d4f,#1b2840);border-bottom-color:#365683}
+body.dark .mission-steps span{background:#1d304d;border-color:#48638c}
+@media(max-width:800px){.mission-intro{padding:15px}.mission-intro h2{font-size:21px}.mission-target{font-size:16px}.mission-steps{display:grid;gap:5px}.study-layout .column-heading.main-heading b{font-size:15px}}
 </style>
 
 <style id="python-runtime-style">
@@ -361,18 +382,28 @@ function svgBoard(compact=false){
  return svg;
 }
 function codePanel(){const a=lines(),current=state.step,en=state.lang==="en";return `<div class="codebox"><div class="code-head"><b class="cap">PYTHON · ${String(currentLesson().id).padStart(2,"0")}_PRACTICA.PY</b><span class="starter-label">${en?"✓ Code preloaded in the editor":"✓ Código cargado en el editor"}</span></div><details class="starter-code"><summary>${en?"VIEW STARTER CODE":"VER CÓDIGO DE EJEMPLO"}</summary><div class="code-lines">${a.map((line,i)=>`<div class="code-line ${i===current-1?"active":""}"><span class="ln">${String(i+1).padStart(2,"0")}</span><span>${esc(line)||" "}</span></div>`).join("")}</div></details></div>`;}
-function learnCenter(){const l=currentLesson(),n=lines().length;return `<main class="panel center">
-<div class="panel-head"><h2>PYTHON LAB · HEXAPAWN <small style="font-size:11px;color:var(--muted)"> · ${esc(l.title)}</small></h2><span class="pill">● CODE + BOARD</span></div>
+function learnCenter(){const l=currentLesson(),n=lines().length,t=guideTask(),en=state.lang==="en";return `<main class="panel center">
+<div class="panel-head"><h2>PYTHON LAB · HEXAPAWN</h2><span class="pill">${en?"PRACTICE":"PRÁCTICA"} ${String(l.id).padStart(2,"0")} / 30</span></div>
+<section class="mission-intro" aria-label="${en?"Current mission":"Misión actual"}">
+ <div class="mission-kicker">🚀 ${en?"START HERE · YOUR MISSION":"EMPIEZA AQUÍ · TU MISIÓN"}</div>
+ <h2>${esc(en?(EN_TRANSLATIONS[l.title]||l.title):l.title)}</h2>
+ <p class="mission-target">${esc(en?t.changeEn:t.change)}</p>
+ <div class="mission-steps">
+ <span><b>1</b> ${en?"Read the mission":"Lee el reto"}</span>
+ <span><b>2</b> ${en?"Edit the code and press RUN PYTHON":"Modifica el código y pulsa RUN PYTHON"}</span>
+ <span><b>3</b> ${en?"Explain and check":"Explica y comprueba"}</span>
+ </div>
+</section>
 <div class="study-layout">
   <div class="board-column">
-    <div class="column-heading"><b>01 · TABLERO INTERACTIVO</b><span>3 × 3 · COORDENADAS PYTHON</span></div>
+    <div class="column-heading main-heading"><b>♟ ${en?"VISUAL BOARD":"TABLERO VISUAL"}</b><span>3 × 3 · ${en?"PYTHON INDICES":"ÍNDICES PYTHON"}</span></div>
     <div class="diagram">${svgBoard()}</div>
     <div class="legend"><span><i style="background:#24272a"></i>NEGRA</span><span><i style="background:#f6f4ea;border:1px solid #a6a7a0"></i>BLANCA</span><span><i style="background:#edb55a"></i>SELECCIONADA</span><span>Índices rojos = tablero[fila][columna]</span></div>
     <div class="toolbar"><span class="play-label">STEP ${state.step}/${n}</span><button data-action="prev-step" ${state.step===0?"disabled":""}>←</button><button class="primary" data-action="play">${timer?"PAUSE":"▶ PLAY"}</button><button data-action="step" ${state.step===n?"disabled":""}>STEP →</button><button data-action="reset-step">↻ RESET</button><span class="spacer"></span><button data-action="reset-board">RESET BOARD</button></div>
     ${learnGuide()}
   </div>
   <div class="code-column">
-    <div class="column-heading"><b>02 · EDITA Y EJECUTA PYTHON</b><span>PYODIDE · PYTHON REAL</span></div>
+    <div class="column-heading main-heading editor-heading"><b>⌘ ${en?"EDIT AND RUN PYTHON":"EDITA Y EJECUTA PYTHON"}</b><span>PYODIDE · PYTHON REAL</span></div>
     ${codePanel()}
   </div>
 </div>
@@ -381,14 +412,13 @@ function learnGuide(){
  const l=currentLesson(),t=guideTask(),quiz=quizFor(),answer=quizAnswer(l.id),en=state.lang==="en",check=taskChecks[l.id];
  const options=(en?quiz.optionsEn:quiz.options).map((label,i)=>({label,index:(i+l.id)%3})).sort((a,b)=>a.index-b.index);
  return `<div class="lesson-guide">
-  <div class="guide-card change"><h3>✎ 01 · ${en?"YOUR ONE CHANGE":"TU ÚNICO CAMBIO"}</h3><p>${esc(en?t.changeEn:t.change)}</p></div>
-  <div class="guide-card"><details class="guide-hint"><summary>💡 02 · ${en?"SHOW HINT":"VER PISTA"}</summary><p>${esc(en?t.hintEn:t.hint)}</p></details></div>
-  <div class="guide-card reflection"><h3>◈ 03 · ${en?"EXPLAIN WHY":"PARA EXPLICARLO"}</h3><p>${esc(en?t.whyEn:t.why)}</p><textarea class="reflection-input" data-reflection="${l.id}" placeholder="${en?"Your explanation…":"Tu explicación…"}" aria-label="${en?"Your explanation":"Tu explicación"}">${esc(answerFor(l.id))}</textarea></div>
-  <div class="guide-card quiz-card"><h3>🧠 04 · ${en?"MINI QUIZ":"MINITEST DE COMPRENSIÓN"}</h3><p>${esc(en?t.whyEn:t.why)}</p>
+  <div class="guide-card"><details class="guide-hint"><summary>💡 ${en?"NEED A HINT?":"¿NECESITAS UNA PISTA?"}</summary><p>${esc(en?t.hintEn:t.hint)}</p></details></div>
+  <div class="guide-card reflection"><h3>◈ ${en?"EXPLAIN WHY":"PARA EXPLICARLO"}</h3><p>${esc(en?t.whyEn:t.why)}</p><textarea class="reflection-input" data-reflection="${l.id}" placeholder="${en?"Your explanation…":"Tu explicación…"}" aria-label="${en?"Your explanation":"Tu explicación"}">${esc(answerFor(l.id))}</textarea></div>
+  <div class="guide-card quiz-card"><h3>🧠 ${en?"MINI QUIZ":"MINITEST DE COMPRENSIÓN"}</h3><p>${esc(en?t.whyEn:t.why)}</p>
   <div class="quiz-answers">${options.map(x=>`<label class="quiz-option"><input type="radio" name="quiz-${l.id}" value="${x.label===((en?quiz.optionsEn:quiz.options)[0])?0:(en?quiz.optionsEn:quiz.options).indexOf(x.label)}" ${answer.selected===(en?quiz.optionsEn:quiz.options).indexOf(x.label)?"checked":""} ${answer.passed?"disabled":""}><span>${esc(x.label)}</span></label>`).join("")}</div>
   <button data-action="check-quiz" ${answer.passed?"disabled":""}>${answer.passed?(en?"✓ PASSED":"✓ SUPERADO"):(en?"CHECK ANSWER":"COMPROBAR RESPUESTA")}</button>
   <p class="quiz-feedback ${answer.passed?"success":answer.tried?"error":""}" role="status">${answer.passed?(en?"Correct! You understand the concept.":"¡Correcto! Has comprendido el concepto."):answer.tried?(en?"Not quite. Review the hint and try again.":"Todavía no. Revisa la pista y vuelve a intentarlo."):(en?"Choose an answer.":"Selecciona una respuesta.")}</p></div>
-  <div class="guide-card checker"><h3>✓ 05 · ${en?"CHECK YOUR SOLUTION":"COMPRUEBA TU SOLUCIÓN"}</h3><p>${en?"Run Python and pass the mini quiz.":"Ejecuta Python y supera el minitest."}</p><button class="primary" data-action="verify-lesson">${en?"CHECK SOLUTION":"COMPROBAR SOLUCIÓN"}</button>
+  <div class="guide-card checker"><h3>✓ ${en?"CHECK YOUR SOLUTION":"COMPRUEBA TU SOLUCIÓN"}</h3><p>${en?"Run Python and pass the mini quiz.":"Ejecuta Python y supera el minitest."}</p><button class="primary" data-action="verify-lesson">${en?"CHECK SOLUTION":"COMPROBAR SOLUCIÓN"}</button>
   <div class="guide-feedback ${check?.ok?"success":check?"error":""}" data-guide-feedback role="status">${check?esc(check.message):(en?"Pending: Python + explanation + mini quiz.":"Pendiente: Python + explicación + minitest.")}</div><div class="buttons guide-next"><button data-action="complete" class="primary" ${!check?.ok&&!state.completed.includes(state.lesson)?"disabled":""}>${state.completed.includes(state.lesson)?"✓ COMPLETED":en?"MARK COMPLETE":"MARCAR COMPLETADA"}</button><button data-action="next-lesson">NEXT →</button></div></div>
  </div>`;
 }
