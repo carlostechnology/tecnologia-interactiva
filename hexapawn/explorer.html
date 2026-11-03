@@ -210,12 +210,16 @@ const esc=x=>String(x??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&
 const codeText=x=>esc(x).replace(/`([^`]+)`/g,"<code>$1</code>");
 const shuffle=a=>{const b=[...a];for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]];}return b;};
 const freshBoard=()=>[["N","N","N"],[".",".","."],["B","B","B"]];
-let state={mode:"learn",lesson:0,step:0,completed:[],theme:"light",lang:"es",board:freshBoard(),turn:"B",selected:null,lastMove:"",exam:null};
+// In lesson 01 the variable peones represents the total number of visible pieces (0–9).
+function countBoard(n){const b=Array.from({length:3},()=>[".",".","."]);for(let i=0;i<n;i++)b[2-Math.floor(i/3)][i%3]="B";return b;}
+let state={mode:"learn",lesson:0,step:0,completed:[],theme:"light",lang:"es",board:countBoard(3),turn:"B",selected:null,lastMove:"",exam:null};
 try{const v=JSON.parse(localStorage.getItem(KEY)||"null");if(v&&v.version===1){state={...state,...v};if(!Array.isArray(state.board))state.board=freshBoard();}}catch{}
 let timer=null;
 function save(){try{localStorage.setItem(KEY,JSON.stringify({...state,version:1}));}catch{}}
 function stop(){if(timer){clearInterval(timer);timer=null;}}
-function resetBoard(){state.board=freshBoard();state.turn="B";state.selected=null;state.lastMove="Tablero inicial";}
+function resetBoard(){state.board=state.mode==="learn"&&state.lesson===0?countBoard(3):freshBoard();state.turn="B";state.selected=null;state.lastMove="Tablero inicial";}
+// Reconcile older saved sessions, which showed six pawns even in the variable lesson.
+if(state.mode==="learn"&&state.lesson===0)state.board=countBoard(3);
 function currentLesson(){return LESSONS[state.lesson];}
 function lines(){return currentLesson().code.split("\n");}
 function progress(){return state.mode==="learn"?Math.round(state.completed.length/30*100):state.exam?(state.exam.done?100:Math.min(100,Math.round(state.exam.answers.length/(state.exam.mode==="practice"?60:45)*100))):0;}
@@ -336,6 +340,12 @@ function applyPythonBoard(nextBoard){
  return true;
 }
 window.smartChessUpdateFromPython=applyPythonBoard;
+window.smartChessUpdatePawnCount=function(n){
+ if(state.mode!=="learn"||currentLesson().id!==1||!Number.isInteger(n)||n<0||n>9)return false;
+ state.board=countBoard(n);state.turn="B";state.selected=null;state.lastMove="peones = "+n;
+ save();const diagram=mount.querySelector(".board-column .diagram");if(diagram)diagram.innerHTML=svgBoard();
+ return true;
+};
 window.smartChessUpdateRowFromPython=function(nextRow){
  if(!Array.isArray(nextRow)||nextRow.length!==3||!nextRow.every(cell=>cell==="B"||cell==="N"||cell==="."))return false;
  // In the introductory list exercises, "fila" represents tablero[0].
@@ -432,10 +442,16 @@ render();
     const panel = event.target.closest(".python-playground");
     if (panel) drafts.set(panel.dataset.lesson, event.target.value);
   });
-  function boardPreview(board,row) {
+  function boardPreview(board,row,pawnCount) {
     const panel=getPanel(); if(!panel)return;
     const target=panel.querySelector(".py-board-preview");
-    if(!board&&!row){target.classList.remove("visible");target.replaceChildren();return;}
+    if(!board&&!row&&pawnCount==null){target.classList.remove("visible");target.replaceChildren();return;}
+    if(!board&&!row){
+      const synced=typeof window.smartChessUpdatePawnCount==="function"&&window.smartChessUpdatePawnCount(pawnCount);
+      const message=document.createElement("span");message.className="py-board-caption";
+      message.textContent=synced?`✓ peones = ${pawnCount}: el tablero muestra ${pawnCount} pieza${pawnCount===1?"":"s"}.`:"El valor de peones debe ser un número entero de 0 a 9 para representarlo en el tablero.";
+      target.replaceChildren(message);target.classList.add("visible");return;
+    }
     const isBoard=!!board;
     const update=isBoard?window.smartChessUpdateFromPython:window.smartChessUpdateRowFromPython;
     const synced=typeof update==="function"&&update(isBoard?board:row);
@@ -461,7 +477,7 @@ render();
     const id=++activeId;
     try {
       if (!worker) {
-        worker = new Worker("python-worker.js?v=20261103-fila-sync",{type:"module"});
+        worker = new Worker("python-worker.js?v=20261103-peones-sync",{type:"module"});
         worker.addEventListener("message", event => {
           const msg=event.data || {};
           if (msg.type==="loading") { status("LOADING PYTHON…"); return; }
@@ -473,7 +489,7 @@ render();
             status("✓ FINISHED");
             const output=[msg.output,msg.stderr].filter(Boolean).join("\n");
             consoleText(output || "✓ Programa terminado. No se ha utilizado print().");
-            boardPreview(msg.board,msg.row);
+            boardPreview(msg.board,msg.row,msg.pawnCount);
           } else {
             status("ERROR");
             consoleText([msg.output,msg.stderr,msg.error].filter(Boolean).join("\n") || "Error al ejecutar el programa.");
