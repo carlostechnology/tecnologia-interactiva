@@ -197,6 +197,10 @@ function translateUI(){
    if(!translated){
      let m=raw.match(/^(\d+)\/30 COMPLETE$/);if(m)translated=m[1]+"/30 COMPLETED";
    }
+   if(!translated){
+     const group=raw.match(/^(\\d{2}) · (.+)$/);
+     if(group&&EN_TRANSLATIONS[group[2]])translated=group[1]+" · "+EN_TRANSLATIONS[group[2]].toUpperCase();
+   }
    if(translated)node.textContent=node.textContent.replace(raw,translated);
  }
 }
@@ -309,7 +313,7 @@ function learnCenter(){const l=currentLesson(),n=lines().length;return `<main cl
   </div>
 </div>
 </main>`;}
-function learnInspector(){const l=currentLesson(),done=state.completed.includes(state.lesson);return `<aside class="panel inspector"><div class="panel-head"><h2>LESSON OVERVIEW</h2><span class="cap">${String(l.id).padStart(2,"0")} / 30</span></div><div class="panel-body"><span class="pill">${done?"✓ COMPLETED":"● ACTIVE"}</span><h2 style="margin:19px 0 9px">${esc(l.title.toUpperCase())}</h2><p>${esc(l.explanation)}</p><div class="kv"><span>SUBJECT</span><b>PYTHON BASICS</b></div><div class="kv"><span>BLOCK</span><b>${esc(GROUPS[l.section])}</b></div><div class="kv"><span>CODE LINES</span><b>${lines().length}</b></div><div class="kv"><span>GUIDED STEP</span><b>${state.step}/${lines().length}</b></div><div class="note"><b>YOUR CHALLENGE</b>${esc(l.challenge)}</div><h3 style="margin:20px 0 7px">EXPECTED OUTPUT</h3><pre class="output">${state.step>=lines().length?esc(l.output):"Avanza por el código para revelar el resultado."}</pre><p class="small">El recorrido STEP te ayuda a comprender cada instrucción. Para modificar y ejecutar el programa de verdad, utiliza el editor PYTHON y pulsa RUN PYTHON.</p><div class="buttons"><button class="primary" data-action="complete">${done?"✓ COMPLETED":"MARK COMPLETE"}</button><button data-action="next-lesson">NEXT LESSON →</button></div><p style="margin-top:17px" class="small"><a href="${LINK}" target="_blank" rel="noopener">ENTRADA ORIGINAL DEL BLOG ↗</a></p></div></aside>`;}
+function learnInspector(){const l=currentLesson(),done=state.completed.includes(state.lesson);return `<aside class="panel inspector"><div class="panel-head"><h2>LESSON OVERVIEW</h2><span class="cap">${String(l.id).padStart(2,"0")} / 30</span></div><div class="panel-body"><span class="pill">${done?"✓ COMPLETED":"● ACTIVE"}</span><h2 style="margin:19px 0 9px">${esc(l.title.toUpperCase())}</h2><p>${esc(l.explanation)}</p><div class="kv"><span>SUBJECT</span><b>PYTHON BASICS</b></div><div class="kv"><span>BLOCK</span><b>${esc(GROUPS[l.section])}</b></div><div class="kv"><span>CODE LINES</span><b>${lines().length}</b></div><div class="kv"><span>GUIDED STEP</span><b>${state.step}/${lines().length}</b></div><div class="note"><b>YOUR CHALLENGE</b>${esc(l.challenge)}</div><h3 style="margin:20px 0 7px">EXPECTED OUTPUT</h3><pre class="output">${state.step>=lines().length?esc(l.output):(state.lang==="en"?"Step through the code to reveal the result.":"Avanza por el código para revelar el resultado.")}</pre><p class="small">El recorrido STEP te ayuda a comprender cada instrucción. Para modificar y ejecutar el programa de verdad, utiliza el editor PYTHON y pulsa RUN PYTHON.</p><div class="buttons"><button class="primary" data-action="complete">${done?"✓ COMPLETED":"MARK COMPLETE"}</button><button data-action="next-lesson">NEXT LESSON →</button></div><p style="margin-top:17px" class="small"><a href="${LINK}" target="_blank" rel="noopener">ENTRADA ORIGINAL DEL BLOG ↗</a></p></div></aside>`;}
 function learnTrace(){const a=lines();return `<section class="panel trace"><div class="panel-head"><h2>GUIDED TRACE</h2><span class="cap">LINE-BY-LINE · GUIDED LEARNING</span></div><div style="overflow:auto"><table><thead><tr><th>NO.</th><th>STATE</th><th>INSTRUCTION</th><th>EXPLANATION</th></tr></thead><tbody>${a.map((line,i)=>`<tr class="${i===state.step-1?"current":""}"><td>${String(i+1).padStart(2,"0")}</td><td>${i<state.step?"● VISITED":"○ PENDING"}</td><td>${esc(line.trim()||"(blank line)")}</td><td>${i===state.step-1?esc(currentLesson().explanation):""}</td></tr>`).join("")}</tbody></table></div></section>`;}
 function topicStats(t){const a=state.exam?.answers.filter(x=>QS[x.id].topic===t)||[];return {n:a.length,correct:a.filter(x=>x.ok).length,accuracy:a.length?a.filter(x=>x.ok).length/a.length:0};}
 function shouldEnd(){const ex=state.exam,n=ex.answers.length;if(ex.mode==="practice")return n===60;if(n<30)return false;if(n>=45)return true;if(n%6!==0)return false;return BANK.every((_,t)=>topicStats(t).n>=5&&topicStats(t).accuracy>=.6);}
@@ -413,6 +417,12 @@ render();
     panel.querySelector(".py-editor").value = drafts.has(key) ? drafts.get(key) : original;
     controls();
     window.smartChessTranslateUI?.();
+    if(document.documentElement.lang==="en"){
+      const hint=panel.querySelector(".py-hint");
+      if(hint)hint.textContent="Real Python in your browser (Pyodide). Internet is required on first load. STOP interrupts infinite loops. Your changes stay in this session.";
+      const consoleNode=panel.querySelector(".py-console");
+      if(consoleNode)consoleNode.textContent="Edit the program and click RUN PYTHON to execute it.";
+    }
   }
   const observer = new MutationObserver(insertEditor);
   observer.observe(root, {childList:true,subtree:true});
