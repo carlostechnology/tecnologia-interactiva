@@ -1,0 +1,672 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SmartChess · Hexapawn | TIC II</title>
+<style>
+:root{--bg:#f5f7f2;--ink:#273d33;--muted:#647368;--green:#355f43;--soft:#eaf1e6;--line:#dce5d8;--gold:#deb15b}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.6 system-ui,"Segoe UI",sans-serif}
+button,input{font:inherit}
+button{cursor:pointer;border:0;border-radius:9px;padding:12px 18px;font-weight:650}
+button:focus-visible,input:focus-visible,a:focus-visible{outline:3px solid var(--gold);outline-offset:3px}
+button:disabled{opacity:.5;cursor:not-allowed}
+.primary{background:var(--green);color:white}
+.primary:hover{background:#254d34}
+.secondary{background:white;border:1px solid var(--line);color:var(--ink)}
+.shell{max-width:900px;margin:auto;padding:25px 20px 60px}
+header{display:flex;align-items:center;gap:13px;padding:15px 0 28px}
+.mark{display:grid;place-items:center;width:44px;height:44px;background:var(--soft);border-radius:12px;font-size:27px}
+header strong{display:block;font-size:15px}
+header small{color:var(--muted)}
+header a{margin-left:auto;font-size:12px;color:var(--green);text-decoration:none}
+.card{background:white;border:1px solid var(--line);border-radius:17px;padding:35px;margin-bottom:20px;box-shadow:0 3px 15px #263a2008}
+.eyebrow{color:#68805e;font-weight:800;font-size:11px;letter-spacing:1.5px}
+h1{font-size:clamp(27px,5vw,36px);line-height:1.2;letter-spacing:-1px;margin:14px 0}
+h2{font-size:23px;line-height:1.3}
+h3{font-size:17px}
+p{color:var(--muted)}
+label{display:block;margin:15px 0;font-size:13px;font-weight:650}
+input[type=text]{display:block;width:100%;margin-top:7px;padding:12px;border:1px solid var(--line);border-radius:8px}
+input[type=radio]{accent-color:var(--green)}
+.notice{background:var(--soft);border:1px solid var(--line);padding:14px;border-radius:10px;font-size:13px;margin:20px 0}
+.modes{display:grid;gap:12px;margin:22px 0}
+.mode,.answer{display:flex;align-items:flex-start;gap:13px;padding:18px;border:1px solid var(--line);border-radius:10px;cursor:pointer;font-weight:400}
+.mode:has(input:checked),.answer:has(input:checked){background:#edf4e9;border-color:#76996b}
+.mode input,.answer input{margin-top:5px;flex-shrink:0}
+.mode small{display:block;color:var(--muted);margin-top:5px}
+.row{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:23px}
+.progress{height:8px;background:#e9eee5;border-radius:8px;overflow:hidden;margin:19px 0 29px}
+.progress i{display:block;height:100%;background:#79a06d;transition:width .25s}
+.answers{display:grid;gap:12px;margin:27px 0}
+.letter{background:#e3ebe0;padding:3px 8px;border-radius:5px;font-size:12px;font-weight:700}
+.question{font-size:23px;line-height:1.4;font-weight:650;letter-spacing:-.35px}
+code{background:#eaf0e7;color:#2a5b3a;padding:2px 5px;border-radius:4px;font-size:.9em}
+.feedback{padding:20px;border-radius:11px;margin:22px 0}
+.correct{background:#edf7e9;border:1px solid #c9dfc0}
+.incorrect{background:#fff0eb;border:1px solid #ebc9bc}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:25px 0}
+.stat{background:#f7faf5;border:1px solid var(--line);padding:15px;border-radius:11px}
+.stat b{display:block;font-size:24px}
+.stat span{font-size:11px;color:var(--muted)}
+.score{font-size:65px;font-weight:700;color:var(--green);line-height:1.2}
+.score small{font-size:23px;color:var(--muted)}
+.topic-result{margin:17px 0}
+.topic-result .progress{height:6px;margin:7px 0}
+.review{border-top:1px solid var(--line);padding:19px 0}
+.review p{margin:6px 0;font-size:13px}
+details{margin-top:25px;border-top:1px solid var(--line);padding-top:15px}
+summary{cursor:pointer;font-weight:650}
+.game{margin-top:27px;padding:22px;background:#f8faf5;border:1px solid var(--line);border-radius:13px}
+.game-layout{display:grid;grid-template-columns:250px 1fr;gap:22px;align-items:start}
+.board{display:grid;grid-template-columns:repeat(3,1fr);aspect-ratio:1;border:4px solid #46634d;border-radius:8px;overflow:hidden}
+.square{position:relative;border:0;border-radius:0;padding:0;display:grid;place-items:center;font-size:43px}
+.light{background:#eceee1}.dark{background:#8eaa85}
+.square.selected{outline:4px solid var(--gold);outline-offset:-4px}
+.square.legal:after{content:"";position:absolute;width:17px;height:17px;background:#dbad56af;border-radius:50%}
+.pawn{line-height:1;z-index:1}
+.pawn.white{color:#fffdf3;-webkit-text-stroke:1px #4b604f}
+.pawn.black{color:#273b2d}
+.coord{position:absolute;top:3px;left:5px;font-size:10px;font-weight:700;color:#354b3a}
+.game-info{padding:15px;background:white;border:1px solid var(--line);border-radius:10px}
+.game-info p{font-size:13px}
+.small{font-size:12px;color:var(--muted)}
+footer{text-align:center;font-size:12px;color:var(--muted);padding:20px}
+@media(max-width:650px){.card{padding:22px 18px}.game-layout{grid-template-columns:1fr}.board{max-width:270px}.stats{grid-template-columns:repeat(2,1fr)}header a{font-size:10px}}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="shell">
+<header>
+  <div class="mark">♟</div>
+  <div><strong>TIC II · 2.º Bachillerato</strong><small>SmartChess · Hexapawn y Python</small></div>
+  <a href="./">← Hexapawn Lab</a>
+</header>
+<main id="app"></main>
+<footer>TECNOLOGÍA / INTERACTIVA · Learn · Build · Experiment</footer>
+</div>
+<script>
+"use strict";
+
+const BLOG="https://tecnologiaingenieria.wordpress.com/2026/10/06/smartchess-hexapawn/";
+const KEY="smartchess-hexapawn-tic2-v1";
+
+/*
+Cada pregunta contiene:
+[enunciado, respuesta correcta, distractor 1,
+ distractor 2, distractor 3, explicación]
+
+La posición de la respuesta correcta se mezcla al mostrarla.
+Cada bloque contiene 10 preguntas.
+*/
+
+const BANK=[
+{
+name:"Reglas de Hexapawn",
+summary:"Tablero, turnos, avances, capturas y victoria.",
+items:[
+["¿Cuántas casillas tiene el tablero de Hexapawn?","9 (3 × 3)","16 (4 × 4)","8 (2 × 4)","64 (8 × 8)","Tres filas por tres columnas dan nueve casillas."],
+["¿Cuántos peones tiene cada jugador al comienzo?","Tres","Uno","Dos","Cuatro","Cada jugador empieza con tres peones."],
+["¿Qué color comienza la partida?","Blancas","Negras","Se sortea cada turno","Ambos a la vez","En la versión del blog comienzan las blancas."],
+["¿Cuándo puede un peón avanzar recto una casilla?","Cuando la casilla de delante está vacía","Cuando hay un rival delante","Cuando puede saltar otra pieza","Cuando retrocede","El peón solo avanza recto hacia una casilla libre."],
+["¿Cómo captura un peón?","En diagonal hacia delante","En línea recta","En diagonal hacia atrás","Saltando dos casillas","Las capturas se realizan en diagonal hacia delante sobre un rival."],
+["¿Es obligatorio capturar si puedes hacerlo?","No","Sí, siempre","Solo para negras","Solo en el último turno","En Hexapawn no es obligatorio capturar."],
+["¿Qué ocurre si una blanca alcanza la fila superior?","Ganan las blancas","Se convierte en dama","Vuelve al inicio","La partida continúa","Llegar a la fila opuesta termina la partida con victoria."],
+["Si te toca jugar y no puedes mover, ¿qué sucede?","Pierdes","Empatas","Saltas turno","Se reinicia la partida","Dejar al rival sin movimientos legales es una condición de victoria."],
+["¿Qué significa la notación b1-b2?","Mover de b1 a b2","Dos piezas inmóviles","Capturar necesariamente","Mover dos veces","La notación indica origen y destino del movimiento."],
+["¿Cuál de estos hechos también da la victoria?","Capturar todos los peones rivales","Ocupar el centro","Tener tres peones","Mover dos veces seguidas","Eliminar todas las piezas contrarias termina la partida."]
+]},
+{
+name:"Variables, listas e índices",
+summary:"Guardar datos y representar filas con Python.",
+items:[
+["¿Qué muestra peones = 3 seguido de print(peones)?","3","peones","0","[3,3,3]","La variable almacena el número 3 y print muestra su valor."],
+["En la lista [\"B\",\".\",\"N\"], ¿qué significa el punto?","Una casilla vacía","Una blanca","Una negra","Un error","B representa blanca, N negra y el punto una casilla vacía."],
+["¿Qué devuelve fila[0] si fila = [\"B\",\".\",\"N\"]?","B",".","N","0","El primer elemento de una lista tiene índice cero."],
+["¿Qué devuelve fila[1] con esa misma lista?",".","B","N","1","El índice uno corresponde al segundo elemento."],
+["¿Qué devuelve fila[2] con esa misma lista?","N","B",".","2","El índice dos corresponde al tercer elemento."],
+["¿Qué ocurre al consultar fila[3] en una lista de tres elementos?","IndexError","NameError","SyntaxError","Se crea una casilla","Los índices válidos son 0, 1 y 2."],
+["Si fila = [\"B\",\".\",\"N\"] y ejecutamos fila[0] = \".\", ¿cómo queda?","[\".\",\".\",\"N\"]","[\"B\",\".\",\"N\"]","[\".\",\".\"]","[\"B\",\".\",\".\"]","La asignación modifica únicamente el primer elemento."],
+["¿Qué devuelve len([\".\",\".\",\".\"])?","3","0","1","9","len cuenta elementos, aunque todos sean casillas vacías."],
+["¿Qué lista representa una blanca y dos casillas vacías?","[\"B\",\".\",\".\"]","[\"B\",\"B\",\".\"]","[\"N\",\".\",\".\"]","[\"B\",\".\"]","La fila debe tener tres elementos y una sola B."],
+["¿Qué diferencia hay entre fila[2] y len(fila)?","Uno lee una posición; el otro cuenta elementos","Ambos devuelven la última pieza","Uno añade y otro elimina","Ambos cuentan peones","Un índice accede a un elemento; len devuelve la longitud de la lista."]
+]},
+{
+name:"Bucles, condiciones y contadores",
+summary:"Recorrer listas, comparar símbolos y contar piezas.",
+items:[
+["¿Qué hace for casilla in fila?","Recorre los elementos de la fila","Ordena la lista","Crea una lista nueva","Elimina las casillas vacías","for visita cada elemento de la lista una vez."],
+["¿Qué operador compara dos valores para saber si son iguales?","==","=","!=","=>","== compara; = asigna."],
+["En casilla = \"B\", ¿qué significa =?","Asignación","Comparación","Final de un bucle","Llamada a función","El signo igual guarda el valor B en la variable."],
+["Si casilla vale N, ¿se ejecuta if casilla == \"B\"?","No","Sí","Dos veces","Solo si hay tres peones","La condición es falsa y se omite el bloque."],
+["¿Cuántas veces se ejecuta un for sobre [\"B\",\".\",\"N\"]?","Tres","Una","Dos","Nueve","Hay una iteración por elemento."],
+["¿Por qué ponemos total = 0 antes de contar?","Para iniciar el contador","Para borrar los peones","Para vaciar la lista","Para detener el programa","Un contador necesita un valor inicial."],
+["En [\"B\",\".\",\"B\"], ¿cuántas veces se cumple casilla == \"B\"?","Dos","Tres","Una","Cero","La condición se cumple con las dos blancas."],
+["¿Qué hace total = total + 1?","Incrementa total en uno","Mantiene total en uno","Resta uno","Convierte total en lista","Se lee el valor anterior, se suma uno y se guarda el resultado."],
+["Si print(\"Fin\") está fuera de un if, ¿cuándo se ejecuta?","Siempre que se llegue a esa línea","Solo si es True","Solo si es False","Nunca","La sangría indica qué líneas pertenecen al bloque."],
+["¿Qué condición sirve para contar casillas vacías?","casilla == \".\"","casilla = \".\"","casilla == \"B\"","fila == 0","El punto identifica una casilla vacía y == realiza la comparación."]
+]},
+{
+name:"Funciones y reutilización",
+summary:"def, parámetros, llamadas y return.",
+items:[
+["¿Qué palabra clave define una función en Python?","def","for","list","show","La palabra clave para definir una función es def."],
+["¿Cuándo se ejecuta el cuerpo de saludar()?","Cuando se llama a la función","Al definirla","Antes de iniciar el archivo","Al declarar una lista","Definir una función no ejecuta sus instrucciones."],
+["¿Qué es nombre en def saludar(nombre)?","Un parámetro","Una palabra reservada","Una condición","Un resultado","El parámetro recibe el valor pasado en la llamada."],
+["Si duplicar(numero) devuelve numero * 2, ¿cuánto vale duplicar(5)?","10","5","7","25","La función multiplica cinco por dos."],
+["¿Qué diferencia hay entre print y return?","print muestra; return devuelve un valor","Ambos cierran el programa","return solo muestra","No hay diferencia","El valor de return puede guardarse y utilizarse después."],
+["Una función devuelve datos[0]. ¿Qué entrega para [\"N\",\".\",\"B\"]?","N","B",".","0","El elemento con índice cero es N."],
+["¿Para qué sirve contar(fila, simbolo)?","Para contar distintos símbolos con una misma función","Solo para contar blancas","Para evitar todos los bucles","Para devolver siempre tres","El parámetro simbolo permite reutilizar la función."],
+["Si total = 0 está dentro de una función, ¿qué sucede en una nueva llamada?","Se crea un nuevo contador","Conserva la cuenta anterior","Se borra la lista","La función deja de funcionar","Una variable local se inicializa de nuevo en cada llamada."],
+["¿Dónde debe estar return total para contar toda la fila?","Después del bucle, dentro de la función","Dentro del if del primer acierto","Antes de total = 0","Fuera de la función","Devolver dentro del bucle puede finalizar el recuento demasiado pronto."],
+["Para fila = [\"B\",\".\",\"B\"], ¿cuánto suman los recuentos de B, N y punto?","3","2","4","9","Hay dos blancas, cero negras y un punto: en total tres casillas."]
+]},
+{
+name:"Tablero y coordenadas",
+summary:"Listas anidadas, filas, columnas e índices.",
+items:[
+["¿Cómo representamos un tablero 3 × 3 en Python?","Como una lista de tres listas","Con un único número","Con tres cadenas independientes","Con nueve funciones","Cada lista interior representa una fila de tres elementos."],
+["¿Cómo es el tablero inicial de arriba abajo?","N N N / . . . / B B B","B B B / . . . / N N N","N . N / B . B / N . N",". . . / B B B / N N N","Las negras comienzan arriba, el centro está vacío y las blancas abajo."],
+["¿Qué fila devuelve tablero[0]?","La superior","La central","La inferior","Una inexistente","La primera fila tiene índice cero."],
+["¿Qué fila devuelve tablero[2]?","La inferior","La central","La superior","La cuarta","La tercera fila tiene índice dos."],
+["¿Cómo se accede a la casilla b2?","tablero[1][1]","tablero[2][1]","tablero[1][2]","tablero[0][1]","b2 está en el centro: fila índice 1, columna índice 1."],
+["¿Cómo se accede a b1?","tablero[2][1]","tablero[1][1]","tablero[0][1]","tablero[2][2]","La fila inferior tiene índice dos y b es la columna uno."],
+["¿Cómo se accede a a1?","tablero[2][0]","tablero[0][2]","tablero[1][0]","tablero[0][0]","a corresponde a la columna cero y la fila inferior al índice dos."],
+["¿Cómo se accede a c2?","tablero[1][2]","tablero[2][1]","tablero[0][2]","tablero[1][1]","La fila central es uno y la columna c es dos."],
+["¿Cuántas casillas recorren dos bucles anidados sobre el tablero completo?","Nueve","Tres","Seis","Veintisiete","Tres filas con tres elementos cada una producen nueve visitas."],
+["Si una blanca está en la fila Python 2, ¿qué índice tiene la fila de delante?","1","3","2","0","Las blancas avanzan hacia arriba, restando uno al índice de fila."]
+]},
+{
+name:"Movimientos y depuración",
+summary:"Comprobar movimientos, modificar casillas y detectar errores.",
+items:[
+["Si esta_vacia(casilla) devuelve casilla == \".\", ¿qué devuelve esta_vacia(\".\")?","True","False","\".\"","0","El argumento coincide con el símbolo de casilla vacía."],
+["¿Qué devuelve esta_vacia(\"B\")?","False","True","B","None","Una blanca no es una casilla vacía."],
+["Para avanzar de b1 a b2, ¿qué debemos comprobar?","Hay B en b1 y b2 está vacía","Hay B en b1 y N en b2","Ambas están vacías","Hay N en b1 y B en b2","Suponiendo turno blanco y partida activa, necesitamos pieza propia en origen y destino libre."],
+["Hay una negra en b2 y una blanca en b1. ¿Puede capturarla recto?","No, solo se captura en diagonal","Sí, porque está delante","Sí, si se anuncia","Solo si quedan dos peones","Una pieza rival situada justo delante bloquea el avance."],
+["Si columna = 1 permite b1-b2, ¿qué valor permite a1-a2?","0","1","2","3","Las columnas a, b y c tienen índices 0, 1 y 2."],
+["Después de mover una blanca de b1 a b2, ¿cómo quedan ambas?","b1 = \".\"; b2 = \"B\"","b1 = \"B\"; b2 = \"B\"","Ambas vacías","b1 = \"N\"; b2 = \"B\"","Mover exige vaciar el origen y ocupar el destino."],
+["Si b1 está vacía y b2 también, ¿puedes mover una blanca desde b1?","No, falta una blanca en el origen","Sí, porque b2 está libre","Sí, con print","No, porque b2 está fuera","Validar el destino no basta: el origen debe contener la pieza."],
+["Si fila_origen = 0 y fila_destino = fila_origen - 1, ¿qué resulta?","-1","0","1","Error de sintaxis","La resta produce -1; hay que comprobar los límites."],
+["¿Por qué tablero[-1] puede provocar un error lógico?","Porque selecciona la última fila","Porque siempre produce IndexError","Porque borra el tablero","Porque elige la primera columna","Python acepta índices negativos y -1 indica el último elemento."],
+["¿Qué debemos revisar ante un IndentationError?","La sangría de las instrucciones","Los colores de las piezas","El navegador","La longitud del tablero","La indentación define los bloques de if, for y def."]
+]}
+];
+
+const questions=[];
+BANK.forEach((block,t)=>{
+  block.items.forEach((item,i)=>{
+    questions.push({
+      id:questions.length,
+      topic:t,
+      difficulty:Math.min(5,1+Math.floor(i/2)),
+      text:item[0],
+      options:item.slice(1,5),
+      explanation:item[5]
+    });
+  });
+});
+
+const app=document.getElementById("app");
+const esc=value=>String(value??"").replace(/[&<>"']/g,c=>({
+  "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+}[c]));
+const format=value=>esc(value).replace(/`([^`]+)`/g,"<code>$1</code>");
+const shuffle=array=>{
+  const copy=[...array];
+  for(let i=copy.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    [copy[i],copy[j]]=[copy[j],copy[i]];
+  }
+  return copy;
+};
+
+let session=null;
+let storageAvailable=true;
+
+function save(){
+  try{localStorage.setItem(KEY,JSON.stringify(session));}
+  catch{storageAvailable=false;}
+}
+function getSaved(){
+  try{return JSON.parse(localStorage.getItem(KEY)||"null");}
+  catch{return null;}
+}
+function clearSaved(){
+  try{localStorage.removeItem(KEY);}catch{}
+}
+
+function boardHTML(){
+  return `
+  <section class="game">
+    <span class="eyebrow">ANTES DE PROGRAMAR</span>
+    <h2>Explora el tablero 3 × 3</h2>
+    <p>Juega con un compañero. Selecciona un peón y después una casilla marcada.</p>
+    <div class="game-layout">
+      <div id="board" class="board" aria-label="Tablero de Hexapawn"></div>
+      <div class="game-info">
+        <strong id="turnText">Turno de blancas</strong>
+        <p id="gameMessage">Avanza recto a una casilla vacía o captura en diagonal.</p>
+        <p class="small">La captura no es obligatoria. Se gana al llegar al extremo opuesto, eliminar todos los peones rivales o dejar al contrario sin movimientos.</p>
+        <button class="secondary" id="resetBoard" type="button">Reiniciar partida</button>
+        <p class="small">Pregunta: ¿cómo representarías esta posición mediante listas de Python?</p>
+      </div>
+    </div>
+  </section>`;
+}
+
+function mountBoard(){
+  let board,turn,selected,winner;
+  const grid=document.getElementById("board");
+  const other=p=>p==="B"?"N":"B";
+
+  function legalMoves(r,c){
+    if(board[r][c]!==turn)return [];
+    const nr=r+(turn==="B"?-1:1);
+    if(nr<0||nr>2)return [];
+    const result=[];
+    if(board[nr][c]===".")result.push([nr,c]);
+    for(const dc of [-1,1]){
+      const nc=c+dc;
+      if(nc>=0&&nc<3&&board[nr][nc]===other(turn)){
+        result.push([nr,nc]);
+      }
+    }
+    return result;
+  }
+
+  function hasMoves(){
+    return board.some((row,r)=>row.some((p,c)=>
+      p===turn&&legalMoves(r,c).length>0
+    ));
+  }
+
+  function redraw(){
+    grid.replaceChildren();
+    const possible=selected?legalMoves(...selected):[];
+    for(let r=0;r<3;r++){
+      for(let c=0;c<3;c++){
+        const piece=board[r][c];
+        const btn=document.createElement("button");
+        btn.type="button";
+        btn.className="square "+((r+c)%2?"dark":"light");
+        if(selected&&selected[0]===r&&selected[1]===c)btn.classList.add("selected");
+        if(possible.some(m=>m[0]===r&&m[1]===c))btn.classList.add("legal");
+        const coord="abc"[c]+(3-r);
+        btn.setAttribute("aria-label",coord+": "+(piece==="B"?"blanca":piece==="N"?"negra":"vacía"));
+        const mark=document.createElement("span");
+        mark.className="coord";mark.textContent=coord;btn.append(mark);
+        if(piece!=="."){
+          const pawn=document.createElement("span");
+          pawn.className="pawn "+(piece==="B"?"white":"black");
+          pawn.textContent="♟";btn.append(pawn);
+        }
+        btn.onclick=()=>select(r,c);
+        grid.append(btn);
+      }
+    }
+    document.getElementById("turnText").textContent=winner
+      ?"Ganan las "+(winner==="B"?"blancas":"negras")+" 🎉"
+      :"Turno de "+(turn==="B"?"blancas":"negras");
+  }
+
+  function select(r,c){
+    if(winner)return;
+    if(selected&&legalMoves(...selected).some(m=>m[0]===r&&m[1]===c)){
+      const [sr,sc]=selected,played=turn;
+      board[sr][sc]=".";
+      board[r][c]=played;
+      selected=null;
+      turn=other(played);
+      if((played==="B"&&r===0)||(played==="N"&&r===2)||
+         !board.flat().includes(turn)||!hasMoves())winner=played;
+      document.getElementById("gameMessage").textContent=winner
+        ?"¡Partida terminada!":"Movimiento "+("abc"[sc])+(3-sr)+"-"+("abc"[c])+(3-r)+".";
+    }else{
+      selected=board[r][c]===turn?[r,c]:null;
+      document.getElementById("gameMessage").textContent=selected
+        ?"Elige uno de los destinos señalados."
+        :"Selecciona un peón del color que mueve.";
+    }
+    redraw();
+  }
+
+  function reset(){
+    board=[["N","N","N"],[".",".","."],["B","B","B"]];
+    turn="B";selected=null;winner=null;
+    document.getElementById("gameMessage").textContent="Avanza recto a una casilla vacía o captura en diagonal.";
+    redraw();
+  }
+
+  document.getElementById("resetBoard").onclick=reset;
+  reset();
+}
+
+function home(){
+  const saved=getSaved();
+  app.innerHTML=`
+  <section class="card">
+    <span class="eyebrow">TECNOLOGÍAS DE LA INFORMACIÓN Y LA COMUNICACIÓN II</span>
+    <h1>Aprende a programar con Hexapawn.</h1>
+    <p>Comprueba cuánto sabes de las reglas del juego, las listas, los bucles, las funciones y los movimientos en Python.</p>
+    <div class="notice"><strong>60 preguntas · 6 bloques.</strong> Funciona sin Internet, sin cuentas y sin instalar programas.</div>
+    ${saved?`<div class="notice">Hay una actividad guardada: ${saved.answers.length} respuestas.</div>
+      <button class="secondary" id="resume">Continuar o ver el resultado anterior</button>`:""}
+    <form id="startForm">
+      <label>Nombre o alias
+        <input type="text" name="name" maxlength="100" required placeholder="Nombre del alumno">
+      </label>
+      <label>Grupo
+        <input type="text" name="group" maxlength="60" placeholder="2.º Bachillerato A">
+      </label>
+      <h3>Elige cómo practicar</h3>
+      <div class="modes">
+        <label class="mode">
+          <input type="radio" name="mode" value="practice" checked>
+          <span><strong>Práctica completa</strong><small>Las 60 preguntas sin repetir, organizadas por bloques. Verás la solución y la explicación después de responder.</small></span>
+        </label>
+        <label class="mode">
+          <input type="radio" name="mode" value="exam">
+          <span><strong>Examen adaptativo</strong><small>Entre 30 y 45 preguntas. La dificultad se adapta a tus respuestas. Las soluciones se muestran al final.</small></span>
+        </label>
+      </div>
+      <button type="submit" class="primary">Empezar actividad →</button>
+    </form>
+    <p class="small">Tu progreso se guarda en este navegador cuando está permitido. Puedes descargar los resultados al terminar. No se envían automáticamente al profesor.</p>
+    <details><summary>Los seis bloques</summary>
+      ${BANK.map((b,i)=>`<p><strong>${i+1}. ${esc(b.name)}</strong> · ${esc(b.summary)}</p>`).join("")}
+    </details>
+    ${boardHTML()}
+  </section>`;
+
+  mountBoard();
+
+  document.getElementById("resume")?.addEventListener("click",()=>{
+    session=saved;render();
+  });
+
+  document.getElementById("startForm").onsubmit=e=>{
+    e.preventDefault();
+    if(saved&&!confirm("¿Sustituir el progreso guardado por una actividad nueva?"))return;
+    const f=new FormData(e.target);
+    session={
+      name:String(f.get("name")).trim(),
+      group:String(f.get("group")).trim(),
+      mode:f.get("mode"),
+      started:Date.now(),
+      ended:null,
+      answers:[],
+      current:null,
+      level:2,
+      streak:0,
+      feedback:false,
+      done:false
+    };
+    save();render();
+  };
+}
+
+function answered(id){
+  return session.answers.some(a=>a.id===id);
+}
+
+function topicStats(topic){
+  const arr=session.answers.filter(a=>questions[a.id].topic===topic);
+  return {
+    count:arr.length,
+    correct:arr.filter(a=>a.ok).length,
+    accuracy:arr.length?arr.filter(a=>a.ok).length/arr.length:0
+  };
+}
+
+function shouldFinish(){
+  if(session.mode==="practice")return session.answers.length===60;
+  const n=session.answers.length;
+  if(n<30)return false;
+  if(n>=45)return true;
+  if(n%6!==0)return false;
+  const covered=BANK.every((_,i)=>topicStats(i).count>=5);
+  const solid=BANK.every((_,i)=>topicStats(i).accuracy>=.6);
+  return covered&&solid;
+}
+
+function nextQuestion(){
+  if(session.current)return session.current;
+  const available=questions.filter(q=>!answered(q.id));
+  if(!available.length)return null;
+
+  let pool=available;
+
+  if(session.mode==="practice"){
+    pool.sort((a,b)=>a.id-b.id);
+  }else{
+    const ranked=BANK.map((_,i)=>({
+      topic:i,
+      ...topicStats(i)
+    })).filter(x=>available.some(q=>q.topic===x.topic));
+
+    ranked.sort((a,b)=>{
+      if(session.answers.length<30)return a.count-b.count||a.topic-b.topic;
+      return a.accuracy-b.accuracy||a.count-b.count;
+    });
+
+    pool=available.filter(q=>q.topic===ranked[0].topic);
+    pool.sort((a,b)=>
+      Math.abs(a.difficulty-session.level)-Math.abs(b.difficulty-session.level)
+      ||Math.random()-.5
+    );
+  }
+
+  const q=pool[0];
+  session.current={id:q.id,order:shuffle([0,1,2,3])};
+  save();
+  return session.current;
+}
+
+function answer(choice){
+  if(!session.current||session.done)return;
+  const q=questions[session.current.id];
+  const ok=choice===0;
+  session.answers.push({
+    id:q.id,choice,ok,at:Date.now()
+  });
+  session.current=null;
+  session.streak=ok?Math.max(1,session.streak+1):Math.min(-1,session.streak-1);
+  if(session.streak>=2){session.level=Math.min(5,session.level+1);session.streak=0;}
+  if(session.streak<=-2){session.level=Math.max(1,session.level-1);session.streak=0;}
+  if(shouldFinish()){
+    session.done=true;
+    session.ended=Date.now();
+  }
+  session.feedback=session.mode==="practice";
+  save();render();
+}
+
+function render(){
+  if(!session){home();return;}
+  if(session.feedback){showFeedback();return;}
+  if(session.done){showResults();return;}
+  const current=nextQuestion();
+  if(!current){
+    session.done=true;
+    session.ended=Date.now();
+    save();showResults();return;
+  }
+  const q=questions[current.id],n=session.answers.length;
+  const total=session.mode==="practice"?60:45;
+  app.innerHTML=`
+  <section class="card">
+    <div class="row">
+      <span class="eyebrow">${session.mode==="practice"?"PRÁCTICA COMPLETA":"EXAMEN ADAPTATIVO"} · PREGUNTA ${n+1}</span>
+      <span class="small">${esc(session.name)}</span>
+    </div>
+    <div class="progress" role="progressbar" aria-valuemin="0" aria-valuemax="${total}" aria-valuenow="${n}">
+      <i style="width:${n/total*100}%"></i>
+    </div>
+    <p class="small">Bloque ${q.topic+1} · ${esc(BANK[q.topic].name)} · Nivel ${q.difficulty}/5</p>
+    <div class="question">${format(q.text)}</div>
+    <form id="answerForm">
+      <div class="answers">
+        ${current.order.map((original,i)=>`
+        <label class="answer">
+          <input type="radio" name="choice" value="${original}" required>
+          <span class="letter">${"ABCD"[i]}</span>
+          <span>${format(q.options[original])}</span>
+        </label>`).join("")}
+      </div>
+      <button class="primary" type="submit">Confirmar respuesta →</button>
+    </form>
+    <p class="small">La respuesta confirmada no se puede cambiar.</p>
+  </section>`;
+  document.getElementById("answerForm").onsubmit=e=>{
+    e.preventDefault();
+    const selected=app.querySelector("input[name=choice]:checked");
+    if(selected)answer(Number(selected.value));
+  };
+}
+
+function showFeedback(){
+  const a=session.answers.at(-1),q=questions[a.id];
+  app.innerHTML=`
+  <section class="card">
+    <span class="eyebrow">PRÁCTICA · ${session.answers.length} DE 60</span>
+    <h2>${a.ok?"¡Respuesta correcta!":"Vamos a repasarlo"}</h2>
+    <p>${format(q.text)}</p>
+    <div class="feedback ${a.ok?"correct":"incorrect"}">
+      <strong>Tu respuesta:</strong> ${format(q.options[a.choice])}
+      ${a.ok?"":`<p><strong>Respuesta correcta:</strong> ${format(q.options[0])}</p>`}
+    </div>
+    <p>${esc(q.explanation)}</p>
+    <p class="small">Bloque: ${esc(BANK[q.topic].name)}</p>
+    <button class="primary" id="continue">${session.done?"Ver resultado final":"Siguiente pregunta"} →</button>
+  </section>`;
+  document.getElementById("continue").onclick=()=>{
+    session.feedback=false;save();render();
+  };
+}
+
+function report(){
+  const n=session.answers.length;
+  const weights=[1,1.35,1.7,2.15,2.65];
+  let possible=0,earned=0;
+  session.answers.forEach(a=>{
+    const w=weights[questions[a.id].difficulty-1];
+    possible+=w;if(a.ok)earned+=w;
+  });
+  const correct=session.answers.filter(a=>a.ok).length;
+  return {
+    n,correct,
+    percentage:n?Math.round(correct/n*100):0,
+    score:possible?Math.round(100*earned/possible)/10:0,
+    seconds:Math.round(((session.ended||Date.now())-session.started)/1000)
+  };
+}
+
+function reviewHTML(all){
+  const arr=session.answers.filter(a=>all||!a.ok);
+  if(!arr.length)return "<p>No hay errores que revisar. ¡Enhorabuena!</p>";
+  return arr.map(a=>{
+    const q=questions[a.id];
+    return `<article class="review">
+      <span class="small">${esc(BANK[q.topic].name)} · ${a.ok?"✓ Correcta":"✗ Incorrecta"}</span>
+      <h3>${format(q.text)}</h3>
+      <p>Tu respuesta: ${format(q.options[a.choice])}</p>
+      <p><strong>Respuesta correcta: ${format(q.options[0])}</strong></p>
+      <p>${esc(q.explanation)}</p>
+    </article>`;
+  }).join("");
+}
+
+function showResults(all=false){
+  const r=report();
+  const mins=Math.floor(r.seconds/60);
+  const secs=String(r.seconds%60).padStart(2,"0");
+  app.innerHTML=`
+  <section class="card">
+    <span class="eyebrow">ACTIVIDAD FINALIZADA</span>
+    <h1>Tu resultado</h1>
+    <p>${esc(session.name)} · ${esc(session.group||"Sin grupo")}</p>
+    <div class="score">${r.score.toFixed(1)}<small> / 10</small></div>
+    <p class="small">Nota orientativa ponderada por dificultad.</p>
+    <div class="stats">
+      <div class="stat"><b>${r.correct}/${r.n}</b><span>Aciertos</span></div>
+      <div class="stat"><b>${r.percentage}%</b><span>Porcentaje</span></div>
+      <div class="stat"><b>${mins}:${secs}</b><span>Tiempo</span></div>
+    </div>
+    <h2>Rendimiento por bloques</h2>
+    ${BANK.map((block,i)=>{
+      const t=topicStats(i);
+      const pct=t.count?Math.round(t.accuracy*100):0;
+      return `<div class="topic-result">
+        <div class="row"><strong>${esc(block.name)}</strong><span>${t.correct}/${t.count} · ${pct}%</span></div>
+        <div class="progress"><i style="width:${pct}%"></i></div>
+      </div>`;
+    }).join("")}
+    <div class="actions">
+      <button class="primary" id="downloadHTML">Descargar informe HTML</button>
+      <button class="secondary" id="downloadJSON">Descargar JSON</button>
+    </div>
+    <p class="small">El informe incluye las respuestas y explicaciones. No se envía automáticamente.</p>
+    <h2>Revisar respuestas</h2>
+    <div class="actions">
+      <button class="secondary" id="errors">Solo errores</button>
+      <button class="secondary" id="all">Todas las preguntas</button>
+    </div>
+    <div>${reviewHTML(all)}</div>
+    <button class="secondary" id="homeButton">Volver al inicio</button>
+  </section>`;
+
+  document.getElementById("errors").onclick=()=>showResults(false);
+  document.getElementById("all").onclick=()=>showResults(true);
+  document.getElementById("homeButton").onclick=home;
+
+  document.getElementById("downloadJSON").onclick=()=>{
+    download("Hexapawn_resultado.json",JSON.stringify({
+      activity:"SmartChess · Hexapawn · TIC II",
+      name:session.name,group:session.group,
+      date:new Date(session.ended).toISOString(),
+      result:r,answers:session.answers
+    },null,2),"application/json");
+  };
+
+  document.getElementById("downloadHTML").onclick=()=>{
+    const html=`<!DOCTYPE html><html lang="es"><meta charset="UTF-8">
+    <title>Resultado Hexapawn TIC II</title>
+    <style>body{font:15px/1.6 Arial;max-width:850px;margin:35px auto;padding:20px;color:#273d33}
+    article{border-top:1px solid #ccc;padding:15px 0}
+    @media print{article{break-inside:avoid}}</style>
+    <h1>SmartChess · Hexapawn · TIC II</h1>
+    <p><b>Alumno:</b> ${esc(session.name)}<br><b>Grupo:</b> ${esc(session.group)}
+    <br><b>Fecha:</b> ${esc(new Date(session.ended).toLocaleString("es-ES"))}
+    <br><b>Modalidad:</b> ${session.mode==="practice"?"Práctica":"Examen adaptativo"}</p>
+    <h2>Nota: ${r.score.toFixed(1)}/10</h2>
+    <p>Aciertos: ${r.correct}/${r.n} (${r.percentage}%)</p>
+    <h2>Respuestas y explicaciones</h2>${reviewHTML(true)}
+    </html>`;
+    download("Hexapawn_resultado.html",html,"text/html");
+  };
+}
+
+function download(filename,content,type){
+  const blob=new Blob([content],{type:type+";charset=utf-8"});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement("a");
+  a.href=url;a.download=filename;
+  document.body.append(a);a.click();a.remove();
+  setTimeout(()=>URL.revokeObjectURL(url),1000);
+}
+
+const previous=getSaved();
+if(previous&&Array.isArray(previous.answers)){
+  // El usuario decide si continúa el intento anterior.
+  home();
+}else{
+  home();
+}
+</script>
+</body>
+</html>
