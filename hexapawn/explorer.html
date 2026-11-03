@@ -151,6 +151,38 @@ body.dark .mission-steps span{background:#1d304d;border-color:#48638c}
 @media(min-width:900px) and (max-width:1200px){.mission-intro{grid-template-columns:minmax(0,1fr) minmax(275px,34%);gap:14px}.mission-steps{padding-left:14px}}
 @media(max-width:899px){.mission-steps{display:flex;flex-wrap:wrap}.mission-intro{display:flex;flex-direction:column;align-items:stretch}}
 body.dark .mission-steps{border-left-color:#48638c}
+
+/* Balanced learning lab: board and editor above; explanation and quiz span full width below. */
+.study-layout{align-items:start}
+.study-layout .py-editor{min-height:145px!important;max-height:420px}
+.study-layout .diagram svg{max-height:370px;width:100%;object-fit:contain}
+.study-layout .diagram{display:flex;justify-content:center;align-items:center}
+.study-layout .code-column{min-height:0}
+.learning-check-zone{border-top:2px solid var(--line);background:var(--paper)}
+.learning-check-title{display:flex;align-items:baseline;flex-wrap:wrap;gap:10px;justify-content:space-between;padding:15px 18px;border-bottom:1px solid var(--line);background:var(--active);color:var(--blue);font-size:16px;font-weight:950;letter-spacing:.02em}
+.learning-check-title small{font-size:11px;color:var(--muted);letter-spacing:0;font-weight:700}
+.learning-check-zone .lesson-guide{padding:16px;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px;margin:0}
+.learning-check-zone .lesson-guide>.guide-card:first-child{grid-column:1;grid-row:1}
+.learning-check-zone .lesson-guide>.guide-card.reflection{grid-column:1;grid-row:2}
+.learning-check-zone .lesson-guide>.guide-card.quiz-card{grid-column:2;grid-row:1 / span 2}
+.learning-check-zone .lesson-guide>.guide-card.checker{grid-column:1/-1;grid-row:3;display:grid;grid-template-columns:1fr auto;gap:6px 18px;align-items:center}
+.learning-check-zone .lesson-guide>.guide-card.checker h3{grid-column:1/-1;margin:0}
+.learning-check-zone .lesson-guide>.guide-card.checker p{grid-column:1;margin:0}
+.learning-check-zone .lesson-guide>.guide-card.checker>button{grid-column:2;grid-row:2;padding:11px}
+.learning-check-zone .guide-feedback{grid-column:1;grid-row:3}
+.learning-check-zone .guide-next{grid-column:2;grid-row:3;justify-content:flex-end;margin:0}
+.learning-check-zone .lesson-guide>.guide-card{padding:15px}
+.learning-check-zone .reflection-input{min-height:110px}
+.learning-check-zone .quiz-answers{display:grid;grid-template-columns:1fr;gap:6px}
+.trace-fold>summary{cursor:pointer;padding:13px 16px;font-size:14px;font-weight:900;color:var(--blue);list-style:revert}
+.trace-fold>summary small{font-size:10px;color:var(--muted)}
+@media(max-width:1000px){
+ .learning-check-zone .lesson-guide{grid-template-columns:1fr}
+ .learning-check-zone .lesson-guide>.guide-card{grid-column:1!important;grid-row:auto!important}
+ .learning-check-zone .lesson-guide>.guide-card.checker{display:block}
+ .learning-check-zone .guide-next{justify-content:flex-start;margin-top:10px}
+ .learning-check-zone .guide-feedback{margin-top:9px}
+}
 </style>
 
 <style id="python-runtime-style">
@@ -414,13 +446,13 @@ function learnCenter(){const l=currentLesson(),n=lines().length,t=guideTask(),en
     <div class="diagram">${svgBoard()}</div>
     <div class="legend"><span><i style="background:#24272a"></i>NEGRA</span><span><i style="background:#f6f4ea;border:1px solid #a6a7a0"></i>BLANCA</span><span><i style="background:#edb55a"></i>SELECCIONADA</span><span>Índices rojos = tablero[fila][columna]</span></div>
     <div class="toolbar"><span class="play-label">STEP ${state.step}/${n}</span><button data-action="prev-step" ${state.step===0?"disabled":""}>←</button><button class="primary" data-action="play">${timer?"PAUSE":"▶ PLAY"}</button><button data-action="step" ${state.step===n?"disabled":""}>STEP →</button><button data-action="reset-step">↻ RESET</button><span class="spacer"></span><button data-action="reset-board">RESET BOARD</button></div>
-    ${learnGuide()}
   </div>
   <div class="code-column">
     <div class="column-heading main-heading editor-heading"><b>⌘ ${en?"EDIT AND RUN PYTHON":"EDITA Y EJECUTA PYTHON"}</b><span>PYODIDE · PYTHON REAL</span></div>
     ${codePanel()}
   </div>
 </div>
+<section class="learning-check-zone"><div class="learning-check-title"><span>🧠 ${en?"SHOW WHAT YOU LEARNED":"DEMUESTRA LO QUE HAS APRENDIDO"}</span><small>${en?"Explanation · mini quiz · verification":"Explicación · minitest · comprobación"}</small></div>${learnGuide()}</section>
 </main>`;}
 function learnGuide(){
  const l=currentLesson(),t=guideTask(),quiz=quizFor(),answer=quizAnswer(l.id),en=state.lang==="en",check=taskChecks[l.id];
@@ -450,7 +482,7 @@ function learnInspector(){
  <p class="small"><a href="${LINK}" target="_blank" rel="noopener">${en?"ORIGINAL BLOG POST ↗":"ENTRADA ORIGINAL DEL BLOG ↗"}</a></p>
  </div></aside>`;
 }
-function learnTrace(){const a=lines();return `<section class="panel trace"><div class="panel-head"><h2>GUIDED TRACE</h2><span class="cap">LINE-BY-LINE · GUIDED LEARNING</span></div><div style="overflow:auto"><table><thead><tr><th>NO.</th><th>STATE</th><th>INSTRUCTION</th><th>EXPLANATION</th></tr></thead><tbody>${a.map((line,i)=>`<tr class="${i===state.step-1?"current":""}"><td>${String(i+1).padStart(2,"0")}</td><td>${i<state.step?"● VISITED":"○ PENDING"}</td><td>${esc(line.trim()||"(blank line)")}</td><td>${i===state.step-1?esc(currentLesson().explanation):""}</td></tr>`).join("")}</tbody></table></div></section>`;}
+function learnTrace(){const a=lines();return `<section class="panel trace"><details class="trace-fold"><summary>▸ GUIDED TRACE <small>· LINE-BY-LINE · GUIDED LEARNING</small></summary><div style="overflow:auto"><table><thead><tr><th>NO.</th><th>STATE</th><th>INSTRUCTION</th><th>EXPLANATION</th></tr></thead><tbody>${a.map((line,i)=>`<tr class="${i===state.step-1?"current":""}"><td>${String(i+1).padStart(2,"0")}</td><td>${i<state.step?"● VISITED":"○ PENDING"}</td><td>${esc(line.trim()||"(blank line)")}</td><td>${i===state.step-1?esc(currentLesson().explanation):""}</td></tr>`).join("")}</tbody></table></div></details></section>`;}
 function topicStats(t){const a=state.exam?.answers.filter(x=>QS[x.id].topic===t)||[];return {n:a.length,correct:a.filter(x=>x.ok).length,accuracy:a.length?a.filter(x=>x.ok).length/a.length:0};}
 function shouldEnd(){const ex=state.exam,n=ex.answers.length;if(ex.mode==="practice")return n===60;if(n<30)return false;if(n>=45)return true;if(n%6!==0)return false;return BANK.every((_,t)=>topicStats(t).n>=5&&topicStats(t).accuracy>=.6);}
 function pickQ(){const ex=state.exam;if(ex.current)return QS[ex.current.id];const used=new Set(ex.answers.map(a=>a.id));let available=QS.filter(q=>!used.has(q.id));if(!available.length)return null;if(ex.mode==="practice")available.sort((a,b)=>a.id-b.id);else{const ranks=BANK.map((_,t)=>({topic:t,...topicStats(t)})).filter(t=>available.some(q=>q.topic===t.topic));ranks.sort((a,b)=>ex.answers.length<30?a.n-b.n||a.topic-b.topic:a.accuracy-b.accuracy||a.n-b.n);available=available.filter(q=>q.topic===ranks[0].topic).sort((a,b)=>Math.abs(a.difficulty-ex.level)-Math.abs(b.difficulty-ex.level));}const q=available[0];ex.current={id:q.id,order:shuffle([0,1,2,3])};save();return q;}
@@ -568,6 +600,9 @@ render();
       '<div class="py-hint">Python real en tu navegador (Pyodide). La primera carga necesita internet y puede tardar unos segundos. STOP interrumpe los bucles infinitos sin bloquear la página. Las ediciones se conservan durante esta sesión.</div>';
     box.insertAdjacentElement("afterend", panel);
     panel.querySelector(".py-editor").value = drafts.has(key) ? drafts.get(key) : original;
+    const editor=panel.querySelector(".py-editor");
+    const editorLines=editor.value.split("\n").length;
+    editor.style.height=Math.min(380,Math.max(155,92+editorLines*22))+"px";
     controls();
     window.smartChessTranslateUI?.();
     if(document.documentElement.lang==="en"){
