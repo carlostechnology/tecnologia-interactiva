@@ -275,6 +275,16 @@ function applyPythonBoard(nextBoard){
  return true;
 }
 window.smartChessUpdateFromPython=applyPythonBoard;
+window.smartChessUpdateRowFromPython=function(nextRow){
+ if(!Array.isArray(nextRow)||nextRow.length!==3||!nextRow.every(cell=>cell==="B"||cell==="N"||cell==="."))return false;
+ // In the introductory list exercises, "fila" represents tablero[0].
+ state.board[0]=nextRow.slice();
+ state.turn="B";state.selected=null;state.lastMove="Primera fila actualizada desde Python";
+ save();
+ const diagram=mount.querySelector(".board-column .diagram");
+ if(diagram)diagram.innerHTML=svgBoard();
+ return true;
+};
 
 function stepForward(){const n=lines().length;if(state.step>=n){stop();return;}state.step++;if(state.step===n&&(currentLesson().id===28||currentLesson().id===29)){const c=currentLesson().id===29?1:1;state.board[2][c]=".";state.board[1][c]="B";state.lastMove="b1-b2";}save();render();}
 function startPlay(){if(timer){stop();render();return;}timer=setInterval(()=>{if(state.step>=lines().length){stop();render();return;}stepForward();},650);render();}
@@ -353,16 +363,18 @@ render();
     const panel = event.target.closest(".python-playground");
     if (panel) drafts.set(panel.dataset.lesson, event.target.value);
   });
-  function boardPreview(board) {
+  function boardPreview(board,row) {
     const panel=getPanel(); if(!panel)return;
     const target=panel.querySelector(".py-board-preview");
-    if(!board){target.classList.remove("visible");target.replaceChildren();return;}
-    const synced=typeof window.smartChessUpdateFromPython==="function" && window.smartChessUpdateFromPython(board);
+    if(!board&&!row){target.classList.remove("visible");target.replaceChildren();return;}
+    const isBoard=!!board;
+    const update=isBoard?window.smartChessUpdateFromPython:window.smartChessUpdateRowFromPython;
+    const synced=typeof update==="function"&&update(isBoard?board:row);
     const message=document.createElement("span");
     message.className="py-board-caption";
     message.textContent=synced
-      ?"✓ Variable tablero detectada: el tablero interactivo de la izquierda se ha actualizado."
-      :"La variable tablero se ha generado, pero no se pudo conectar con la vista.";
+      ?(isBoard?"✓ tablero (matriz 3×3): se han actualizado las nueve casillas de la izquierda.":"✓ fila (lista de tres elementos): se ha actualizado la primera fila, tablero[0].")
+      :"Python ha generado la lista, pero no se ha podido actualizar la representación.";
     target.replaceChildren(message);target.classList.add("visible");
   }
   function stop(message) {
@@ -392,7 +404,7 @@ render();
             status("✓ FINISHED");
             const output=[msg.output,msg.stderr].filter(Boolean).join("\n");
             consoleText(output || "✓ Programa terminado. No se ha utilizado print().");
-            boardPreview(msg.board);
+            boardPreview(msg.board,msg.row);
           } else {
             status("ERROR");
             consoleText([msg.output,msg.stderr,msg.error].filter(Boolean).join("\n") || "Error al ejecutar el programa.");
