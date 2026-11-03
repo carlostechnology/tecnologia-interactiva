@@ -392,7 +392,7 @@ render();
     const id=++activeId;
     try {
       if (!worker) {
-        worker = new Worker("python-worker.js",{type:"module"});
+        worker = new Worker("python-worker.js?v=20261103-fila-sync",{type:"module"});
         worker.addEventListener("message", event => {
           const msg=event.data || {};
           if (msg.type==="loading") { status("LOADING PYTHON…"); return; }
