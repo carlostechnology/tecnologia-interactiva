@@ -191,7 +191,7 @@ function svgBoard(compact=false){
  for(let c=0;c<3;c++){
    const a=proj(0,c),b=proj(0,c+1),d=proj(3,c),e=proj(3,c+1);
    const topX=(a[0]+b[0])/2,bottomX=(d[0]+e[0])/2;
-   svg+=`<text x="${topX}" y="88" text-anchor="middle" fill="#bc4833" font-size="16" font-weight="900" font-family="ui-monospace,monospace">${c}</text>`;
+   svg+=`<text x="${topX}" y="65" text-anchor="middle" fill="#bc4833" font-size="16" font-weight="900" font-family="ui-monospace,monospace">${c}</text>`;
    svg+=`<text x="${bottomX}" y="389" text-anchor="middle" fill="var(--blue2)" font-size="17" font-weight="900">${"abc"[c]}</text>`;
    svg+=`<text x="${bottomX+18}" y="408" text-anchor="middle" fill="#bc4833" font-size="12" font-weight="800" font-family="ui-monospace,monospace">${c}</text>`;
  }
