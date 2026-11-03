@@ -109,6 +109,15 @@ pre.output{white-space:pre-wrap;font:12px/1.5 ui-monospace,monospace;color:var(-
 .compact-inspector{padding:13px}.compact-inspector h2{font-size:15px;line-height:1.3}.compact-inspector .buttons{margin-top:14px}.compact-inspector .buttons button{font-size:11px;padding:9px}
 .compact-inspector .kv{padding:11px 0}.compact-inspector p{font-size:12px;line-height:1.5}
 @media(max-width:800px){.study-layout .py-editor{min-height:265px}.board-column .lesson-guide{padding:11px}.compact-inspector{padding:12px}}
+@media(min-width:801px){
+.workspace:has(.study-layout){grid-template-columns:260px minmax(0,1fr);grid-template-rows:auto auto}
+.workspace:has(.study-layout) .sidebar{grid-column:1;grid-row:1 / span 2}
+.workspace:has(.study-layout) .center{grid-column:2;grid-row:1}
+.workspace:has(.study-layout) .trace{grid-column:2;grid-row:2}
+.workspace:has(.study-layout) .study-layout{grid-template-columns:minmax(0,39%) minmax(0,61%)}
+}
+.guide-next{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.guide-next button{font-size:11px}
 </style>
 
 <style id="python-runtime-style">
@@ -353,7 +362,7 @@ function svgBoard(compact=false){
 }
 function codePanel(){const a=lines(),current=state.step,en=state.lang==="en";return `<div class="codebox"><div class="code-head"><b class="cap">PYTHON · ${String(currentLesson().id).padStart(2,"0")}_PRACTICA.PY</b><span class="starter-label">${en?"✓ Code preloaded in the editor":"✓ Código cargado en el editor"}</span></div><details class="starter-code"><summary>${en?"VIEW STARTER CODE":"VER CÓDIGO DE EJEMPLO"}</summary><div class="code-lines">${a.map((line,i)=>`<div class="code-line ${i===current-1?"active":""}"><span class="ln">${String(i+1).padStart(2,"0")}</span><span>${esc(line)||" "}</span></div>`).join("")}</div></details></div>`;}
 function learnCenter(){const l=currentLesson(),n=lines().length;return `<main class="panel center">
-<div class="panel-head"><h2>PYTHON LAB · HEXAPAWN</h2><span class="pill">● CODE + BOARD</span></div>
+<div class="panel-head"><h2>PYTHON LAB · HEXAPAWN <small style="font-size:11px;color:var(--muted)"> · ${esc(l.title)}</small></h2><span class="pill">● CODE + BOARD</span></div>
 <div class="study-layout">
   <div class="board-column">
     <div class="column-heading"><b>01 · TABLERO INTERACTIVO</b><span>3 × 3 · COORDENADAS PYTHON</span></div>
@@ -380,7 +389,7 @@ function learnGuide(){
   <button data-action="check-quiz" ${answer.passed?"disabled":""}>${answer.passed?(en?"✓ PASSED":"✓ SUPERADO"):(en?"CHECK ANSWER":"COMPROBAR RESPUESTA")}</button>
   <p class="quiz-feedback ${answer.passed?"success":answer.tried?"error":""}" role="status">${answer.passed?(en?"Correct! You understand the concept.":"¡Correcto! Has comprendido el concepto."):answer.tried?(en?"Not quite. Review the hint and try again.":"Todavía no. Revisa la pista y vuelve a intentarlo."):(en?"Choose an answer.":"Selecciona una respuesta.")}</p></div>
   <div class="guide-card checker"><h3>✓ 05 · ${en?"CHECK YOUR SOLUTION":"COMPRUEBA TU SOLUCIÓN"}</h3><p>${en?"Run Python and pass the mini quiz.":"Ejecuta Python y supera el minitest."}</p><button class="primary" data-action="verify-lesson">${en?"CHECK SOLUTION":"COMPROBAR SOLUCIÓN"}</button>
-  <div class="guide-feedback ${check?.ok?"success":check?"error":""}" data-guide-feedback role="status">${check?esc(check.message):(en?"Pending: Python + explanation + mini quiz.":"Pendiente: Python + explicación + minitest.")}</div></div>
+  <div class="guide-feedback ${check?.ok?"success":check?"error":""}" data-guide-feedback role="status">${check?esc(check.message):(en?"Pending: Python + explanation + mini quiz.":"Pendiente: Python + explicación + minitest.")}</div><div class="buttons guide-next"><button data-action="complete" class="primary" ${!check?.ok&&!state.completed.includes(state.lesson)?"disabled":""}>${state.completed.includes(state.lesson)?"✓ COMPLETED":en?"MARK COMPLETE":"MARCAR COMPLETADA"}</button><button data-action="next-lesson">NEXT →</button></div></div>
  </div>`;
 }
 function learnInspector(){
@@ -408,7 +417,7 @@ function examResultsPanel(){const ex=state.exam,r=examReport();return `<main cla
 function examCenter(){if(!state.exam)return examStartPanel();if(state.exam.done&&!state.exam.feedback)return examResultsPanel();return examQuestionPanel();}
 function examInspector(){const ex=state.exam;return `<aside class="panel inspector"><div class="panel-head"><h2>EXAM OVERVIEW</h2><span class="cap">ASSESSMENT</span></div><div class="panel-body">${!ex?`<span class="pill">● READY</span><h2 style="margin-top:18px">ASSESSMENT SETTINGS</h2><p>Un mismo recorrido didáctico conecta la exploración del código con su evaluación.</p><div class="kv"><span>QUESTION BANK</span><b>60</b></div><div class="kv"><span>BLOCKS</span><b>6</b></div><div class="kv"><span>DIFFICULTY</span><b>1–5</b></div><div class="note"><b>TIP</b>Primero completa las lecciones del modo APRENDER. Después comprueba lo que has entendido.</div>`:ex.done&&!ex.feedback?`<span class="pill">✓ COMPLETE</span><h2 style="margin-top:17px">RESULTS SAVED LOCALLY</h2><p>${esc(ex.name)} · ${ex.answers.length} respuestas</p><div class="note">Puedes exportar tu informe HTML o JSON y entregarlo al profesor.</div><button data-action="new-exam" style="margin-top:15px">NEW ATTEMPT</button>`:`<span class="pill">● ${ex.mode==="practice"?"PRACTICE":"EXAM"}</span><h2 style="margin-top:17px">LIVE PROGRESS</h2><div class="result-num" style="font-size:42px">${ex.answers.length}<small> / ${ex.mode==="practice"?60:45}</small></div><div class="meter" style="height:10px"><i style="width:${Math.round(ex.answers.length/(ex.mode==="practice"?60:45)*100)}%"></i></div><div class="kv"><span>STUDENT</span><b>${esc(ex.name)}</b></div><div class="kv"><span>DIFFICULTY</span><b>${ex.level}/5</b></div><div class="kv"><span>ANSWERED</span><b>${ex.answers.length}</b></div><div class="note"><b>REMEMBER</b>Piensa en el estado del tablero y en los valores de las variables antes de elegir.</div>`}</div></aside>`;}
 function examTrace(){const ex=state.exam;return `<section class="panel trace"><div class="panel-head"><h2>ASSESSMENT LOG</h2><span class="cap">LOCAL SESSION</span></div><div style="overflow:auto"><table><thead><tr><th>NO.</th><th>BLOCK</th><th>DIFFICULTY</th><th>STATUS</th></tr></thead><tbody>${ex?.answers.length?ex.answers.map((a,i)=>{const q=QS[a.id];return `<tr><td>${String(i+1).padStart(2,"0")}</td><td>${esc(BANK[q.topic].name)}</td><td>${q.difficulty}/5</td><td>${ex.mode==="exam"&&!ex.done?"RECORDED":a.ok?"✓ CORRECT":"✗ REVIEW"}</td></tr>`;}).join(""):'<tr><td colspan="4">Comienza un intento para registrar respuestas.</td></tr>'}</tbody></table></div></section>`;}
-function render(){document.body.classList.toggle("dark",state.theme==="dark");mount.innerHTML=header()+`<div class="workspace">${sidebar()}${state.mode==="learn"?learnCenter()+learnInspector()+learnTrace():examCenter()+examInspector()+examTrace()}</div>`;translateUI();}
+function render(){document.body.classList.toggle("dark",state.theme==="dark");mount.innerHTML=header()+`<div class="workspace">${sidebar()}${state.mode==="learn"?learnCenter()+learnTrace():examCenter()+examInspector()+examTrace()}</div>`;translateUI();}
 function applyPythonBoard(nextBoard){
  if(!Array.isArray(nextBoard)||nextBoard.length!==3||!nextBoard.every(row=>Array.isArray(row)&&row.length===3&&row.every(cell=>cell==="B"||cell==="N"||cell===".")))return false;
  state.board=nextBoard.map(row=>row.slice());
