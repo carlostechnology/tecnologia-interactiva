@@ -117,6 +117,34 @@ pre.output{white-space:pre-wrap;font:12px/1.5 ui-monospace,monospace;color:var(-
 body.dark .py-editor{background:#15243b;color:#e5ecfb}
 body.dark .py-board-cell{color:#142747}
 </style>
+
+<style id="study-layout-style">
+.study-layout{display:grid;grid-template-columns:minmax(0,43%) minmax(0,57%);align-items:start;min-width:0}
+.board-column,.code-column{min-width:0;align-self:stretch}
+.board-column{border-right:1px solid var(--line)}
+.column-heading{padding:11px 13px;background:var(--bg);border-bottom:1px solid var(--line);display:flex;flex-wrap:wrap;justify-content:space-between;gap:6px;color:var(--ink);font-size:11px;letter-spacing:.04em}
+.column-heading span{font-size:9px;color:var(--muted);font-weight:800}
+.study-layout .diagram svg{width:100%;height:auto;max-height:none;aspect-ratio:710/450}
+.study-layout .diagram{min-height:0}
+.study-layout .legend{font-size:10px;padding:9px 11px}
+.study-layout .toolbar{padding:11px;gap:5px}
+.study-layout .toolbar button{padding:8px 9px}
+.study-layout .codebox{border-top:0}
+.study-layout .code-lines{max-height:170px}
+.study-layout .python-playground{padding:13px;gap:9px}
+.study-layout .py-editor{min-height:230px}
+@media(max-width:1100px){
+ .study-layout{grid-template-columns:minmax(0,40%) minmax(0,60%)}
+ .study-layout .column-heading span{display:none}
+}
+@media(max-width:800px){
+ .study-layout{display:flex;flex-direction:column}
+ .study-layout .code-column{order:0;width:100%}
+ .study-layout .board-column{order:1;width:100%;border-right:0;border-top:2px solid var(--line)}
+ .study-layout .py-editor{min-height:200px}
+ .study-layout .diagram svg{max-height:420px}
+}
+</style>
 </head>
 <body>
 <div id="app"></div>
@@ -209,7 +237,21 @@ function svgBoard(compact=false){
  return svg;
 }
 function codePanel(){const a=lines(),current=state.step;return `<div class="codebox"><div class="code-head"><b class="cap">PYTHON · ${String(currentLesson().id).padStart(2,"0")}_PRACTICA.PY</b><button data-action="copy">COPY CODE</button></div><div class="code-lines">${a.map((line,i)=>`<div class="code-line ${i===current-1?"active":""}"><span class="ln">${String(i+1).padStart(2,"0")}</span><span>${esc(line)||" "}</span></div>`).join("")}</div></div>`;}
-function learnCenter(){const l=currentLesson(),n=lines().length;return `<main class="panel center"><div class="panel-head"><h2>BOARD VISUALIZATION</h2><span class="pill">● LIVE MODEL</span></div><div class="diagram">${svgBoard()}</div><div class="legend"><span><i style="background:#24272a"></i>NEGRA</span><span><i style="background:#f6f4ea;border:1px solid #a6a7a0"></i>BLANCA</span><span><i style="background:#edb55a"></i>CASILLA SELECCIONADA</span><span>Índices rojos: tablero[fila][columna] · Letras y números azules: ajedrez · Haz clic para mover</span></div><div class="toolbar"><span class="play-label">STEP ${state.step}/${n}</span><button data-action="prev-step" ${state.step===0?"disabled":""}>←</button><button class="primary" data-action="play">${timer?"PAUSE":"▶ PLAY"}</button><button data-action="step" ${state.step===n?"disabled":""}>STEP →</button><button data-action="reset-step">↻ RESET</button><span class="spacer"></span><button data-action="reset-board">RESET BOARD</button></div>${codePanel()}</main>`;}
+function learnCenter(){const l=currentLesson(),n=lines().length;return `<main class="panel center">
+<div class="panel-head"><h2>PYTHON LAB · HEXAPAWN</h2><span class="pill">● CODE + BOARD</span></div>
+<div class="study-layout">
+  <div class="board-column">
+    <div class="column-heading"><b>01 · TABLERO INTERACTIVO</b><span>3 × 3 · COORDENADAS PYTHON</span></div>
+    <div class="diagram">${svgBoard()}</div>
+    <div class="legend"><span><i style="background:#24272a"></i>NEGRA</span><span><i style="background:#f6f4ea;border:1px solid #a6a7a0"></i>BLANCA</span><span><i style="background:#edb55a"></i>SELECCIONADA</span><span>Índices rojos = tablero[fila][columna]</span></div>
+    <div class="toolbar"><span class="play-label">STEP ${state.step}/${n}</span><button data-action="prev-step" ${state.step===0?"disabled":""}>←</button><button class="primary" data-action="play">${timer?"PAUSE":"▶ PLAY"}</button><button data-action="step" ${state.step===n?"disabled":""}>STEP →</button><button data-action="reset-step">↻ RESET</button><span class="spacer"></span><button data-action="reset-board">RESET BOARD</button></div>
+  </div>
+  <div class="code-column">
+    <div class="column-heading"><b>02 · EDITA Y EJECUTA PYTHON</b><span>PYODIDE · PYTHON REAL</span></div>
+    ${codePanel()}
+  </div>
+</div>
+</main>`;}
 function learnInspector(){const l=currentLesson(),done=state.completed.includes(state.lesson);return `<aside class="panel inspector"><div class="panel-head"><h2>LESSON OVERVIEW</h2><span class="cap">${String(l.id).padStart(2,"0")} / 30</span></div><div class="panel-body"><span class="pill">${done?"✓ COMPLETED":"● ACTIVE"}</span><h2 style="margin:19px 0 9px">${esc(l.title.toUpperCase())}</h2><p>${esc(l.explanation)}</p><div class="kv"><span>SUBJECT</span><b>PYTHON BASICS</b></div><div class="kv"><span>BLOCK</span><b>${esc(GROUPS[l.section])}</b></div><div class="kv"><span>CODE LINES</span><b>${lines().length}</b></div><div class="kv"><span>GUIDED STEP</span><b>${state.step}/${lines().length}</b></div><div class="note"><b>YOUR CHALLENGE</b>${esc(l.challenge)}</div><h3 style="margin:20px 0 7px">EXPECTED OUTPUT</h3><pre class="output">${state.step>=lines().length?esc(l.output):"Avanza por el código para revelar el resultado."}</pre><p class="small">El recorrido STEP te ayuda a comprender cada instrucción. Para modificar y ejecutar el programa de verdad, utiliza el editor PYTHON y pulsa RUN PYTHON.</p><div class="buttons"><button class="primary" data-action="complete">${done?"✓ COMPLETED":"MARK COMPLETE"}</button><button data-action="next-lesson">NEXT LESSON →</button></div><p style="margin-top:17px" class="small"><a href="${LINK}" target="_blank" rel="noopener">ENTRADA ORIGINAL DEL BLOG ↗</a></p></div></aside>`;}
 function learnTrace(){const a=lines();return `<section class="panel trace"><div class="panel-head"><h2>GUIDED TRACE</h2><span class="cap">LINE-BY-LINE · GUIDED LEARNING</span></div><div style="overflow:auto"><table><thead><tr><th>NO.</th><th>STATE</th><th>INSTRUCTION</th><th>EXPLANATION</th></tr></thead><tbody>${a.map((line,i)=>`<tr class="${i===state.step-1?"current":""}"><td>${String(i+1).padStart(2,"0")}</td><td>${i<state.step?"● VISITED":"○ PENDING"}</td><td>${esc(line.trim()||"(blank line)")}</td><td>${i===state.step-1?esc(currentLesson().explanation):""}</td></tr>`).join("")}</tbody></table></div></section>`;}
 function topicStats(t){const a=state.exam?.answers.filter(x=>QS[x.id].topic===t)||[];return {n:a.length,correct:a.filter(x=>x.ok).length,accuracy:a.length?a.filter(x=>x.ok).length/a.length:0};}
