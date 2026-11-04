@@ -617,7 +617,7 @@ mount.addEventListener("click",e=>{const sq=e.target.closest("[data-square]");if
  else if(a==="intro-go-python"){state.mode="learn";state.lesson=0;state.step=0;resetBoard();save();render();}
  else if(a==="switch-exam"){stop();state.mode="exam";save();render();}
  else if(a==="theme"){state.theme=state.theme==="light"?"dark":"light";save();render();}
- else if(a==="lesson"){stop();state.lesson=Number(v);state.step=0;resetBoard();save();render();}
+ else if(a==="lesson"){stop();state.mode="learn";state.lesson=Number(v);state.step=0;resetBoard();save();render();}
  else if(a==="step")stepForward();
  else if(a==="prev-step"){stop();state.step=Math.max(0,state.step-1);resetBoard();save();render();}
  else if(a==="reset-step"){stop();state.step=0;resetBoard();save();render();}
