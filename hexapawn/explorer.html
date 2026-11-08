@@ -325,6 +325,26 @@ body.dark .py-highlight .py-operator{color:#ff98c3}
 .py-actions [data-py-action="next-debug"]{background:#e1ebfb!important;color:#124481!important}
 body.dark .py-debug-line{background:#28456f;color:#d5e9ff}
 body.dark .py-actions [data-py-action="next-debug"]{background:#244267!important;color:#d5e9ff!important}
+</style><style id="exam-board-widget-style">
+.exam-board-widget{border:1px solid var(--line);border-radius:10px;background:var(--paper);padding:12px 16px;margin:15px auto 20px;max-width:490px}
+.exam-board-heading{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:10px;flex-wrap:wrap}
+.exam-board-heading strong{font-size:12px;color:var(--ink);letter-spacing:.04em}
+.exam-board-heading small{font-size:11px;color:var(--muted)}
+.exam-board-main{display:grid;grid-template-columns:22px 1fr;align-items:stretch;gap:8px;max-width:330px;margin:auto}
+.exam-board-ranks{display:grid;grid-template-rows:repeat(3,1fr);align-items:center;justify-items:center;font-size:12px;font-weight:800;color:var(--blue)}
+.exam-board-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));aspect-ratio:1;border:3px solid #6c6155;overflow:hidden}
+.exam-board-cell{display:flex;position:relative;justify-content:center;align-items:center;min-width:0}
+.exam-board-cell.light{background:#e7d6bb}
+.exam-board-cell.dark{background:#9bb9ce}
+.exam-board-pawn{font-family:Georgia,'Times New Roman',serif;font-size:clamp(30px,5vw,58px);line-height:1.1;transform:translateY(2px);text-shadow:0 2px 2px #0003}
+.exam-board-pawn.black{color:#191c22;-webkit-text-stroke:1px #3f444b}
+.exam-board-pawn.white{color:#fffdf4;-webkit-text-stroke:1.4px #767d80}
+.exam-board-index{position:absolute;top:4px;left:5px;font:700 10px/1 ui-monospace,Consolas,monospace;color:#9a412a;background:#ffffffc5;border-radius:2px;padding:3px}
+.exam-board-square{position:absolute;bottom:3px;right:5px;font:800 11px/1 ui-monospace,Consolas,monospace;color:#324f64;background:#ffffffb3;padding:2px 3px;border-radius:2px}
+.exam-board-files{display:grid;grid-template-columns:repeat(3,1fr);max-width:330px;margin:5px auto 0;padding-left:30px;text-align:center;font:800 12px/1.5 ui-monospace,Consolas,monospace;color:var(--blue)}
+.exam-board-caption{text-align:center;font-size:11px;line-height:1.5;color:var(--muted);margin:7px 0 0}
+body.dark .exam-board-widget{background:#1a2a43}
+@media(max-width:750px){.exam-board-widget{padding:10px}.exam-board-pawn{font-size:clamp(28px,9vw,49px)}}
 </style></head>
 <body>
 <div id="app"></div>
@@ -578,7 +598,35 @@ function shouldEnd(){const ex=state.exam,n=ex.answers.length;if(ex.mode==="pract
 function pickQ(){const ex=state.exam;if(ex.current)return QS[ex.current.id];const used=new Set(ex.answers.map(a=>a.id));let available=QS.filter(q=>!used.has(q.id));if(!available.length)return null;if(ex.mode==="practice")available.sort((a,b)=>a.id-b.id);else{const ranks=BANK.map((_,t)=>({topic:t,...topicStats(t)})).filter(t=>available.some(q=>q.topic===t.topic));ranks.sort((a,b)=>ex.answers.length<30?a.n-b.n||a.topic-b.topic:a.accuracy-b.accuracy||a.n-b.n);available=available.filter(q=>q.topic===ranks[0].topic).sort((a,b)=>Math.abs(a.difficulty-ex.level)-Math.abs(b.difficulty-ex.level));}const q=available[0];ex.current={id:q.id,order:shuffle([0,1,2,3])};save();return q;}
 const ui=(es,en)=>state.lang==="en"?en:es;
 function examStartPanel(){return `<main class="panel center"><div class="panel-head"><h2>EXAM CONTROL</h2><span class="cap">READY TO START</span></div><div class="question"><span class="pill">60 QUESTIONS · 6 BLOCKS</span><h1>${ui("¿QUÉ SABES DE HEXAPAWN Y PYTHON?","WHAT DO YOU KNOW ABOUT HEXAPAWN AND PYTHON?")}</h1><p>${ui("La evaluación utiliza el mismo banco de preguntas del cuestionario anterior. Practica con explicaciones inmediatas o realiza un examen adaptativo.","Practice with immediate feedback or take an adaptive exam using the same question bank.")}</p><form id="exam-start"><div class="form-row"><label for="student">STUDENT NAME</label><input id="student" name="name" required maxlength="90" placeholder="${ui("Nombre o alias","Name or nickname")}"></div><div class="form-row"><label for="group">GROUP</label><input id="group" name="group" maxlength="60" placeholder="2.º Bachillerato A"></div><div class="form-row"><label for="exam-mode">MODE</label><select id="exam-mode" name="mode"><option value="practice">${ui("PRÁCTICA · 60 preguntas con feedback","PRACTICE · 60 questions with feedback")}</option><option value="exam">${ui("EXAMEN ADAPTATIVO · 30 a 45 preguntas","ADAPTIVE EXAM · 30 to 45 questions")}</option></select></div><button type="submit" class="primary">START ASSESSMENT →</button></form></div></main>`;}
-function examQuestionPanel(){const ex=state.exam,originalQ=pickQ(),n=ex.answers.length;if(!originalQ)return examResultsPanel();const q=localizedQuestion(originalQ),ord=ex.current.order;return `<main class="panel center"><div class="panel-head"><h2>QUESTION ${n+1}</h2><span class="cap">${ex.mode==="practice"?"PRACTICE":"ADAPTIVE EXAM"} · LEVEL ${q.difficulty}/5</span></div><div class="question"><span class="pill">BLOCK ${q.topic+1} · ${esc(localizedTopic(q.topic).toUpperCase())}</span><h1>${codeText(q.text)}</h1>${ex.feedback?`<div class="feedback ${ex.answers.at(-1).ok?"":"bad"}"><b>${ex.answers.at(-1).ok?"CORRECT":"REVIEW THE CONCEPT"}</b><p>${codeText(q.options[0])}</p><p>${esc(q.explanation)}</p></div><button class="primary" data-action="continue-exam">${ex.done?"VIEW RESULTS":"NEXT QUESTION"} →</button>`:`<div>${ord.map((idx,i)=>`<button class="option ${ex.choice===idx?"selected":""}" data-action="choose" data-value="${idx}"><span>${"ABCD"[i]}</span>${codeText(q.options[idx])}</button>`).join("")}</div><div class="buttons"><button class="primary" data-action="submit-answer" ${!Number.isInteger(ex.choice)?"disabled":""}>CONFIRM ANSWER →</button></div><p class="small">${ui("La respuesta no se podrá modificar.","You cannot change your answer after submitting.")} ${ex.mode==="exam"?ui("Las soluciones se mostrarán al finalizar.","Correct answers will be shown at the end."):""}</p>`}</div></main>`;}
+
+/**
+ * Read-only board for questions that refer to physical squares or Python indices.
+ * Each drawing is derived from the question ID, never from selected/correct answers.
+ * We deliberately omit movement hints and legal destination overlays during exams.
+ */
+function examBoardForQuestion(question){
+ if(!question)return null;
+ const id=question.id;
+ const board=[["N","N","N"],[".",".","."],["B","B","B"]];
+ const contextual=new Set([8,40,41,42,43,44,45,46,47,48,49,52,53,54,55,56]);
+ if(!contextual.has(id))return null;
+ if(id===53)board[1][1]="N"; // Black pawn directly in front of b1.
+ if(id===56)board[2][1]="."; // No pawn on the departure square.
+ return board;
+}
+function examBoardWidget(question){
+ const board=examBoardForQuestion(question);
+ if(!board)return "";
+ const en=state.lang==="en";
+ // A real chess diagram, with the same square palette as the main laboratory.
+ const rows=board.map((row,r)=>row.map((piece,c)=>{
+   const coord="abc"[c]+(3-r),label=piece==="B"?(en?"White pawn":"Peón blanco"):piece==="N"?(en?"Black pawn":"Peón negro"):(en?"Empty square":"Casilla vacía");
+   return '<div class="exam-board-cell '+((r+c)%2?"light":"dark")+'" role="gridcell" aria-label="'+coord+': '+label+'"><span class="exam-board-index">'+r+','+c+'</span><span class="exam-board-pawn '+(piece==="N"?"black":piece==="B"?"white":"empty")+'" aria-hidden="true">'+(piece==="."?"": "♟")+'</span><span class="exam-board-square">'+coord+'</span></div>';
+ }).join("")).join("");
+ return '<section class="exam-board-widget" aria-label="'+(en?"Reference Hexapawn board":"Tablero Hexapeón de referencia")+'"><div class="exam-board-heading"><strong>♟ '+(en?"BOARD REFERENCE":"TABLERO DE REFERENCIA")+'</strong><small>'+(en?"Python indices: [row, column]":"Índices Python: [fila, columna]")+'</small></div><div class="exam-board-main"><div class="exam-board-ranks"><span>3</span><span>2</span><span>1</span></div><div class="exam-board-grid" role="grid" aria-label="Hexapawn 3 by 3">'+rows+'</div></div><div class="exam-board-files"><span>a</span><span>b</span><span>c</span></div><p class="exam-board-caption">'+(en?"Reference situation only. The diagram does not indicate legal moves or the correct answer.":"Situación de referencia: el tablero no señala movimientos legales ni la respuesta correcta.")+'</p></section>';
+}
+
+function examQuestionPanel(){const ex=state.exam,originalQ=pickQ(),n=ex.answers.length;if(!originalQ)return examResultsPanel();const q=localizedQuestion(originalQ),ord=ex.current.order;return `<main class="panel center"><div class="panel-head"><h2>QUESTION ${n+1}</h2><span class="cap">${ex.mode==="practice"?"PRACTICE":"ADAPTIVE EXAM"} · LEVEL ${q.difficulty}/5</span></div><div class="question"><span class="pill">BLOCK ${q.topic+1} · ${esc(localizedTopic(q.topic).toUpperCase())}</span><h1>${codeText(q.text)}</h1>${examBoardWidget(originalQ)}${ex.feedback?`<div class="feedback ${ex.answers.at(-1).ok?"":"bad"}"><b>${ex.answers.at(-1).ok?"CORRECT":"REVIEW THE CONCEPT"}</b><p>${codeText(q.options[0])}</p><p>${esc(q.explanation)}</p></div><button class="primary" data-action="continue-exam">${ex.done?"VIEW RESULTS":"NEXT QUESTION"} →</button>`:`<div>${ord.map((idx,i)=>`<button class="option ${ex.choice===idx?"selected":""}" data-action="choose" data-value="${idx}"><span>${"ABCD"[i]}</span>${codeText(q.options[idx])}</button>`).join("")}</div><div class="buttons"><button class="primary" data-action="submit-answer" ${!Number.isInteger(ex.choice)?"disabled":""}>CONFIRM ANSWER →</button></div><p class="small">${ui("La respuesta no se podrá modificar.","You cannot change your answer after submitting.")} ${ex.mode==="exam"?ui("Las soluciones se mostrarán al finalizar.","Correct answers will be shown at the end."):""}</p>`}</div></main>`;}
 function examReport(){const ex=state.exam,a=ex.answers,correct=a.filter(x=>x.ok).length,w=[1,1.35,1.7,2.15,2.65];let tot=0,earned=0;for(const x of a){const v=w[QS[x.id].difficulty-1];tot+=v;if(x.ok)earned+=v;}return {n:a.length,correct,score:tot?Math.round(100*earned/tot)/10:0,percentage:a.length?Math.round(100*correct/a.length):0,seconds:Math.round(((ex.ended||Date.now())-ex.started)/1000)};}
 function examResultsPanel(){const ex=state.exam,r=examReport();return `<main class="panel center"><div class="panel-head"><h2>ASSESSMENT COMPLETE</h2><span class="pill">✓ FINISHED</span></div><div class="question"><span class="cap">${esc(ex.name)} · ${esc(ex.group||"TIC II")}</span><h1>YOUR RESULTS</h1><div class="result-num">${r.score.toFixed(1)}<small> / 10</small></div><p>${ui("Nota orientativa ponderada por dificultad.","Estimated grade weighted by difficulty.")}</p><div class="stats"><div><b>${r.correct}/${r.n}</b><span>CORRECT ANSWERS</span></div><div><b>${r.percentage}%</b><span>ACCURACY</span></div></div><h3>PERFORMANCE BY BLOCK</h3>${BANK.map((b,t)=>{const s=topicStats(t);return `<div class="kv"><span>${esc(localizedTopic(t))}</span><b>${s.correct}/${s.n} · ${Math.round(100*s.accuracy)}%</b></div>`;}).join("")}<div class="buttons" style="margin-top:20px"><button class="primary" data-action="download-report">DOWNLOAD HTML REPORT</button><button data-action="download-json">JSON</button></div><h3 style="margin-top:20px">REVIEW ANSWERS</h3><div>${ex.answers.map(a=>{const q=localizedQuestion(QS[a.id]);return `<details><summary>${a.ok?"✓":"✗"} ${esc(q.text)}</summary><p><b>Correct:</b> ${codeText(q.options[0])}</p><p>${esc(q.explanation)}</p></details>`;}).join("")}</div></div></main>`;}
 function examCenter(){if(!state.exam)return examStartPanel();if(state.exam.done&&!state.exam.feedback)return examResultsPanel();return examQuestionPanel();}
