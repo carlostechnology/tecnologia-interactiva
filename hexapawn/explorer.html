@@ -311,6 +311,20 @@ body.dark .py-highlight .py-string{color:#a5e0b4}
 body.dark .py-highlight .py-number{color:#ffcc86}
 body.dark .py-highlight .py-comment{color:#a2b2c7}
 body.dark .py-highlight .py-operator{color:#ff98c3}
+</style><style id="python-debug-style">
+.py-debug-view{border:1px solid var(--line);padding:12px;border-left:4px solid #1758b9;background:var(--paper);display:grid;gap:10px}
+.py-debug-view[hidden]{display:none!important}
+.py-debug-head{display:flex;justify-content:space-between;gap:10px;font-size:11px;color:var(--ink)}
+.py-debug-position{color:var(--muted);font:700 11px/1.4 monospace}
+.py-debug-line{font:700 13px/1.6 ui-monospace,Consolas,monospace;padding:10px;background:#e4edfc;color:#16489d;white-space:pre-wrap;overflow-wrap:anywhere}
+.py-debug-vars{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:6px;max-height:240px;overflow:auto}
+.py-debug-var{display:flex;gap:8px;justify-content:space-between;border:1px solid var(--line);padding:6px 8px;font:12px/1.4 ui-monospace,Consolas,monospace;min-width:0}
+.py-debug-var code{white-space:pre-wrap;overflow-wrap:anywhere;text-align:right}
+.py-debug-notice{font-size:11px;color:var(--muted);margin:0}
+.py-actions [data-py-action="debug"]{background:#18437d!important;color:#fff!important}
+.py-actions [data-py-action="next-debug"]{background:#e1ebfb!important;color:#124481!important}
+body.dark .py-debug-line{background:#28456f;color:#d5e9ff}
+body.dark .py-actions [data-py-action="next-debug"]{background:#244267!important;color:#d5e9ff!important}
 </style></head>
 <body>
 <div id="app"></div>
@@ -691,6 +705,7 @@ render();
   const drafts = new Map();
   const originals = new Map();
   let worker = null, busy = false, activeId = 0, watchdog = null;
+  let debugTrace = null,debugIndex = -1;
   const runs=new Map();
   const root = document.getElementById("app");
   if (!root) return;
@@ -701,6 +716,7 @@ render();
     const panel = getPanel(); if (!panel) return;
     panel.querySelector('[data-py-action="run"]').disabled = busy;
     panel.querySelector('[data-py-action="stop"]').disabled = !busy;
+    const next=panel.querySelector('[data-py-action="next-debug"]');if(next)next.disabled=busy||!debugTrace||debugIndex>=debugTrace.events.length-1;
   };
   const keyFor = box => box.querySelector(".code-head .cap")?.textContent?.trim() || "default";
   const getOriginal = box => Array.from(box.querySelectorAll(".code-line")).map(line => line.lastElementChild?.textContent || "").join("\n");
@@ -736,7 +752,8 @@ render();
     panel.dataset.lesson = key;
     panel.innerHTML = '<div class="py-heading"><span>⌘ PYTHON · EDITOR &amp; CONSOLE</span><span class="py-status">READY TO LOAD</span></div>' +
       '<div class="py-code-wrap"><pre class="py-highlight" aria-hidden="true"><code></code></pre><textarea class="py-editor" spellcheck="false" aria-label="Código Python editable" wrap="off"></textarea></div>' +
-      '<div class="py-actions"><button type="button" data-py-action="run">▶ RUN PYTHON</button><button type="button" data-py-action="stop" disabled>■ STOP</button><button type="button" data-py-action="reset">↺ RESET CODE</button><button type="button" data-py-action="compare">≠ COMPARE CODE</button></div>' +
+      '<div class="py-actions"><button type="button" data-py-action="run">▶ RUN PYTHON</button><button type="button" data-py-action="stop" disabled>■ STOP</button><button type="button" data-py-action="reset">↺ RESET CODE</button><button type="button" data-py-action="compare">≠ COMPARE CODE</button><button type="button" data-py-action="debug">◉ DEBUG PYTHON</button><button type="button" data-py-action="next-debug" disabled>→ NEXT STEP</button></div>' +
+      '<div class="py-debug-view" hidden><div class="py-debug-head"><b>PYTHON · REAL EXECUTION TRACE</b><span class="py-debug-position"></span></div><div class="py-debug-line"></div><div class="py-debug-vars"></div><p class="py-debug-notice">Las líneas y variables proceden de la ejecución real con Pyodide. Cada paso muestra el estado anterior a ejecutar la línea señalada.</p></div>' +
       '<details class="py-diff"><summary>≠ Código original frente al modificado</summary><div class="py-diff-body" aria-live="polite"></div></details>' +
       '<pre class="py-console" aria-live="polite">Modifica el programa y pulsa RUN PYTHON para ejecutarlo.</pre>' +
       '<div class="py-board-preview" aria-live="polite"></div>' +
@@ -746,6 +763,7 @@ render();
     const editor=panel.querySelector(".py-editor");
     const editorLines=editor.value.split("\n").length;
     editor.style.height=Math.min(380,Math.max(155,92+editorLines*22))+"px";
+    debugTrace=null;debugIndex=-1;
     updateHighlight(panel);
     controls();
     window.smartChessTranslateUI?.();
@@ -764,7 +782,7 @@ render();
     if(event.target.matches("[data-reflection]")){window.dispatchEvent(new CustomEvent("smartchess:reflection",{detail:{id:Number(event.target.dataset.reflection),text:event.target.value}}));return;}
     if (!event.target.matches(".py-editor")) return;
     const panel = event.target.closest(".python-playground");
-    if (panel) {drafts.set(panel.dataset.lesson, event.target.value);updateHighlight(panel);}
+    if (panel) {drafts.set(panel.dataset.lesson, event.target.value);debugTrace=null;debugIndex=-1;panel.querySelector(".py-debug-view").hidden=true;updateHighlight(panel);controls();}
   });
   function boardPreview(board,row,pawnCount) {
     const panel=getPanel(); if(!panel)return;
@@ -786,6 +804,41 @@ render();
       :"Python ha generado la lista, pero no se ha podido actualizar la representación.";
     target.replaceChildren(message);target.classList.add("visible");
   }
+
+  function showDebugStep(){
+    const panel=getPanel(),view=panel?.querySelector(".py-debug-view");
+    if(!view||!debugTrace)return;
+    const events=debugTrace.events||[];
+    view.hidden=false;
+    const event=events[debugIndex],current=debugIndex+1;
+    view.querySelector(".py-debug-position").textContent=events.length?String(Math.max(current,0))+" / "+events.length+(debugTrace.truncated?" · TRACE LIMITED":""):"NO EXECUTED LINES";
+    if(!event){view.querySelector(".py-debug-line").textContent="Pulsa NEXT STEP para ver la primera línea.";view.querySelector(".py-debug-vars").replaceChildren();return;}
+    const editor=panel.querySelector(".py-editor");
+    const raw=editor.value.split("\n")[event.line-1]||"";
+    view.querySelector(".py-debug-line").textContent="▶ "+event.line+": "+raw.trim()+(event.function!=="<module>"?" · "+event.function+"()":"");
+    const names=Object.entries(event.variables||{});
+    const body=view.querySelector(".py-debug-vars");
+    body.replaceChildren();
+    for(const [name,value] of names){
+      const item=document.createElement("div");item.className="py-debug-var";
+      const key=document.createElement("b");key.textContent=name;
+      const val=document.createElement("code");val.textContent=value;
+      item.append(key,val);body.append(item);
+    }
+    const top=editor.value.split("\n").slice(0,event.line-1).join("\n").length+(event.line>1?1:0);
+    const end=top+raw.length;
+    editor.focus({preventScroll:true});editor.setSelectionRange(top,end);
+    const lineHeight=parseFloat(getComputedStyle(editor).lineHeight)||22;
+    editor.scrollTop=Math.max(0,(event.line-4)*lineHeight);
+    updateHighlight(panel);
+    // Traces are captured from actual Python execution; board displays the snapshot at this line.
+    if(event.board)window.smartChessUpdateFromPython?.(event.board);
+    else if(event.variables?.peones && typeof window.smartChessUpdatePawnCount==="function"){
+      const count=Number(event.variables.peones);
+      if(Number.isInteger(count))window.smartChessUpdatePawnCount(count);
+    }
+  }
+
   function stop(message) {
     if (worker) { worker.terminate(); worker=null; }
     if (watchdog) { clearTimeout(watchdog); watchdog=null; }
@@ -793,17 +846,19 @@ render();
     status("STOPPED"); if (message) consoleText(message);
     controls();
   }
-  function start() {
+  function start(debug=false) {
     const panel=getPanel(); if (!panel || busy) return;
     const code=panel.querySelector(".py-editor").value;
     const lessonId=window.smartChessCurrentLessonId?.();
     if (!code.trim()) { consoleText("Escribe algunas instrucciones de Python primero."); return; }
-    busy=true; controls(); status("STARTING…"); consoleText("Cargando Python…"); boardPreview(null);
+    debugTrace=null;debugIndex=-1;
+    const debugBox=panel.querySelector(".py-debug-view");if(debugBox)debugBox.hidden=true;
+    busy=true; controls(); status(debug?"STARTING DEBUG…":"STARTING…"); consoleText("Cargando Python…"); boardPreview(null);
     const id=++activeId;
-    runs.set(id,{lessonId,code});
+    runs.set(id,{lessonId,code,debug});
     try {
       if (!worker) {
-        worker = new Worker("python-worker.js?v=20261103-peones-sync",{type:"module"});
+        worker = new Worker("python-worker.js?v=20261108-trace-v1",{type:"module"});
         worker.addEventListener("message", event => {
           const msg=event.data || {};
           if (msg.type==="loading") { status("LOADING PYTHON…"); return; }
@@ -811,7 +866,9 @@ render();
           if (msg.id !== activeId) return;
           const run=runs.get(msg.id)||{};runs.delete(msg.id);
           if (watchdog) {clearTimeout(watchdog);watchdog=null;}
-          busy=false; controls();
+          busy=false;
+          if(run.debug&&msg.trace){debugTrace=msg.trace;debugIndex=-1;getPanel()?.querySelector(".py-debug-view")?.removeAttribute("hidden");showDebugStep();}
+          controls();
           if (msg.type==="result") {
             status("✓ FINISHED");
             const output=[msg.output,msg.stderr].filter(Boolean).join("\n");
@@ -831,7 +888,7 @@ render();
           worker.terminate(); worker=null;
         });
       }
-      worker.postMessage({id,code});
+      worker.postMessage({id,code,debug});
       watchdog = setTimeout(() => {if (busy && activeId===id) stop("Ejecución detenida tras 45 segundos. Revisa si existe un bucle infinito y vuelve a probar.");},45000);
     } catch(error) {stop("No se pudo iniciar el intérprete: "+String(error));}
   }
@@ -840,6 +897,8 @@ render();
     if(!button || !getPanel()?.contains(button))return;
     const action=button.dataset.pyAction;
     if(action==="run")start();
+    if(action==="debug")start(true);
+    if(action==="next-debug"){if(debugTrace&&debugIndex<debugTrace.events.length-1){debugIndex++;showDebugStep();controls();}}
     if(action==="stop")stop("■ Programa interrumpido. Puedes corregirlo y ejecutarlo de nuevo.");
     if(action==="compare"){
       const panel=getPanel(), key=panel.dataset.lesson, initial=(originals.get(key)||"").split("\n"), edited=panel.querySelector(".py-editor").value.split("\n");
@@ -852,7 +911,7 @@ render();
     if(action==="reset"){
       const panel=getPanel(), key=panel.dataset.lesson;
       const code=originals.get(key)||"";
-      drafts.delete(key);panel.querySelector(".py-editor").value=code;updateHighlight(panel);
+      drafts.delete(key);panel.querySelector(".py-editor").value=code;debugTrace=null;debugIndex=-1;panel.querySelector(".py-debug-view").hidden=true;updateHighlight(panel);controls();
       consoleText("Código original restaurado.");boardPreview(null);status("READY");
     }
   });
