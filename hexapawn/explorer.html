@@ -799,7 +799,7 @@ render();
     if(action==="run")start();
     if(action==="stop")stop("■ Programa interrumpido. Puedes corregirlo y ejecutarlo de nuevo.");
     if(action==="compare"){
-      const panel=getPanel(), key=panel.dataset.lesson, initial=(originals.get(key)||"").split("\\n"), edited=panel.querySelector(".py-editor").value.split("\\n");
+      const panel=getPanel(), key=panel.dataset.lesson, initial=(originals.get(key)||"").split("\n"), edited=panel.querySelector(".py-editor").value.split("\n");
       const area=panel.querySelector(".py-diff-body"), max=Math.max(initial.length,edited.length);
       const escapeText=x=>String(x).replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));
       const changed=[];for(let i=0;i<max;i++)if(initial[i]!==edited[i])changed.push('<div class="py-diff-row"><span>LINE '+(i+1)+'</span><pre class="old">− '+escapeText(initial[i]??"")+'</pre><pre class="new">+ '+escapeText(edited[i]??"")+'</pre></div>');
