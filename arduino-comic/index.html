@@ -69,7 +69,30 @@ body{background:radial-gradient(circle at 20% 0,#d1eaff,transparent 460px),#eaf5
 @media(max-width:780px){.wrap{display:block}.lesson-pair,.intro-grid{grid-template-columns:1fr}.hero{grid-template-columns:1fr}.hero-art{display:none}.main{padding:14px 15px 70px}.lesson>summary{padding:13px 11px}.lesson-heading strong{font-size:20px}.lesson-num{width:49px;height:49px;font-size:20px}.dialogue>div:not(.section-top){font-size:14px}}
 @media print{.sidebar{display:none!important}.main{max-width:none}.wrap{display:block}.lesson{break-inside:avoid;box-shadow:none}.comic-code:not([open]){display:none}.hero{color:white;print-color-adjust:exact;-webkit-print-color-adjust:exact}.lesson-concept,.lesson>summary,.dialogue,.word,.stat{print-color-adjust:exact;-webkit-print-color-adjust:exact}}
 </style>
-</head>
+
+<style id="comic-illustration-v2">
+.comic-story{border:3px solid #1b406d;border-radius:19px;background:#fff;box-shadow:5px 5px 0 #183b6429;margin:16px 0 26px;padding:16px;overflow:hidden}
+.comic-story-title{display:flex;align-items:center;gap:9px;font-size:clamp(17px,2.4vw,22px);font-weight:950;letter-spacing:-.5px;color:#133e75;margin:0 0 15px}
+.comic-story-title span{background:#ffdb42;padding:7px 15px;border:2px solid #244976;border-radius:99px;box-shadow:2px 3px 0 #224a7133}
+.comic-story-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.07fr);gap:15px}
+.comic-story-scene{background:#e8f6ff;border:2px solid #66b1dc;border-radius:15px;display:flex;align-items:center;justify-content:center;position:relative;min-height:184px;padding:10px;gap:7px}
+.comic-figure{width:clamp(67px,10vw,126px);height:145px;flex:none;align-self:end}
+.comic-device{width:clamp(45px,7vw,80px);height:94px;flex:none}
+.comic-board{width:clamp(94px,15vw,160px);height:118px;flex:none}
+.comic-connector{font-size:31px;color:#125aad;font-weight:950}
+.comic-bubble{position:relative;background:#fff;border:2px solid #183e68;border-radius:18px 18px 18px 3px;padding:12px 14px;line-height:1.42;font-size:clamp(13px,1.55vw,16px);font-weight:800;color:#173655;max-width:270px;box-shadow:3px 3px 0 #13529322}
+.comic-explanation{border:2px solid #bc90e8;background:#f7ebff;border-radius:14px;padding:15px 16px;min-width:0}
+.comic-explanation h4{font-size:15px;color:#542c89;margin:0 0 10px}.comic-explanation p{margin:0 0 11px;font-size:14px;line-height:1.65;color:#2c3855}
+.comic-explanation p:last-child{margin-bottom:0}.comic-explanation strong{color:#14549d}.comic-explanation code{background:#fff;border-radius:6px;padding:2px 5px;font-size:12px;color:#63349a}
+.comic-trouble{margin:12px 0 20px;border:3px solid #185186;border-radius:17px;background:#e4ffe8;padding:14px;display:grid;grid-template-columns:130px minmax(0,1fr);gap:13px;align-items:center}
+.comic-trouble h4{margin:0 0 7px;font-weight:950;color:#166143;font-size:18px}.comic-trouble p{margin:0;line-height:1.65;font-size:13px}.comic-trouble .comic-figure{height:150px;width:128px}
+.comic-flow{display:flex;flex-direction:column;align-items:center;gap:5px;margin:4px auto 2px;max-width:250px;width:100%}.comic-flow-node{border:2px solid #19496e;border-radius:13px;padding:9px 13px;text-align:center;font-size:14px;font-weight:900;background:#e0f4ff;width:100%}.comic-flow-node.power{background:#def8cc}.comic-flow-node.looper{background:#ecd7ff}.comic-flow-arrow{font-size:21px;font-weight:950;color:#125baf;line-height:1}
+.comic-story-scene.flow-scene{display:block;background:#f9f8ff}
+.comic-speech-pair{margin:10px 0 5px;display:grid;grid-template-columns:1fr 1fr;gap:9px}.comic-speech-pair div{background:#fff;border:2px solid #ab86d8;border-radius:13px;padding:10px;font-weight:750;font-size:13px;color:#46266f}.comic-speech-pair div:last-child{border-color:#7dc4a3;color:#185e47}
+.comic-story .practice-icon-hero{width:140px;height:120px;flex:none}
+@media(max-width:800px){.comic-story-grid{grid-template-columns:1fr}.comic-story-scene{min-height:157px}.comic-figure{width:100px;height:115px}.comic-board{width:138px}.comic-trouble{grid-template-columns:100px 1fr}.comic-trouble .comic-figure{width:94px;height:120px}}
+@media print{.comic-story,.comic-trouble{box-shadow:none;break-inside:avoid;print-color-adjust:exact;-webkit-print-color-adjust:exact}}
+</style></head>
 <body>
 <div class="wrap" id="top">
 <aside class="sidebar" id="sidebar" aria-label="Practice navigation">
@@ -726,5 +749,43 @@ document.addEventListener('DOMContentLoaded',()=>{
  const mainTitle=document.querySelector('.hero h1');if(mainTitle)mainTitle.innerHTML='Arduino<br><em>Comic Lab!</em>';
  const note=document.createElement('p');note.className='mini-note';note.innerHTML='🎨 <strong>Comic edition:</strong> same simulations, exercises and full Arduino code as the original, with a clearer visual presentation.';
  document.querySelector('.summary-strip')?.after(note);
+});
+</script>
+<script id="comic-illustration-v2-script">
+document.addEventListener('DOMContentLoaded',function(){
+const lessons=[
+{heading:"HOW AN LED BLINKS",hero:"led",speech:"HIGH = ON. LOW = OFF!",fact:"An LED is an <strong>output</strong>. Arduino sends HIGH to switch it on and LOW to switch it off.",take:"Change <code>delay(1000)</code> to <code>delay(200)</code> → the LED blinks faster.",trouble:"LED stays off? Check the A1 connection, the power and OUTPUT mode."},
+{heading:"HOW A BUZZER MAKES SOUND",hero:"buzzer",speech:"Beep! Can you hear me?",fact:"The buzzer is an <strong>output</strong>. <code>tone()</code> controls frequency (Hz) and duration (ms).",take:"Higher frequency → higher-pitched sound. 2000 Hz sounds higher than 500 Hz.",trouble:"No sound? Check the A2 connection and make sure the frequency is audible."},
+{heading:"HOW A BUTTON SENDS INFORMATION",hero:"button",speech:"Press me! Arduino reads 1.",fact:"A button is an <strong>input</strong>. On our VYK module, pressed = 1 (HIGH) and released = 0 (LOW).",take:"<code>digitalRead(A0)</code> reads the button; the Serial Monitor shows the value.",trouble:"The value never changes? Check A0 and the Serial Monitor baud rate (115200)."},
+{heading:"INPUT → DECISION → OUTPUT",hero:"led",speech:"If pressed: light ON!",fact:"Arduino checks <code>if</code>. When the condition is true, the LED turns on. <code>else</code> handles the alternative.",take:"Button A0 = input → Arduino decides → LED A1 = output.",trouble:"LED works backwards? Check which action you placed inside if and else."},
+{heading:"ONE PRESS, ONE BEEP",hero:"buzzer",speech:"Only one beep for each NEW press!",fact:"A Boolean variable <code>previous</code> remembers whether the button was previously pressed.",take:"<code>pressed &amp;&amp; !previous</code> detects a new press, not a long hold.",trouble:"Too many beeps? Check that previous is updated after reading the button."},
+{heading:"HOW THE OLED SHOWS A MESSAGE",hero:"oled",speech:"HELLO! I'm the screen.",fact:"The OLED is an <strong>output</strong> with 128 × 64 pixels. It uses I²C: SDA and SCL.",take:"<code>oled.print()</code> prepares the text; <code>oled.display()</code> shows it.",trouble:"Blank screen? Check I²C connections, OLED address 0x3C and the SSD1306 library."},
+{heading:"HOW A COUNTER WORKS",hero:"button",speech:"1, 2, 3… Every press counts!",fact:"A counter is a <strong>variable</strong>. It stores a number that changes.",take:"<code>counter++</code> adds one; a function such as <code>showCounter()</code> updates the screen.",trouble:"Counting too fast? Count a new button press instead of every loop iteration."},
+{heading:"TWO WAYS TO HANDLE TIME",hero:"clock",speech:"Tick, tick… without stopping!",fact:"<code>delay()</code> pauses the program. <code>millis()</code> measures elapsed time while the program keeps running.",take:"1000 ms = 1 second. Use <code>millis()</code> for a responsive countdown.",trouble:"Buttons stop working during a wait? Replace long delays with millis-based timing."},
+{heading:"WHOSE TURN IS IT?",hero:"clock",speech:"WHITE TURN → BLACK TURN!",fact:"A <strong>state</strong> tells Arduino what is happening: WAITING, WHITE_TURN or BLACK_TURN.",take:"Press the BLACK button first to start White's clock; press WHITE to pass the turn.",trouble:"The wrong clock runs? Check the active state and which player pressed a button."},
+{heading:"PUT EVERYTHING TOGETHER!",hero:"clock",speech:"Two players. One chess clock!",fact:"The final clock combines <strong>inputs</strong> (buttons), <strong>outputs</strong> (LED, buzzer, OLED), states and timers.",take:"5 minutes per player. An alarm sounds at zero; holding both buttons for 2 seconds resets.",trouble:"Check each component separately first: buttons, LED, buzzer and OLED; then test both clocks."}
+];
+const icon=(name,cls)=>'<svg class="'+(cls||'comic-device')+'" role="img" aria-label="'+name+'"><use href="./comic-art.svg#'+name+'"></use></svg>';
+const flow='<div class="comic-flow"><div class="comic-flow-node power">⚡ Power ON / Reset</div><div class="comic-flow-arrow">↓</div><div class="comic-flow-node">⚙ setup() — runs once</div><div class="comic-flow-arrow">↓</div><div class="comic-flow-node looper">⟳ loop() — repeats forever ↺</div></div>';
+const navIntro=document.querySelector('.intro-grid');
+if(navIntro){
+const intro=document.createElement('section');intro.className='comic-story';intro.innerHTML='<h3 class="comic-story-title"><span>🎨 MEET THE ARDUINO COMIC LAB!</span></h3><div class="comic-story-grid"><div class="comic-story-scene">'+icon('boy','comic-figure')+'<div class="comic-bubble">An input tells Arduino something. The program decides what to do!</div></div><div class="comic-story-scene">'+icon('button')+'<span class="comic-connector">→</span>'+icon('board','comic-board')+'<span class="comic-connector">→</span>'+icon('led')+'</div></div>';
+navIntro.after(intro);
+}
+document.querySelectorAll('.lesson').forEach((lesson,i)=>{
+ const data=lessons[i];if(!data)return;
+ const root=lesson.querySelector('.lesson-content'); const sim=root?.querySelector('.simulation');if(!root||!sim)return;
+ const panel=document.createElement('section');panel.className='comic-story';
+ const flowBlock=i===0?'<div class="comic-flow" style="margin-top:12px"><div class="comic-flow-node power">⚡ Arduino starts</div><div class="comic-flow-arrow">↓</div><div class="comic-flow-node">setup() runs once</div><div class="comic-flow-arrow">↓</div><div class="comic-flow-node looper">loop() repeats: ON → OFF → ON …</div></div>':'';
+ const scene=i===0?icon('boy','comic-figure')+'<div class="comic-bubble">'+data.speech+'</div>'+icon('led'):i===7?icon('girl','comic-figure')+'<div class="comic-bubble">'+data.speech+'</div>'+icon('clock'):icon(i%2===0?'boy':'girl','comic-figure')+'<div class="comic-bubble">'+data.speech+'</div>'+icon(data.hero,'comic-device');
+ panel.innerHTML='<h3 class="comic-story-title"><span>🧠 '+data.heading+'</span></h3><div class="comic-story-grid"><div class="comic-story-scene">'+scene+'</div><div class="comic-explanation"><h4>💡 KEY CONCEPTS</h4><p>'+data.fact+'</p><h4>🔎 REMEMBER!</h4><p>'+data.take+'</p>'+flowBlock+'</div></div>';
+ const concept=root.querySelector('.lesson-concept');if(concept)concept.after(panel);else root.prepend(panel);
+ const quiz=root.querySelector('.quiz');if(quiz){const trouble=document.createElement('div');trouble.className='comic-trouble';trouble.innerHTML=icon('girl','comic-figure')+'<div><h4>🔧 TROUBLESHOOTING</h4><p>'+data.trouble+'</p></div>';quiz.after(trouble);}
+});
+const toolbox=document.querySelector('#toolbox');
+if(toolbox){
+ const scene=document.createElement('div');scene.className='comic-story-grid';scene.style.marginTop='15px';
+ scene.innerHTML='<div class="comic-story-scene">'+icon('girl','comic-figure')+'<div class="comic-bubble">Can you help me, please?</div></div><div class="comic-story-scene">'+icon('boy','comic-figure')+'<div class="comic-bubble">Yes! Let’s check the code.</div></div>';toolbox.append(scene);
+}
 });
 </script></body></html>
